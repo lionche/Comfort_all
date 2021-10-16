@@ -1,0 +1,10 @@
+var NISLFuzzingFunc = function(e) {
+    var t = this;
+    var i = t.Chart;
+    var n = e.target.shape;
+    i.setItemActived(n, !0);
+}
+;
+var NISLParameter0 = [false, [-6097.04273126941159955, -385860.24479378633797755, 5526.23379889999513181, -9545175309.8786922849595323, 633950766.5560889032356304, 461501776.5343443596164126, -426838.1308785698221694, 4393.362209718828288, 9140.31373567548591197, 951345.9956567336582, 2433687545.9994459635348485], undefined, null, null];
+var NISLCallingResult = NISLFuzzingFunc(NISLParameter0);
+print(NISLCallingResult);
