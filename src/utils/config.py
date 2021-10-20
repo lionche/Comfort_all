@@ -90,7 +90,7 @@ class Hparams_Generator:
     # parser.add_argument('--nsamples', default=512, type=int,
     #nsamples代表段落的数量
     # parser.add_argument('--nsamples', default=512, type=int,
-    parser.add_argument('--nsamples', default=32, type=int,
+    parser.add_argument('--nsamples', default=512, type=int,
                         help='Controls the number of testcases generated, nsamples*4≈numberof testcases')
     parser.add_argument('--batch_size', default=16, type=int,
                         help='Batch size for generation(increase for GPUs, 16 is recommended for RTX 2080)')
@@ -146,9 +146,10 @@ class Hparams_Coverage:
     parser.add_argument('--fuzzer', type=str, default="comfort",
                         help="which fuzzer to test, there are comfort, die, fuzzilli, montage, deepsmith, codealchemist")
     #自定义测试库
-    #路径开始于 /
-    parser.add_argument('--coverage_files', type=str, default="data/generated_data/complete_testcases/default_config",
-    # parser.add_argument('--coverage_files', type=str, default="data/generated_data/original_samples/default_config",
+    #路径开于 /
+    # parser.add_argument('--coverage_files', type=str, default="data/generated_data/complete_testcases/default_config",
+    parser.add_argument('--coverage_files', type=str, default="data/generated_data/original_samples/default_config",
+    # parser.add_argument('--coverage_files', type=str, default="data/generated_data/complete_testcases/55_lines/line_19",
     # parser.add_argument('--coverage_files', type=str, default="",
                         help='path to the directory of files that need to calculate coverage')
 

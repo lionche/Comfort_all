@@ -51,33 +51,26 @@ def jshint_checking(file_path):
     # 进行uglifyjs过滤
     # cmd = ['timeout', '60s', 'node', '--max_old_space_size=4096', 'jshint']
     cmd = ['timeout', '60s', 'jshint', file_path]
-    # cmd = ['pwd']
-    # p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # stdout, stderr = p.communicate()
-    # if stdout:
-    #     print(stdout)
-    # if stderr:
-    #     print(stderr)
 
     if sys.platform.startswith('win'):  # 假如是windows
         p1 = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     else:  # 假如是linux
-        # p1 = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         p1 = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     stdout, stderr = p1.communicate()
-    # if stdout:
-    #     print("正常")
-    #     print(stdout)
-    # if stderr:
-    #     print("error")
-    #     print(stderr)
+    if stdout:
+        print(f"{file_path}语法出错")
+        print(stdout)
+    if stderr:
+        print("error")
+        print(stderr)
 
     stdout = p1.communicate()[0]
     if stdout.__len__() > 0:
         jshint_flag = 0
     else:  # 通过了检查，此时 test_file_name中就是美化后的代码
         jshint_flag = 1
+        # print(f"{file_path}right!")
     return jshint_flag
 
 def extractCoverage(coverage_file):
@@ -148,32 +141,34 @@ if __name__ == '__main__':
                 process = "\rprocessing: {current}/{total}".format(current=str(i + 1), total=total)
                 # 可以刷新的打印
                 sys.stdout.write(process)
-                coverage(report_dir, temp_dir, file_path)
+                # coverage(report_dir, temp_dir, file_path)
 
-
+                # print(file_path)
 
                 if jshint_checking(file_path):
                     jshint_pass += 1
                 i += 1
 
-    coverage_file = os.path.join(report_dir, "coverage-summary.json")
+    # coverage_file = os.path.join(report_dir, "coverage-summary.json")
 
     # get the current time
     now = time.localtime()
     nowt = time.strftime("%Y-%m-%d-%H_%M_%S", now)
     if not os.path.exists(reporter_dir):
         os.mkdir(reporter_dir)
-    reporter_path = os.path.join(reporter_dir, nowt + "_" + fuzzer + ".json")
-    with open(reporter_path, "w", encoding="utf-8") as f:
-        f.write(open(coverage_file, "r").read())
 
-    coverages = extractCoverage(coverage_file)
-    print("\n\njshint passing rate: %s" % str(round(jshint_pass / total, 4) * 100))
-    print("\ncoverage rate results:")
-    print("statement coverages: %s" % coverages[0])
-    print("function coverages: %s" % coverages[1])
-    print("branch coverages: %s" % coverages[2])
-    print("line coverages: %s" % coverages[3])
-    print(f"\n------------------------------------------------------")
-    print(f"Coverage messages has been saved to {reporter_path}'")
-    print(f"------------------------------------------------------\n")
+    reporter_path = os.path.join(reporter_dir, nowt + "_" + fuzzer + ".json")
+    # with open(reporter_path, "w", encoding="utf-8") as f:
+    #     f.write(open(coverage_file, "r").read())
+    #
+    # coverages = extractCoverage(coverage_file)
+    # print("\n\njshint passing rate: %s" % str(round(jshint_pass / total, 4) * 100))
+    print(f"\n{os.path.split(coverage_files)[-1]}\t%s" % str(round(jshint_pass / total, 4) * 100))
+    # print("\ncoverage rate results:")
+    # print("statement coverages: %s" % coverages[0])
+    # print("function coverages: %s" % coverages[1])
+    # print("branch coverages: %s" % coverages[2])
+    # print("line coverages: %s" % coverages[3])
+    # print(f"\n------------------------------------------------------")
+    # print(f"Coverage messages has been saved to {reporter_path}'")
+    # print(f"------------------------------------------------------\n")
