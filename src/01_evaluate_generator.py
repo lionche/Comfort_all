@@ -120,7 +120,7 @@ def function_generate(hparams, saved_dir):
                           temperature=hparams.temperature,
                           include_prefix=True,
                           return_as_list=True,
-                          length=10240
+                          length=512
                           )
 
     # when the last batch, intercepted by the remainder
@@ -217,14 +217,14 @@ if __name__ == '__main__':
     if hparams.mode == 'finetune':
         gpt2_finetune(hparams)
     elif hparams.mode == 'generate':
-        start_time = time.time()
 
         # new a directory name
         # time_stamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
         # identifier = str(uuid4())[:8]
         # new_dir_name = f'{time_stamp}_{identifier}'
         # new_dir_name = f'{time_stamp}_{identifier}'
-        js_file_root = 'data/test_function/'
+        # js_file_root = 'data/test_function/'
+        js_file_root = 'data/generated_data/original_samples/gpt_zhongzi/corpus-1000-copy/'
         js_files_list = os.listdir(js_file_root)
         js_files_list.sort()
 
@@ -234,23 +234,35 @@ if __name__ == '__main__':
 
             # 选择从第几行开始续写
             for cut_line in range(1, js_len - 2):
+                start_time = time.time()
                 folder_name = js_file.split('.')[0] + '_js'
-                new_dir_name = f'{folder_name}/line_{cut_line}'
+                # gpt save path
+                new_dir_name = f'corpus_1000_gpt/{folder_name}/line_{cut_line}'
 
                 function_prefix = getJSfile(js_file_root + js_file, cut_line)
 
                 # generate JS function by gpt2
                 samples_saved_dir = os.path.join(hparams.sample_dir, new_dir_name)
-                generated_functions = function_generate(hparams, samples_saved_dir)
+
+                print(f'{folder_name}/line_{cut_line}')
+
+                try:
+                    generated_functions = function_generate(hparams, samples_saved_dir)
+                except:
+                    print('wrong.so skip')
+
+                    pass
                 # function_generate只生成方法
                 # assemble JS testcase
-                testcases_saved_dir = os.path.join(hparams.testcase_dir, new_dir_name)
-                testcase_assemble(generated_functions, testcases_saved_dir)
+                # testcases_saved_dir = os.path.join(hparams.testcase_dir, new_dir_name)
+                # testcase_assemble(generated_functions, testcases_saved_dir)
                 end_time = time.time()
                 info_print(
                     f"A total of {len(generated_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
-                info_print(f"All generated functions by gpt2 are saved in: {samples_saved_dir}")
+                # info_print(f"All generated functions by gpt2 are saved in: {samples_saved_dir}")
             # info_print(f"All generated testcases are saved in: {testcases_saved_dir}")
+
+            os.remove(js_file_root + js_file)
 
     else:
         raise ValueError('The "mode" parameter is invalid. Please enter it again!')

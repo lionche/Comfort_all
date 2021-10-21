@@ -9,8 +9,8 @@ def getJSfile(path,lines_num):
         function_cut = ''
         for i in line_list_cut:
             function_cut += i
-        print(function_cut)
-        print('--')
+        # print(function_cut)
+        # print('--')
         return function_cut
 
 #获取js文件的长度

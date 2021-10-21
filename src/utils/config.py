@@ -89,8 +89,8 @@ class Hparams_Generator:
     # note: you have to make sure nsamples % batch_size == 0
     # parser.add_argument('--nsamples', default=512, type=int,
     #nsamples代表段落的数量
+    parser.add_argument('--nsamples', default=32, type=int,
     # parser.add_argument('--nsamples', default=512, type=int,
-    parser.add_argument('--nsamples', default=512, type=int,
                         help='Controls the number of testcases generated, nsamples*4≈numberof testcases')
     parser.add_argument('--batch_size', default=16, type=int,
                         help='Batch size for generation(increase for GPUs, 16 is recommended for RTX 2080)')

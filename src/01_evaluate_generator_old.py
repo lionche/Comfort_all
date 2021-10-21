@@ -9,7 +9,7 @@ from generate_model.callable_processor import CallableProcessor
 from utils.config import Hparams_Generator
 import gpt_2_simple as gpt2
 
-os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+os.environ['CUDA_VISIBLE_DEVICES'] = "1"
 
 
 def info_print(str):
@@ -90,8 +90,10 @@ def function_generate(hparams, saved_dir):
 
     all_functions = []
 
-    # 设置前缀
-    generate_prefix = hparams.generate_prefix
+    # 设置前缀'
+    generate_prefix = hparams.generate_prefix + """var obj1 = {};
+var obj2 = {};
+    """
     print(generate_prefix, "\n-------------------------------")
 
     texts = gpt2.generate(sess,
