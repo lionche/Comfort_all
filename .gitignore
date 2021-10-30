@@ -3,3 +3,4 @@
 .idea/
 .idea/deployment.xml
 .idea/vcs.xml
+/data/generated_data/

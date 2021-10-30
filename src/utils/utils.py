@@ -1,4 +1,5 @@
 import json
+import os
 from collections import OrderedDict
 
 
@@ -23,3 +24,11 @@ def dict_order(_dict):
     new_dict['scopes'] = _dict.get('scopes')
     new_dict['values'] = _dict.get('values')
     return new_dict
+
+def createFolder(saved_dir):
+    """
+    如果文件夹不存在，就创建
+    :param saved_dir: 文件夹的位置
+    """
+    if not os.path.exists(saved_dir):
+        os.makedirs(saved_dir)

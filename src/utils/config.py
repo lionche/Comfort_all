@@ -70,8 +70,8 @@ class Hparams_Generator:
     parser.add_argument('--gpt2_model_dir', default=PROJECT_ABSOLUTE_PATH + '/src/generate_model/models', type=str,
                         help='Pretrained gpt2 model path')
     # gpt预训练模型名称
-    # parser.add_argument('--gpt2_model_name', default='117M', type=str,
-    parser.add_argument('--gpt2_model_name', default='355M', type=str,
+    parser.add_argument('--gpt2_model_name', default='117M', type=str,
+    # parser.add_argument('--gpt2_model_name', default='355M', type=str,
                         help='Pretrained gpt2 model name, only "117M" is available')
     # gpt微调模型文件夹
     parser.add_argument('--finetuned_model_dir', default=PROJECT_ABSOLUTE_PATH + '/src/generate_model/models', type=str,

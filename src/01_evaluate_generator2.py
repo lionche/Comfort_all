@@ -3,11 +3,13 @@ import time
 import datetime
 import shutil
 import math
-from selectPrefix import getJSfile, getJSfileSize
+from selectPrefix import getJSfile, getJSfileSize, count_var_lines
 from utils.config import Hparams_Generator
 import gpt_2_simple as gpt2
 
+# 更新
 os.environ['CUDA_VISIBLE_DEVICES'] = "1"
+
 
 def info_print(str):
     # 不懂
@@ -24,33 +26,14 @@ else:
     hparams.multi_gpu = False
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # disable gpu
 time.sleep(1)
+#去掉升级版本的提醒
+import tensorflow as tf
+tf.get_logger().setLevel('ERROR')
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Mask prompts for TensorFlow
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Mask prompts for TensorFlow
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
 
-
-def gpt2_finetune(hparams):
-    info_print("Model finetuning, please wait. (Press Ctrl+C to exit early)")
-    sess = gpt2.start_tf_sess()
-    # input check
-    if not os.path.exists(os.path.join(hparams.gpt2_model_dir, hparams.gpt2_model_name)):
-        raise FileNotFoundError("The specified gpt2 pretrained model doesn't exist, please restore the default params.")
-
-    # clear checkpoint dir
-    model_path = os.path.join(hparams.finetuned_model_dir, hparams.finetuned_model_name)
-    if os.path.exists(model_path):
-        shutil.rmtree(model_path)
-
-    gpt2.finetune(sess=sess,
-                  dataset=hparams.data_path,
-                  model_dir=hparams.gpt2_model_dir,
-                  model_name=hparams.gpt2_model_name,
-                  checkpoint_dir=hparams.finetuned_model_dir,
-                  run_name=hparams.finetuned_model_name,
-                  multi_gpu=hparams.multi_gpu,
-                  steps=hparams.steps)
-
-
-def function_generate(hparams, saved_dir):
+def function_generate(hparams, saved_dir, function_prefix):
     sess = gpt2.start_tf_sess()
     sess = gpt2.reset_session(sess)
 
@@ -130,7 +113,6 @@ def function_generate(hparams, saved_dir):
             # print("-" * 10)
             all_functions.append(functions[0])
 
-
     # for function in functions:
     #     print(function)
 
@@ -171,6 +153,61 @@ def function_generate(hparams, saved_dir):
     return all_functions
 
 
+def generateJs(js_folder_root):
+
+    orginal_js_path = os.path.join(js_folder_root, 'orginal')
+
+    for root, dirs, files in os.walk(orginal_js_path):
+        files.sort()
+        for file in files:
+            file_path = os.path.join(root, file)
+
+            # file_path是具体js的路径
+
+            # print(file_path)
+
+            # 从具体js文件来选择，前缀的开始行数，要求前缀必须含有var的定义
+            # count是含有var的最后一行的行数
+            count = count_var_lines(file_path)
+
+            # js文件的总行数
+            js_len = getJSfileSize(file_path)
+            # print(count, js_len)
+
+            # print(file_path)
+
+            # 选择从第几行开始续写，规定前缀的范围，左闭右开
+            for cut_line in range(count, js_len):
+                start_time = time.time()
+                folder_name = file.split('.')[0] + '_js'
+
+                # gpt save path
+                gpt_js_save_name = f'{folder_name}/line_{cut_line}'
+
+                # print(gpt_js_save_name)
+
+                function_prefix = getJSfile(file_path, cut_line)
+
+                #   generate JS function by gpt2
+
+                gpt_js_folder_path = os.path.join(js_folder_root, 'gpt')
+
+                gpt_saved_dir = os.path.join(gpt_js_folder_path, gpt_js_save_name)
+
+                print(gpt_js_save_name)
+
+                try:
+                    generated_functions = function_generate(hparams, gpt_saved_dir, function_prefix)
+                except:
+                    print('wrong.so skip')
+                    pass
+                end_time = time.time()
+                info_print(
+                    f"A total of {len(generated_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
+
+            # os.remove(js_file_path)
+
+
 if __name__ == '__main__':
 
     # js_folder_root要处理的文件夹
@@ -178,47 +215,4 @@ if __name__ == '__main__':
     # orginal是原js文件 ，gpt保存gpt续写出的代码，replace保存替换片段的代码
     js_folder_root = 'data/generated_data/original_samples/test_corpus_100/no_hint'
 
-
-    orginal_js_path = os.path.join(js_folder_root, 'orginal')
-    js_files_list = os.listdir(orginal_js_path)
-    js_files_list.sort()
-
-    for js_file in js_files_list:
-        js_file_path = os.path.join(orginal_js_path, js_file)
-        js_len = getJSfileSize(js_file_path)
-
-
-    # for root, dirs, files in os.walk(orginal_js_path):
-    #     for file in files:
-    #         file_path = os.path.join(root, file)
-
-        # 选择从第几行开始续写
-        for cut_line in range(1, js_len - 1):
-            start_time = time.time()
-            folder_name = js_file.split('.')[0] + '_js'
-            # gpt save path
-            gpt_js_save_name = f'{folder_name}/line_{cut_line}'
-
-            function_prefix = getJSfile(js_file_path, cut_line)
-
-            # generate JS function by gpt2
-
-            gpt_js_folder_path = os.path.join(js_folder_root, 'gpt')
-
-            gpt_saved_dir = os.path.join(gpt_js_folder_path, gpt_js_save_name)
-
-            print(f'{folder_name}/line_{cut_line}')
-
-            try:
-                generated_functions = function_generate(hparams, gpt_saved_dir)
-            except:
-                print('wrong.so skip')
-                pass
-            end_time = time.time()
-            info_print(
-                    f"A total of {len(generated_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
-            # info_print(f"All generated functions by gpt2 are saved in: {samples_saved_dir}")
-        # info_print(f"All generated testcases are saved in: {testcases_saved_dir}")
-
-        # os.remove(js_file_path)
-
+    generateJs(js_folder_root)

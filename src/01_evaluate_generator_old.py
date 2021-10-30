@@ -91,9 +91,7 @@ def function_generate(hparams, saved_dir):
     all_functions = []
 
     # 设置前缀'
-    generate_prefix = hparams.generate_prefix + """var obj1 = {};
-var obj2 = {};
-    """
+    generate_prefix = hparams.generate_prefix
     print(generate_prefix, "\n-------------------------------")
 
     texts = gpt2.generate(sess,
@@ -125,10 +123,11 @@ var obj2 = {};
         functions = text.split(hparams.generate_prefix)[1:]
 
         # 如果生成多个方法，只取第一个符合前缀的方法
-        if len(functions) > 1:
-            # print(functions[0])
-            # print("-" * 10)
-            all_functions.append(functions[0])
+
+        if len(functions) >= 2:
+            functions = functions[:-1]
+
+        all_functions += functions
 
     # save all generated functions by gpt2 to a new file
     if not os.path.exists(saved_dir):

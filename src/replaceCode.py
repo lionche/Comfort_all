@@ -54,12 +54,10 @@ def merge_js_cut(JSCutGptPath, startline, endline):
     :return:
     """
 
-    js_file_num = JSCutGptPath.split('/')[5].split('_')[0]
-    JSCutOriginalPath = f'../data/test_function/{js_file_num}.js'
     # print(JSCutOriginalPath)
 
     # js文件的行数
-    js_file_len = getJSfileSize(JSCutOriginalPath)
+    # js_file_len = getJSfileSize(JSCutOriginalPath)
 
     # JSCutGptPath = f'../data/generated_data/original_samples/{js_file_num}_js/line_{lines_num}/1.js'
     function_cut_add = getJSCutGpt(JSCutGptPath, startline, endline)
@@ -81,66 +79,47 @@ def getJSfileSize(path):
 
 # gpt续写前缀的行数
 
-JSCutGptLinesRoot = f'../data/generated_data/original_samples/55_js_function'
 
-# 行数最多为58
-function_all_list = [[] for i in range(63)]
+if __name__ == '__main__':
 
+    # js要处理的文件夹
+    # 应包含 orginal，gpt，replace三个文件夹
+    # orginal是原js文件 ，gpt保存gpt续写出的代码，replace保存替换片段的代码
 
-for root, dirs, files in os.walk(JSCutGptLinesRoot):
-    for file in files:
+    JSworkfolderPath = '../data/generated_data/original_samples/test_corpus_100/'
 
-        gpt_file_path = os.path.join(root, file)
-        # print(gpt_file_path)
-        js_file_num = gpt_file_path.split('/')[5].split('_')[0]
-        file_js_lines_num = int(gpt_file_path.split('/')[6].split('_')[1])
-        js_name = gpt_file_path.split('/')[7]
+    JSGptRoot = JSworkfolderPath + 'gpt_no_repeat'
 
-        replace_saved_dir = f'../data/generated_data/original_samples/replace/{js_file_num}_js/line_{file_js_lines_num}'
+    JSOrginalsRoot = JSworkfolderPath + 'orginal'
 
-        if not os.path.exists(replace_saved_dir):
-            os.makedirs(replace_saved_dir)
-
-        function_all = merge_js_cut(gpt_file_path, file_js_lines_num + 1, file_js_lines_num + 3)
-
-        with open(os.path.join(replace_saved_dir,js_name), 'w', encoding='utf-8') as f:
-            f.write(function_all)
-
-        # function_all_list[file_js_lines_num].append(function_all)
-
-# print(function_all_list[62])
+    JSReplaceRoot =  JSworkfolderPath + 'replaced'
 
 
-# for idx, lines_x in enumerate(function_all_list):
-#
-#     process = "\rprocessing: {current}/{total}".format(current=str(idx + 1), total=len(function_all_list))
-#
-#     # 可以刷新的打印
-#     sys.stdout.write(process)
-#
-#     replace_saved_dir = f'../data/generated_data/original_samples/replace/line_{idx}'
-#
-#     # replace_complete_saved_dir = f'../data/generated_data/complete_testcases/replace/line_{idx}'
-#
-#     if not os.path.exists(replace_saved_dir):
-#         os.makedirs(replace_saved_dir)
-#
-#     # print(idx)
-#     for idx2, line_function in enumerate(lines_x, start=1):
-#         with open(os.path.join(replace_saved_dir, f'{idx2}.js'), 'w', encoding='utf-8') as f:
-#             f.write(line_function)
-#
-#         # testcase_assemble(line_function,replace_complete_saved_dir)
+    for root, dirs, files in os.walk(JSGptRoot):
+        for file in files:
+            gpt_file_path = os.path.join(root, file)
+            # print(gpt_file_path)
 
+            #js源文件文件编号
+            js_file_num = gpt_file_path.split('/')[-3].split('_')[0]
+            # print(js_file_num)
 
+            #js行数编号
+            file_js_lines_num = int(gpt_file_path.split('/')[-2].split('_')[1])
+            # print(file_js_lines_num)
 
+            #续写出的js文件编号
+            js_name = gpt_file_path.split('/')[-1]
+            # print(js_name)
 
-# for idx, function in enumerate(function_all_list, start=1):
-#     print(function)
+            replace_saved_dir = f'{JSReplaceRoot}/{js_file_num}_js/line_{file_js_lines_num}'
 
+            if not os.path.exists(replace_saved_dir):
+                os.makedirs(replace_saved_dir)
 
-# print(function_all_list)
+            JSCutOriginalPath = f'{JSOrginalsRoot}/{js_file_num}.js'
 
-# line_1要从第二行开始截取
-# function_cut_add = getJSCutGpt('../data/generated_data/original_samples/0_js/line_2/1.js', 3, 7)
-# function_cut1, function_cut2 = getJSCutOriginal('../data/test_function/0.js', 3, 7)
+            function_all = merge_js_cut(gpt_file_path, file_js_lines_num + 1, file_js_lines_num + 3)
+
+            with open(os.path.join(replace_saved_dir, js_name), 'w', encoding='utf-8') as f:
+                f.write(function_all)

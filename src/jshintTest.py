@@ -1,28 +1,36 @@
 import os
 import subprocess
 import sys
-#给js文件加一个头和尾，为了jshint检测
 
 
-def add_head_tile(file_path:str):
-    file_path_addname = file_path.replace('replace','replace_hint')
+# 给js文件加一个头和尾，为了jshint检测
+from src.utils.utils import createFolder
 
 
-    if not os.path.exists(os.path.split(file_path_addname)[0]):
-        os.makedirs(os.path.split(file_path_addname)[0])
+def add_head_tile(file_path: str):
+    js_hint_path_name = os.path.dirname(file_path).replace(corpus_no_hint_dir, corpus_hint_dir)
+    js_name = os.path.split(file_path)[1]
+    # print(js_hint_path_name)
+
+    createFolder(js_hint_path_name)
 
     with open(file_path, 'r') as f:
         readJS = f.read()
 
-
-    with open(file_path_addname, 'a', encoding='utf8') as file:
+    with open(os.path.join(js_hint_path_name, js_name), 'a', encoding='utf8') as file:
         file.write('var NISLFuzzingFunc = ' + readJS + ';')
 
-corpus_dir = '../data/generated_data/original_samples/replace'
 
+if __name__ == '__main__':
 
-for root, dirs, files in os.walk(corpus_dir):
-    for file in files:
-        file_path = os.path.join(root, file)
-        add_head_tile(file_path)
+    corpus_root = '../data/generated_data/original_samples/test_corpus_100/'
+    corpus_no_hint_dir = corpus_root + 'no_hint'
+    # corpus_dir = '../data/generated_data/original_samples/gpt_seed'
 
+    corpus_hint_dir = corpus_root + 'hint'
+
+    for root, dirs, files in os.walk(corpus_no_hint_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if file_path.endswith(".js"):
+                add_head_tile(file_path)
