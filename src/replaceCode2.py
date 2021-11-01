@@ -10,7 +10,7 @@ import os
 # ^ {4}\w+.*;$ 单行
 # (^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^} 整体
 # (^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$ 多行
-from src.utils.utils import createFolder
+from utils.utils import createFolder
 
 
 def readFileAll(path):
@@ -35,65 +35,6 @@ def analysis_js_block(path):
     return block_list
 
 
-def getJSCutGpt(path, startline, endline):
-    with open(path, 'r') as f:
-        lines_list = f.readlines()
-        line_list_cut = lines_list[startline - 1:endline]
-        function_cut = ''
-        for i in line_list_cut:
-            function_cut += i
-        # print(function_cut)
-        # print('--' * 50)
-        return function_cut
-
-
-# 获取原用例截取剩下的片段
-def getJSCutOriginal(path, startline, endline):
-    with open(path, 'r') as f:
-        lines_list = f.readlines()
-        line_list_cut1 = lines_list[:startline - 1]
-        line_list_cut2 = lines_list[endline:]
-        function_cut1 = ''
-        function_cut2 = ''
-        for i in line_list_cut1:
-            function_cut1 += i
-        for i in line_list_cut2:
-            function_cut2 += i
-        # print(function_cut1)
-        # print('--' * 50)
-        # print(function_cut2)
-        # print('--' * 50)
-        return function_cut1, function_cut2
-
-
-# js_file_num
-def merge_js_cut(JSCutGptPath, startline, endline):
-    """
-
-    :param js_file_num:  js文件的编号
-    :param startline: 截取的开始行数，默认为lines_num+1
-    :param endline: 截取结束的行数
-    :return:
-    """
-
-    # print(JSCutOriginalPath)
-
-    # js文件的行数
-    # js_file_len = getJSfileSize(JSCutOriginalPath)
-
-    # JSCutGptPath = f'../data/generated_data/original_samples/{js_file_num}_js/line_{lines_num}/1.js'
-    function_cut_add = getJSCutGpt(JSCutGptPath, startline, endline)
-    function_cut1, function_cut2 = getJSCutOriginal(JSCutOriginalPath, startline, endline)
-    function_all = function_cut1 + function_cut_add + function_cut2
-    # print(function_all)
-    return function_all
-
-
-# 获取js文件的长度
-def getJSfileSize(path):
-    with open(path, 'r') as f:
-        lines_list = f.readlines()
-    return len(lines_list)
 
 
 def RegularCutBlock(test_str):
@@ -104,23 +45,14 @@ def RegularCutBlock(test_str):
     """
     block_list = []
     # regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^}| {4}"use strict";'
-    regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^}| {4}"use strict";| {4}for.*{}'
+    # regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^}| {4}"use strict";| {4}for.*{}'
+    # regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*\n|^}| {4}"use strict";| {4}for.*{}'
+    regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$\n|^ {4}\w+.*;$\n|function.*\n|^}| {4}"use strict"\n;| {4}for.*{}\n'
     matches = re.finditer(regex, test_str, re.MULTILINE)
     for matchNum, match in enumerate(matches, start=1):
         # print(match.group())
         # print('-'*100)
         block_list.append(match.group())
-
-        # print("Match {matchNum} was found at {start}-{end}: {match}".format(matchNum=matchNum, start=match.start(),
-        #                                                                     end=match.end(), match=match.group()))
-
-        # for groupNum in range(0, len(match.groups())):
-        #     groupNum = groupNum + 1
-        #
-        #     print("Group {groupNum} found at {start}-{end}: {group}".format(groupNum=groupNum,
-        #                                                                     start=match.start(groupNum),
-        #                                                                     end=match.end(groupNum),
-        #                                                                     group=match.group(groupNum)))
 
     return block_list
 
@@ -131,13 +63,14 @@ def getFilePath(path: str):
     :param path: js续写的代码的文件路径
     :return: orginal_path:续写前的原文件的路径
             gpt_path: 续写的地址
-            js_number:js文件编号
+            orginal_js_number:原js文件编号
     """
 
-    js_number = path.split('/')[-3].split('_')[0]
-    orginal_path = os.path.join(Root, 'orginal', js_number + '.js')
+    orginal_js_number = path.split('/')[-3].split('_')[0]
+    gpt_js_number = path.split('/')[-3].split('_')[0]
+    orginal_path = os.path.join(Root, 'orginal', orginal_js_number + '.js')
     gpt_path = path
-    return orginal_path, gpt_path, js_number
+    return orginal_path, gpt_path, orginal_js_number
 
 
 def fineBlockIdx(orginal_block_list, gpt_block_list, gpt_line_num):
@@ -171,6 +104,8 @@ def replaceBlock(gpt_file_path):
     orginal_path, gpt_path, js_number = getFilePath(gpt_file_path)
     orginal_block_list = analysis_js_block(orginal_path)
     gpt_block_list = analysis_js_block(gpt_path)
+    #gpt续写出来的js文件的文件名
+    gpt_file_name = os.path.basename(gpt_file_path)
     # gpt前缀的行数，为1~gpt_line_num
     gpt_line_num = int(gpt_path.split('/')[-2].split('_')[1])
     # 续写的内容的第一行为 gpt_line_num+1
@@ -180,6 +115,7 @@ def replaceBlock(gpt_file_path):
     # print('续写的第一行的代码块位置：' + str(block_num))
     # print('原代码块数量：' + str(len(orginal_block_list)))
     # print('gpt续写代码块数量：' + str(len(gpt_block_list)))
+    #当前块不是最后一个块的话
     if block_num != len(gpt_block_list):
 
         # print('原用例')
@@ -201,15 +137,18 @@ def replaceBlock(gpt_file_path):
 
             code_string = ''
 
-            for block in orginal_block_list:
-                print(block)
-                print('-'*100)
-
-            print(orginal_block_list)
             # for block in orginal_block_list:
-            #     code_string = code_string + block
-            #     print(orginal_block_list)
-            # print(code_string)
+            #     print(block)
+            #     print('-'*100)
+
+            # print(orginal_block_list)
+            for block in orginal_block_list:
+                code_string = code_string + block
+                # print(orginal_block_list)
+            print(code_string)
+
+            with open(os.path.join(replace_saved_dir, gpt_file_name), 'w', encoding='utf-8') as f:
+                f.write(code_string)
 
         except:
             pass

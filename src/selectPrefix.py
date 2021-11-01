@@ -3,7 +3,7 @@ import re
 
 # path js文件的路径
 # lines_num截取前几行
-from src.replaceCode2 import readFileAll
+from replaceCode2 import readFileAll
 
 
 def getJSfile(path, lines_num):

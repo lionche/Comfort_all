@@ -200,6 +200,7 @@ def generateJs(js_folder_root):
                     generated_functions = function_generate(hparams, gpt_saved_dir, function_prefix)
                 except:
                     print('wrong.so skip')
+                    continue
                     pass
                 end_time = time.time()
                 info_print(
@@ -213,6 +214,6 @@ if __name__ == '__main__':
     # js_folder_root要处理的文件夹
     # 应包含 orginal，gpt，replace三个文件夹
     # orginal是原js文件 ，gpt保存gpt续写出的代码，replace保存替换片段的代码
-    js_folder_root = 'data/generated_data/original_samples/test_corpus_100/no_hint'
+    js_folder_root = 'data/generated_data/original_samples/test_corpus_1000/no_hint/'
 
     generateJs(js_folder_root)
