@@ -41,8 +41,8 @@ def file2MD5(filePath):
     return file_md5
 
 if __name__ == '__main__':
-    # md5List = ergodicFolder('../data/generated_data/original_samples/test_corpus_100/no_hint/gpt')
-    md5List = ergodicFolder('../data/generated_data/original_samples/test_corpus_1000_old/no_hint/replaced')
+    # md5List = ergodicFolder('../data/generated_data/original_samples/test_corpus_1000/no_hint/gpt')
+    md5List = ergodicFolder('../data/generated_data/original_samples/test_corpus_1000/no_hint/replaced')
     # print(md5List)
     for key in md5List:
         # print(key,md5List[key])

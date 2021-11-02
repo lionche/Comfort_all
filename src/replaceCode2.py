@@ -6,10 +6,6 @@
 
 import re
 import os
-
-# ^ {4}\w+.*;$ 单行
-# (^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^} 整体
-# (^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$ 多行
 from utils.utils import createFolder
 
 
@@ -44,14 +40,9 @@ def RegularCutBlock(test_str):
     :return:
     """
     block_list = []
-    # regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^}| {4}"use strict";'
-    # regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*|^}| {4}"use strict";| {4}for.*{}'
-    # regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$|^ {4}\w+.*;$|function.*\n|^}| {4}"use strict";| {4}for.*{}'
     regex = r'(^ {4})([^} ].*)([^;]$)\n(.*\n)*? {4}}((\))?)(;?)$\n|^ {4}\w+.*;$\n|function.*\n|^}| {4}"use strict"\n;| {4}for.*{}\n'
     matches = re.finditer(regex, test_str, re.MULTILINE)
     for matchNum, match in enumerate(matches, start=1):
-        # print(match.group())
-        # print('-'*100)
         block_list.append(match.group())
 
     return block_list
@@ -131,22 +122,23 @@ def replaceBlock(gpt_file_path):
         # 使用当前代码块替换掉对应的代码块
         try:
             orginal_block_list[block_num - 1] = gpt_block_list[block_num - 1]
+
+            # print('续写替换用例')
+            # for block in orginal_block_list:
+            #     print(block)
+            #     print('-' * 100)
+
+
             replace_saved_dir = f'{JSReplaceRoot}/{js_number}_js/line_{gpt_line_num}'
             # print(replace_saved_dir)
             createFolder(replace_saved_dir)
 
             code_string = ''
 
-            # for block in orginal_block_list:
-            #     print(block)
-            #     print('-'*100)
-
-            # print(orginal_block_list)
             for block in orginal_block_list:
                 code_string = code_string + block
-                # print(orginal_block_list)
-            print(code_string)
-
+            # print(code_string)
+            #写入文件
             with open(os.path.join(replace_saved_dir, gpt_file_name), 'w', encoding='utf-8') as f:
                 f.write(code_string)
 
@@ -179,7 +171,7 @@ if __name__ == '__main__':
     # 应包含 orginal，gpt，replace三个文件夹
     # orginal是原js文件 ，gpt保存gpt续写出的代码，replace保存替换片段的代码
 
-    Root = '../data/generated_data/original_samples/test_corpus_100/no_hint'
+    Root = '../data/generated_data/original_samples/test_corpus_1000/no_hint'
     JSReplaceRoot = Root + '/replaced'
     JSGptRoot = Root + '/gpt_no_repeat'
 
@@ -189,41 +181,3 @@ if __name__ == '__main__':
             # print(gpt_file_path)
 
             replaceBlock(gpt_file_path)
-    #
-    # JSworkfolderPath = '../data/generated_data/original_samples/test_corpus_100/'
-    #
-    # JSGptRoot = JSworkfolderPath + 'gpt_no_repeat'
-    #
-    # JSOrginalsRoot = JSworkfolderPath + 'orginal'
-    #
-    # JSReplaceRoot =  JSworkfolderPath + 'replaced'
-    #
-    #
-    # for root, dirs, files in os.walk(JSGptRoot):
-    #     for file in files:
-    #         gpt_file_path = os.path.join(root, file)
-    #         # print(gpt_file_path)
-    #
-    #         #js源文件文件编号
-    #         js_file_num = gpt_file_path.split('/')[-3].split('_')[0]
-    #         # print(js_file_num)
-    #
-    #         #js行数编号
-    #         file_js_lines_num = int(gpt_file_path.split('/')[-2].split('_')[1])
-    #         # print(file_js_lines_num)
-    #
-    #         #续写出的js文件编号
-    #         js_name = gpt_file_path.split('/')[-1]
-    #         # print(js_name)
-    #
-    #         replace_saved_dir = f'{JSReplaceRoot}/{js_file_num}_js/line_{file_js_lines_num}'
-    #
-    #         if not os.path.exists(replace_saved_dir):
-    #             os.makedirs(replace_saved_dir)
-    #
-    #         JSCutOriginalPath = f'{JSOrginalsRoot}/{js_file_num}.js'
-    #
-    #         function_all = merge_js_cut(gpt_file_path, file_js_lines_num + 1, file_js_lines_num + 3)
-    #
-    #         with open(os.path.join(replace_saved_dir, js_name), 'w', encoding='utf-8') as f:
-    #             f.write(function_all)
