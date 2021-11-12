@@ -35,9 +35,9 @@ def cmd_jshint(temp_file_name,file_path):
     else:  # 假如是linux
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate()
-    # if stdout:
-    #     print(f"{file_path}语法出错")
-    #     print(stdout)
+    if stdout:
+        print(f"{file_path}语法出错")
+        print(stdout)
     # if stderr:
     #     print("error")
     #     print(stderr)
@@ -52,7 +52,7 @@ def cmd_jshint(temp_file_name,file_path):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='manual to this script')
-    parser.add_argument("--type", type=str, default="replaced_no_repeat")
+    parser.add_argument("--type", type=str, default="replaced_var")
     args = parser.parse_args()
     type_dir = args.type
     corpus_dir = f'../data/generated_data/original_samples/test_corpus_1000/no_hint/{type_dir}'
@@ -84,8 +84,8 @@ if __name__ == '__main__':
                 if jshint_checking(file_path):
                     jshint_pass += 1
 
-                else:
-                    os.remove(file_path)
+                # else:
+                    # os.remove(file_path)
 
                     # 复制通过jshint检测的正确的js文件
                     # paste_path = file_path.replace('55_js_function_hint','55_js_function_hint_right')

@@ -1,18 +1,12 @@
 # 新版替换js文件代码,根据代码块来替换
 
-# 1. 分析代码为代码块
+# 1. 分析代码为代码块,前缀包括变量定义
 # 2. 替换代码块
 # 3. 替换完成后,把替换后的代码块写入文件
 
 import re
 import os
-from utils.utils import createFolder
-
-
-def readFileAll(path):
-    with open(path, 'r', encoding='utf-8') as f:
-        code = f.read()
-    return code
+from utils.utils import createFolder, readFileAll
 
 
 def analysis_js_block(path):
