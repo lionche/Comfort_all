@@ -3,11 +3,14 @@ import time
 import datetime
 import shutil
 import math
-from selectPrefix import getJSfile, getJSfileSize
+from uuid import uuid4
+from generate_model.callable_processor import CallableProcessor
+
 from utils.config import Hparams_Generator
 import gpt_2_simple as gpt2
 
 os.environ['CUDA_VISIBLE_DEVICES'] = "1"
+
 
 def info_print(str):
     # 不懂
@@ -17,7 +20,7 @@ def info_print(str):
 # init params
 hparams = Hparams_Generator().parser.parse_args()
 if hparams.multi_gpu == 1:
-    # info_print('GPU enabled.')
+    info_print('GPU enabled.')
     hparams.multi_gpu = True  # enable gpu
 else:
     info_print('GPU disabled.')
@@ -56,21 +59,21 @@ def function_generate(hparams, saved_dir):
 
     # determine the generate model to use
     if hparams.use_nisl_model == 1:
-        # info_print('The NISL model is selected.')
+        info_print('The NISL model is selected.')
         generate_model_dir = hparams.gpt2_model_dir
         generate_model_name = 'nisl_model'
     else:
         # model check
-        # info_print('The new model is selected.')
+        info_print('The new model is selected.')
         generate_model_dir = hparams.finetuned_model_dir
         generate_model_name = hparams.finetuned_model_name
         if not os.path.exists(os.path.join(os.path.join(generate_model_dir, generate_model_name), 'checkpoint')):
             raise FileNotFoundError(
                 "The specified model doesn't exist, please finetune first or set 'use_nisl_model=1'")
-    # time.sleep(1)
+    time.sleep(1)
 
-    # info_print(
-    #     "Generating JS test program (approx 15 minutes with gpus when nsamples=512 - including model load time)...\n")
+    info_print(
+        "Generating JS test program (approx 15 minutes with gpus when nsamples=512 - including model load time)...\n")
     gpt2.load_gpt2(sess,
                    model_dir=generate_model_dir,
                    model_name=generate_model_name,
@@ -81,28 +84,15 @@ def function_generate(hparams, saved_dir):
     # if not condition:
     #     raise AssertionError()
 
-    # assert hparams.batch_size != 0, "'batch_size' cannot be 0!"
+    assert hparams.batch_size != 0, "'batch_size' cannot be 0!"
     # batches = int(math.ceil(hparams.nsamples / hparams.batch_size))
     # remainder = hparams.nsamples % hparams.batch_size
 
     all_functions = []
 
-    # 设置前缀
-    #
-    # function_prefix = '''function test0() {
-    # var GiantPrintArray = [];'''
-
-    # function_prefix = '''
-    # function(
-    #     '''
-    # function_prefix = 'function(e, t) {'
-
-    # generate_prefix = hparams.generate_prefix + 'function(u, f, o'
-    # generate_prefix = hparams.generate_prefix + 'function(e){'
-    generate_prefix = hparams.generate_prefix + function_prefix
-
-    # generate_prefix = hparams.generate_prefix
-    print(function_prefix, "\n-------------------------------")
+    # 设置前缀'
+    generate_prefix = hparams.generate_prefix
+    print(generate_prefix, "\n-------------------------------")
 
     texts = gpt2.generate(sess,
                           model_dir=generate_model_dir,
@@ -117,6 +107,14 @@ def function_generate(hparams, saved_dir):
                           return_as_list=True,
                           length=512
                           )
+
+    # when the last batch, intercepted by the remainder
+    # if idx == batches - 1:
+    #     if remainder != 0:
+    #         texts = texts[:remainder]
+
+    # 当nsamples!=1时，一次生成几个段落。text为一个段落
+
     for text in texts:
 
         # print(text)
@@ -125,40 +123,11 @@ def function_generate(hparams, saved_dir):
         functions = text.split(hparams.generate_prefix)[1:]
 
         # 如果生成多个方法，只取第一个符合前缀的方法
-        if len(functions) > 1:
-            # print(functions[0])
-            # print("-" * 10)
-            all_functions.append(functions[0])
 
+        if len(functions) >= 2:
+            functions = functions[:-1]
 
-    # for function in functions:
-    #     print(function)
-
-    # for text in texts:
-    #
-    #     print(text)
-    #
-    #     functions = text.split(hparams.generate_prefix)[1:]
-    #
-    #     # get rid of the last one to prevent syntax errors
-    #     if len(functions) >= 2:
-    #         functions = functions[:-1]
-    #
-    #     all_functions += functions
-
-    # print
-    # for function in functions:
-    #     print(function)
-    #     print('=' * 50)
-
-    # info_print(f'Generating {idx + 1}/{batches}.')
-
-    # formatting
-    # 默认去除空格
-    # all_functions = [i.strip() + '\n' for i in all_functions]
-
-    # for i in all_functions:
-    #     print(i)
+        all_functions += functions
 
     # save all generated functions by gpt2 to a new file
     if not os.path.exists(saved_dir):
@@ -171,54 +140,61 @@ def function_generate(hparams, saved_dir):
     return all_functions
 
 
+def testcase_assemble(functions, saved_dir):
+    info_print(f"Assembly test program (approx 30 seconds)...\n")
+    time.sleep(2)
+    callable_processor = CallableProcessor()
+    testcases = []
+    for function in functions:
+        try:
+            testcases.append(callable_processor.get_self_calling(function))
+        except:
+            testcases.append('')  # Guarantee idx consistent
+
+    # print info
+    # info_print(f"Test program after creating the calling routine: \n")
+    # for testcase in testcases:
+    #     print(testcase)
+    #     print('=' * 50)
+
+    # formatting
+    testcases = [i.strip() + '\n' for i in testcases]
+
+    # save all testcase to a new file
+    if not os.path.exists(saved_dir):
+        os.makedirs(saved_dir)
+    for idx, testcase in enumerate(testcases, start=1):
+        with open(os.path.join(saved_dir, f'{idx}.js'), 'w', encoding='utf-8') as f:
+            f.write(testcase)
+
+    return testcases
+
+
 if __name__ == '__main__':
+    if hparams.mode == 'finetune':
+        gpt2_finetune(hparams)
+    elif hparams.mode == 'generate':
+        start_time = time.time()
 
-    # js_folder_root要处理的文件夹
-    # 应包含 orginal，gpt，replace三个文件夹
-    # orginal是原js文件 ，gpt保存gpt续写出的代码，replace保存替换片段的代码
-    js_folder_root = 'data/generated_data/original_samples/test_corpus_100/no_hint'
-
-
-    orginal_js_path = os.path.join(js_folder_root, 'orginal')
-    js_files_list = os.listdir(orginal_js_path)
-    js_files_list.sort()
-
-    for js_file in js_files_list:
-        js_file_path = os.path.join(orginal_js_path, js_file)
-        js_len = getJSfileSize(js_file_path)
+        # new a directory name
+        # time_stamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+        # identifier = str(uuid4())[:8]
+        # new_dir_name = f'{time_stamp}_{identifier}'
+        # new_dir_name = f'{time_stamp}_{identifier}'
 
 
-    # for root, dirs, files in os.walk(orginal_js_path):
-    #     for file in files:
-    #         file_path = os.path.join(root, file)
+        # generate JS function by gpt2
+        samples_saved_dir = os.path.join(hparams.sample_dir, 'test')
+        generated_functions = function_generate(hparams, samples_saved_dir)
+        # function_generate只生成方法
+        # assemble JS testcase
+        testcases_saved_dir = os.path.join(hparams.testcase_dir, 'test')
+        testcase_assemble(generated_functions, testcases_saved_dir)
+        end_time = time.time()
+        info_print(
+            f"A total of {len(generated_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
+        info_print(f"All generated functions by gpt2 are saved in: {samples_saved_dir}")
+            # info_print(f"All generated testcases are saved in: {testcases_saved_dir}")
 
-        # 选择从第几行开始续写
-        for cut_line in range(1, js_len - 1):
-            start_time = time.time()
-            folder_name = js_file.split('.')[0] + '_js'
-            # gpt save path
-            gpt_js_save_name = f'{folder_name}/line_{cut_line}'
-
-            function_prefix = getJSfile(js_file_path, cut_line)
-
-            # generate JS function by gpt2
-
-            gpt_js_folder_path = os.path.join(js_folder_root, 'gpt')
-
-            gpt_saved_dir = os.path.join(gpt_js_folder_path, gpt_js_save_name)
-
-            print(f'{folder_name}/line_{cut_line}')
-
-            try:
-                generated_functions = function_generate(hparams, gpt_saved_dir)
-            except:
-                print('wrong.so skip')
-                pass
-            end_time = time.time()
-            info_print(
-                    f"A total of {len(generated_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
-            # info_print(f"All generated functions by gpt2 are saved in: {samples_saved_dir}")
-        # info_print(f"All generated testcases are saved in: {testcases_saved_dir}")
-
-        # os.remove(js_file_path)
-
+    else:
+        raise ValueError('The "mode" parameter is invalid. Please enter it again!')
