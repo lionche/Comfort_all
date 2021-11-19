@@ -9,8 +9,10 @@ import argparse
 import tempfile
 from shutil import copyfile, copy
 
-from replaceCode2 import readFileAll
 # 保证/tmp目录下有配置文件
+from utils import readFileAll
+
+
 def jshint_checking(file_path):
     code = readFileAll(file_path)
 
@@ -86,53 +88,5 @@ def jsjintPass(js_folder_root,type_dir):
 
                 i += 1
 
-    print('\n' + str(jshint_pass / total))
+    print(':\n准确率' + str(jshint_pass / total))
 
-# if __name__ == '__main__':
-#
-#     parser = argparse.ArgumentParser(description='manual to this script')
-#     parser.add_argument("--type", type=str, default="replaced_var")
-#     args = parser.parse_args()
-#     type_dir = args.type
-#     corpus_dir = f'../data/generated_data/original_samples/test_corpus_1000/no_hint/{type_dir}'
-#     # corpus_dir = f'../data/generated_data/original_samples/gpt_seed_hint/{type_dir}'
-#
-#     print(type_dir)
-#
-#     total = 0
-#
-#     for root, dirs, files in os.walk(corpus_dir):
-#         for file in files:
-#             file_path = os.path.join(root, file)
-#             if file_path.endswith(".js"):
-#                 total += 1
-#
-#     i = 0
-#     jshint_pass = 0
-#     for root, dirs, files in os.walk(corpus_dir):
-#         for file in files:
-#             file_path = os.path.join(root, file)
-#             # if file_path.endswith(".js") and '/line_1/' in file_path:
-#             if file_path.endswith(".js"):
-#                 process = "\rprocessing: {current}/{total}".format(current=str(i + 1), total=total)
-#                 # 可以刷新的打印
-#                 sys.stdout.write(process)
-#                 # coverage(report_dir, temp_dir, file_path)
-#
-#                 # print(file_path)
-#                 if jshint_checking(file_path):
-#                     jshint_pass += 1
-#
-#                 # else:
-#                     # os.remove(file_path)
-#
-#                     # 复制通过jshint检测的正确的js文件
-#                     # paste_path = file_path.replace('55_js_function_hint','55_js_function_hint_right')
-#                     # # paste_path = file_path.replace('replace_hint','replace_hint_right')
-#                     # if not os.path.exists(os.path.split(paste_path)[0]):
-#                     #     os.makedirs(os.path.split(paste_path)[0])
-#                     # copy(file_path,paste_path)
-#
-#                 i += 1
-#
-#     print('\n' + str(jshint_pass / total))

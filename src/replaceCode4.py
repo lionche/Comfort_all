@@ -99,8 +99,6 @@ if __name__ == '__main__':
 
             code_all = readFileAll(gpt_file_path)
 
-
-
             # 是否包含变量定义
             Ifmatch = IfContainStatement(code_all)
             if Ifmatch:

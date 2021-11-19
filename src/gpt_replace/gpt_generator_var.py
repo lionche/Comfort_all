@@ -1,7 +1,6 @@
 import os
 import gpt_2_simple as gpt2
 import tensorflow as tf
-# print(os.getcwd())
 
 # 更新
 
@@ -11,9 +10,10 @@ os.environ['CUDA_VISIBLE_DEVICES'] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
 tf.get_logger().setLevel('ERROR')
 
-print(os.getcwd())
 
 def function_generate(function_prefix):
+    # print(os.getcwd())
+
     generate_prefix_top2000 = "//JavascriptTop2000Functions\n"
 
     sess = gpt2.start_tf_sess()
@@ -21,7 +21,7 @@ def function_generate(function_prefix):
 
     # determine the generate model to use
         # info_print('The NISL model is selected.')
-    generate_model_dir = './generate_model/models'
+    generate_model_dir = 'src/generate_model/models'
     generate_model_name = 'nisl_model'
 
     # time.sleep(1)
