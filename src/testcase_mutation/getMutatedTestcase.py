@@ -1,7 +1,6 @@
 import execjs
 import os
 
-print(os.getcwd())
 
 def mutate_testcase(file_path):
     """

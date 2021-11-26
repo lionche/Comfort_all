@@ -13,20 +13,26 @@ from shutil import copyfile, copy
 from utils import readFileAll
 
 
-def jshint_checking(file_path):
-    code = readFileAll(file_path)
+def jshint_checking(file_path,type):
 
-    # 通过with语句创建临时文件，with会自动关闭临时文件
-    with tempfile.NamedTemporaryFile(delete=True) as tmpfile:
-        temp_file_name = tmpfile.name
-        # print(temp_file_name)  # /tmp/tmp73zl8gmn
-        fine_code = 'var NISLFuzzingFunc = ' + code + ';'
-        tmpfile.write(fine_code.encode())
-        tmpfile.seek(0)
-        tmpTxt = tmpfile.read().decode()
-        # print(tmpTxt)
-        result = cmd_jshint(temp_file_name,file_path)
-    return result
+    if type == 'no_hint':
+        code = readFileAll(file_path)
+
+        # 通过with语句创建临时文件，with会自动关闭临时文件
+        with tempfile.NamedTemporaryFile(delete=True) as tmpfile:
+            temp_file_name = tmpfile.name
+            # print(temp_file_name)  # /tmp/tmp73zl8gmn
+            fine_code = 'var NISLFuzzingFunc = ' + code + ';'
+            tmpfile.write(fine_code.encode())
+            tmpfile.seek(0)
+            tmpTxt = tmpfile.read().decode()
+            # print(tmpTxt)
+            result = cmd_jshint(temp_file_name,file_path)
+        return result
+    if type == 'hint':
+        result = cmd_jshint(file_path, file_path)
+        return result
+
 
 def cmd_jshint(temp_file_name,file_path):
     cmd = ['timeout', '60s', 'jshint', temp_file_name]
@@ -38,9 +44,10 @@ def cmd_jshint(temp_file_name,file_path):
     if stdout:
         print(f"{file_path}语法出错")
         print(stdout)
-    # if stderr:
-    #     print("error")
-    #     print(stderr)
+    if stderr:
+        print("error")
+        print(stderr)
+
     if stdout.__len__() > 0:
         jshint_flag = False
     else:  # 通过了检查，此时 test_file_name中就是美化后的代码
@@ -48,7 +55,7 @@ def cmd_jshint(temp_file_name,file_path):
         # print(f"{file_path}right!")
     return jshint_flag
 
-def jsjintPass(js_folder_root,type_dir):
+def jsjintPass(js_folder_root,type_dir,type):
     print(f'jsjint检测{type_dir}')
     type_js_folder_path = os.path.join(js_folder_root, type_dir)
 
@@ -73,11 +80,12 @@ def jsjintPass(js_folder_root,type_dir):
                 # coverage(report_dir, temp_dir, file_path)
 
                 # print(file_path)
-                if jshint_checking(file_path):
+                if jshint_checking(file_path,type):
                     jshint_pass += 1
 
                 else:
-                    os.remove(file_path)
+                    pass
+                    # os.remove(file_path)
 
                     # 复制通过jshint检测的正确的js文件
                     # paste_path = file_path.replace('55_js_function_hint','55_js_function_hint_right')
@@ -90,3 +98,6 @@ def jsjintPass(js_folder_root,type_dir):
 
     print(':\n准确率' + str(jshint_pass / total))
 
+if __name__ == '__main__':
+    hint_js_folder_root = '../../data/generated_data/original_samples/test_corpus_1000/no_hint/'
+    jsjintPass(hint_js_folder_root, 'gpt_no_repeat','no_hint')

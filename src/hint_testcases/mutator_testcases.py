@@ -2,7 +2,7 @@ import os
 # from utils.config import Hparams_Mutation
 
 # 环境变量/root/project/COMFORT
-from src.utils.utils import readFileAll
+from utils.utils import readFileAll
 from testcase_mutation.mutation import Mutator
 
 
@@ -48,20 +48,19 @@ def save_files_from_file(file_path):
 
 
 def mutation_hint_testcases(ROOT):
-    gpt_js_folder_path = os.path.join(ROOT, 'gpt_no_repeat')
-    block_replaced_js_folder_path = os.path.join(ROOT, 'replaced_block_no_repeat')
-    var_replaced_js_folder_path = os.path.join(ROOT, 'replaced_var_no_repeat')
-    orginal_js_folder_path = os.path.join(ROOT, 'orginal')
-    # readFolder(gpt_js_folder_path)
-    # readFolder(block_replaced_js_folder_path)
-    readFolder(var_replaced_js_folder_path)
+    gpt_js_folder_path = os.path.join(ROOT, 'hint','gpt_no_repeat')
+    block_replaced_js_folder_path = os.path.join(ROOT, 'hint','replaced_block_no_repeat')
+    var_replaced_js_folder_path = os.path.join(ROOT, 'hint','replaced_var_no_repeat')
+    orginal_js_folder_path = os.path.join(ROOT, 'hint','orginal')
+    readFolder(gpt_js_folder_path)
+    readFolder(block_replaced_js_folder_path)
+    # readFolder(var_replaced_js_folder_path)
     # readFolder(orginal_js_folder_path)
 
 
 def readFolder(dir):
     for root, dirs, files in os.walk(dir):
         for file in files:
-
             file_path = os.path.join(root, file)
             if file_path.endswith('.js'):
                 # print(code)

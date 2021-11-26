@@ -5,7 +5,6 @@ import tempfile
 import timeout_decorator
 
 
-
 from utils import config
 
 from testcase_mutation import getApisFromTestcase, getMutatedTestcase
@@ -33,7 +32,6 @@ class Mutator:
                     print(e)
                     pass
         return mutated_testcase_set
-
 
 def get_config():
     return config.LoadConfig.init_config()["ESApis"]

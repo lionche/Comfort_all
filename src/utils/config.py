@@ -56,12 +56,14 @@ class Hparams_Generator:
     parser = argparse.ArgumentParser()
 
     # mode: 'finetune' or 'generate'(default)
-    parser.add_argument('--mode', default='generate', type=str, help='Running mode, either "finetune" or "generate")')
+    # parser.add_argument('--mode', default='generate', type=str, help='Running mode, either "finetune" or "generate")')
+    parser.add_argument('--mode', default='finetune', type=str, help='Running mode, either "finetune" or "generate")')
 
     # finetuning phase
     # 微调的训练集
     # parser.add_argument('--data_path', default=PROJECT_ABSOLUTE_PATH + '/data/top10000.txt', type=str,
-    parser.add_argument('--data_path', default=PROJECT_ABSOLUTE_PATH + '/data/train_data.txt', type=str,
+    # parser.add_argument('--data_path', default=PROJECT_ABSOLUTE_PATH + '/data/train_data.txt', type=str,
+    parser.add_argument('--data_path', default=PROJECT_ABSOLUTE_PATH + '/data/top1000JavaMethods_tmp.txt', type=str,
                         help='Finetuning data path')
     # 没懂
     # parser.add_argument('--data_prefix', default='//JavascriptTop2000Functions\n', type=str,
@@ -83,7 +85,7 @@ class Hparams_Generator:
     parser.add_argument('--steps', default=-1, type=int, help='Number of steps to finetune')
 
     # 使用gpu
-    parser.add_argument('--multi_gpu', default=1, type=int, help='Whether to enable GPU, 1 means enable(default)')
+    parser.add_argument('--multi_gpu', default=11, type=int, help='Whether to enable GPU, 1 means enable(default)')
 
     # generating phase
     # note: you have to make sure nsamples % batch_size == 0
@@ -103,8 +105,6 @@ class Hparams_Generator:
     parser.add_argument('--temperature', default=0.5, type=float, help='Temperature of the generated texts')
     # 生成时指定前缀
     parser.add_argument('--generate_prefix', default="//JavascriptTop2000Functions\n", type=str,
-    # parser.add_argument('--generate_prefix', default="chexiaokang", type=str,
-    # parser.add_argument('--generate_prefix', default="function(u, f, o", type=str,
                         help='Prefix used for generation, needs to be consist with data_prefix')
 
     parser.add_argument('--sample_dir', default=PROJECT_ABSOLUTE_PATH + '/data/generated_data/original_samples',

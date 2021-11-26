@@ -1,17 +1,14 @@
 # coding:utf-8
 import math
-import os
 import random
 import re
 
 from six import unichr
-# print(os.getcwd())
-from generateQualify.javascriptAPI.type_inferer import TypeInferer
-# from CorpusProcessing.generateQualify.javascriptAPI.type_inferer import TypeInferer
+from generate_model.type_inferer import TypeInferer
 
 
 class CallableProcessor:
-    def __init__(self, callables, function_name='NISLFuzzingFunc'):
+    def __init__(self, callables=['1'], function_name='NISLFuzzingFunc'):
         self.functions = [self.generate_integer, self.generate_float_point, self.generate_string, self.generate_boolean,
                           self.generate_null, self.generate_undefined, self.generate_array_of_different_type,
                           self.generate_array_of_same_type, self.generate_function]
@@ -79,7 +76,6 @@ class CallableProcessor:
     def generate_array_of_same_type(self):
         length = random.randint(0, 15)
         choice = random.randint(0, self.functions.__len__() - 1)
-        # 如果选中了数组作为元素的类型，更换类型以避免无限递归
         while self.functions[choice] == self.generate_array_of_same_type or self.functions[
             choice] == self.generate_array_of_different_type:
             choice = random.randint(0, self.functions.__len__() - 1)
@@ -103,6 +99,7 @@ class CallableProcessor:
 
     def generate_function(self):
         index = random.randint(0, self.callables.__len__() - 1)
+        # param_function = self.callables[index].__getitem__(0)
         param_function = self.callables[index]
         if param_function.startswith('"use strict";'):
             param_function = re.sub('"use strict";\n\n', '', param_function, 1)
@@ -123,7 +120,7 @@ class CallableProcessor:
             return 0
         return params.split(',').__len__()
 
-    def generate_self_calling(self, function_body: str, no_function=False):
+    def generate_self_calling(self, function_body: str, no_function=True):
         if not function_body.endswith(';'):
             function_body += ';'
 
@@ -184,5 +181,5 @@ class CallableProcessor:
         function_body = self.callables[choice].__getitem__(0).decode()
         return self.generate_self_calling(function_body)
 
-    def get_self_calling(self, function_body, no_function=False):
-        return self.generate_self_calling(function_body, no_function=True)
+    def get_self_calling(self, function_body, no_function=True):
+        return self.generate_self_calling(function_body, no_function=no_function)
