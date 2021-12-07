@@ -16,7 +16,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = "1"
 sess = gpt2.start_tf_sess()
 sess = gpt2.reset_session(sess)
 
-generate_model_dir = '../generate_model/models'
+generate_model_dir = '/root/project/COMFORT/src/generate_model/models'
 generate_model_name = 'nisl_model'
 generate_prefix_top2000 = "//JavascriptTop2000Functions\n"
 
@@ -24,9 +24,6 @@ gpt2.load_gpt2(sess,
                model_dir=generate_model_dir,
                model_name=generate_model_name,
                multi_gpu=True)
-
-
-
 
 def info_print(str):
     # 不懂

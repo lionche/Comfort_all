@@ -50,7 +50,6 @@ def evaluate_testcase(testcase_list, log_path, clear_classifier, interesting_sav
         # Inconsistent testing result list
         test_result_list = Result.differential_test(harness_result)
 
-
         # The test case did not trigger any suspicious behaviour, continue
         if len(test_result_list) < 1:
             continue
@@ -85,10 +84,12 @@ def evaluate_testcase(testcase_list, log_path, clear_classifier, interesting_sav
         logging.info(interesting_test_result)
 
     if test_result_num == 0:
-       logging.info("\n\033[1;31;48mTips: No Potential Non-Conformance Behaviors Detected, Please change test suite\033[0m")
+        logging.info(
+            "\n\033[1;31;48mTips: No Potential Non-Conformance Behaviors Detected, Please change test suite\033[0m")
 
     logging.info(f"\n------------------------------------------------------")
-    logging.info(f"The number of deviated test cases that were filtered out by our filtering scheme is : {test_result_num}\n")
+    logging.info(
+        f"The number of deviated test cases that were filtered out by our filtering scheme is : {test_result_num}\n")
     logging.info(f"The number of test cases required manual analysis is:: {len(suspicious_result_list)}")
     logging.info(f"Summary of test case required manual inspect:")
     logging.info(f"=======================================")
@@ -106,7 +107,7 @@ def evaluate_testcase(testcase_list, log_path, clear_classifier, interesting_sav
 def read_testcases(dir_path):
     testcase_list = []
     for root, dirs, files in os.walk(dir_path):
-       for file in files:
+        for file in files:
             file_path = os.path.join(root, file)
             if file_path.endswith(".js"):
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -120,6 +121,7 @@ if __name__ == '__main__':
     hparams = Hparams_Evaluate().parser.parse_args()
 
     if hparams.testsuite:
+        # 读取文件夹中所有内容到列表中
         testcases = read_testcases(hparams.testsuite)
 
         if not os.path.exists(hparams.log_save_dir):

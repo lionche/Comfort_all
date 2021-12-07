@@ -22,11 +22,11 @@ from utils.config import Hparams_Coverage
 
 # env_dist = os.environ
 # print(env_dist)
+# print(os.getcwd())
 
 def coverage(report_dir, temp_dir, file_path):
     # calculate the coverage of simple file and report the total coverage
-    # print(file_path)
-    cmd = ["timeout", "-s9", "10s", "nyc",
+    cmd = ["timeout", "60s", "nyc",
            "--reporter=json-summary", "--cache=false", "--report-dir=" + report_dir, "--temp-dir=" + temp_dir,
            "--clean=false", "node", file_path]
     # cmd = [ "nyc"]
@@ -45,6 +45,7 @@ def coverage(report_dir, temp_dir, file_path):
     # if stderr:
     #     print(stderr)
     # p.communicate()
+
 
 def jshint_checking(file_path):
     # 进行uglifyjs过滤
@@ -72,7 +73,6 @@ def jshint_checking(file_path):
         # print(f"{file_path}right!")
     return jshint_flag
 
-
 def extractCoverage(coverage_file):
     with open(coverage_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -81,6 +81,7 @@ def extractCoverage(coverage_file):
     function_cov = coverage_message['total']["functions"]['pct']
     branch_cov = coverage_message['total']["branches"]['pct']
     line_cov = coverage_message['total']["lines"]['pct']
+
     return [statement_cov, function_cov, branch_cov, line_cov]
 
 
@@ -93,16 +94,11 @@ def reset_dir(dir_path):
 
 
 def copy_files(src, target):
-    count = 1
     reset_dir(target)
     for root, dirs, files in os.walk(src):
         for file in files:
-            count =count + 1
             src_file = os.path.join(root, file)
-            # print(src_file)
-            # print(target)
             shutil.copy(src_file, target)
-    print(f"copy {count} files")
 
 
 if __name__ == '__main__':
@@ -116,7 +112,7 @@ if __name__ == '__main__':
     if coverage_files:
         if os.path.isdir(coverage_files):
             corpus_dir = os.path.join(parent_dir, "self_defining_generate")
-            # copy_files(src=coverage_files, target=corpus_dir)
+            copy_files(src=coverage_files, target=corpus_dir)
         else:
             print("please input the correct directory of test files")
             sys.exit(0)
@@ -128,8 +124,6 @@ if __name__ == '__main__':
     temp_dir = os.path.join(parent_dir, "nyc_output")
     reset_dir(report_dir)
     reset_dir(temp_dir)
-
-    corpus_dir = hparams.coverage_files
 
     total = 0
     for root, dirs, files in os.walk(corpus_dir):
@@ -147,37 +141,34 @@ if __name__ == '__main__':
                 process = "\rprocessing: {current}/{total}".format(current=str(i + 1), total=total)
                 # 可以刷新的打印
                 sys.stdout.write(process)
-                print(file_path)
-                coverage(report_dir, temp_dir, file_path)
+                # coverage(report_dir, temp_dir, file_path)
 
                 # print(file_path)
 
-                # if jshint_checking(file_path):
-                #     jshint_pass += 1
+                if jshint_checking(file_path):
+                    jshint_pass += 1
                 i += 1
 
-    coverage_file = os.path.join(report_dir, "coverage-summary.json")
+    # coverage_file = os.path.join(report_dir, "coverage-summary.json")
 
     # get the current time
     now = time.localtime()
     nowt = time.strftime("%Y-%m-%d-%H_%M_%S", now)
     if not os.path.exists(reporter_dir):
         os.mkdir(reporter_dir)
-    else:
-        pass
 
     reporter_path = os.path.join(reporter_dir, nowt + "_" + fuzzer + ".json")
-    with open(reporter_path, "w", encoding="utf-8") as f:
-        f.write(open(coverage_file, "r").read())
+    # with open(reporter_path, "w", encoding="utf-8") as f:
+    #     f.write(open(coverage_file, "r").read())
     #
-    coverages = extractCoverage(coverage_file)
+    # coverages = extractCoverage(coverage_file)
     # print("\n\njshint passing rate: %s" % str(round(jshint_pass / total, 4) * 100))
-    # print(f"\n{os.path.split(coverage_files)[-1]}\t%s" % str(round(jshint_pass / total, 4) * 100))
-    print("\ncoverage rate results:")
-    print("statement coverages: %s" % coverages[0])
-    print("function coverages: %s" % coverages[1])
-    print("branch coverages: %s" % coverages[2])
-    print("line coverages: %s" % coverages[3])
-    print(f"\n------------------------------------------------------")
-    print(f"Coverage messages has been saved to {reporter_path}'")
-    print(f"------------------------------------------------------\n")
+    print(f"\n{os.path.split(coverage_files)[-1]}\t%s" % str(round(jshint_pass / total, 4) * 100))
+    # print("\ncoverage rate results:")
+    # print("statement coverages: %s" % coverages[0])
+    # print("function coverages: %s" % coverages[1])
+    # print("branch coverages: %s" % coverages[2])
+    # print("line coverages: %s" % coverages[3])
+    # print(f"\n------------------------------------------------------")
+    # print(f"Coverage messages has been saved to {reporter_path}'")
+    # print(f"------------------------------------------------------\n")

@@ -85,7 +85,7 @@ class Hparams_Generator:
     parser.add_argument('--steps', default=-1, type=int, help='Number of steps to finetune')
 
     # 使用gpu
-    parser.add_argument('--multi_gpu', default=11, type=int, help='Whether to enable GPU, 1 means enable(default)')
+    parser.add_argument('--multi_gpu', default=1, type=int, help='Whether to enable GPU, 1 means enable(default)')
 
     # generating phase
     # note: you have to make sure nsamples % batch_size == 0
@@ -142,17 +142,15 @@ class Hparams_Evaluate:
 #测试代码覆盖率
 class Hparams_Coverage:
     parser = argparse.ArgumentParser()
-    #选择要测试的fuzzer,使用自带的测试库
+    #选择要测试的fuzzer,使用自带的测试库x
     parser.add_argument('--fuzzer', type=str, default="comfort",
                         help="which fuzzer to test, there are comfort, die, fuzzilli, montage, deepsmith, codealchemist")
     #自定义测试库
     #路径开于 /
-    # parser.add_argument('--coverage_files', type=str, default="data/generated_data/complete_testcases/default_config",
-    parser.add_argument('--coverage_files', type=str, default="data/generated_data/original_samples/default_config",
-    # parser.add_argument('--coverage_files', type=str, default="data/generated_data/complete_testcases/55_lines/line_19",
-    # parser.add_argument('--coverage_files', type=str, default="",
+    # parser.add_argument('--coverage_files', type=str, default="/root/project/COMFORT/data/generated_data/complete_testcases/123",
+    # parser.add_argument('--coverage_files', type=str, default="/root/project/COMFORT/data/generated_data/original_samples/test_corpus_1000/no_hint/orginal",
+    parser.add_argument('--coverage_files', type=str, default="data/generated_data/original_samples/test_corpus_1000/hint/replaced_block_no_repeat_1",
                         help='path to the directory of files that need to calculate coverage')
-
 
 class Hparams_Reduce:
     parser = argparse.ArgumentParser()

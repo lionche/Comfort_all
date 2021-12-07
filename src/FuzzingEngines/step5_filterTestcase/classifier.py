@@ -30,9 +30,12 @@ class Classifier:
         """
         if config_instance is None:
             config_instance = config.LoadConfig.init_config()
+        #连接mysql的信息
         self.classify_db_path = config_instance["classify_db"]
         self.esapi_instance = ESAPI(config_instance["ESApis"])
+        # 返回js引擎的信息
         self.testbed_parser = testbed_parser
+
         self.classify_db_connection = DataBase(self.classify_db_path)
 
         # Hermes could not close the note caused a false positive counter

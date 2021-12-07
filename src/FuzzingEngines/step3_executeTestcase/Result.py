@@ -76,8 +76,8 @@ class HarnessResult:
         self.testcase = testcase
         self.outputs = []
 
-    def add_output(self, output: Output):
-        self.outputs.append(output)
+    # def add_output(self, output: Output):
+    #     self.outputs.append(output)
 
     def __str__(self):
         return json.dumps({"Harness Result": {"testcase": self.testcase,

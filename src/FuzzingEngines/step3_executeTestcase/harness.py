@@ -94,7 +94,6 @@ class Harness:
         return outputs
 
     def multi_thread(self, testcase_path: pathlib.Path) -> List[Output]:
-
         """
         Multithreading test execution test cases
         :param testcase_path: path of the test case
