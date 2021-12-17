@@ -121,7 +121,6 @@ def replaceBlock(gpt_file_path,JSReplaceRoot,Root):
             #     print(block)
             #     print('-' * 100)
 
-
             replace_saved_dir = f'{JSReplaceRoot}/{js_number}_js/line_{gpt_line_num}'
             # print(replace_saved_dir)
             createFolder(replace_saved_dir)

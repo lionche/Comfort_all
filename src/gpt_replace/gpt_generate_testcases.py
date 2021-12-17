@@ -28,7 +28,6 @@ js_folder_root = '../../data/generated_data/original_samples/test_corpus_10/no_h
 generateJs1(js_folder_root)
 # # 对生成的文件去重，将不重复的文件复制到另一个文件夹中
 
-exit()
 ergodicFolderGpt(js_folder_root)
 # # jshint语法检测，错误的删除
 jsjintPass(js_folder_root, 'gpt_no_repeat')
