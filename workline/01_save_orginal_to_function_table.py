@@ -4,7 +4,6 @@ import os
 import sys
 
 from src.studyMysql.Table_Operation import Table_Function
-from src.utils.utils import readFileAll
 
 # Table_Function格式
 # Function_content,SourceFun_id,Mutation_method,Remark
@@ -13,6 +12,12 @@ lis = []
 
 dir = r"/root/project/COMFORT/data/JStestcases/testcases"
 current = 0
+
+def readFileAll(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        code = f.read()
+    return code
+
 for root, dirs, files in os.walk(dir):
 
     files.sort(key=lambda x: int(x[:-3]))
