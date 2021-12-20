@@ -2,6 +2,7 @@
 
 import os
 import sys
+sys.path.append('/root/Comfort_all')
 
 from src.studyMysql.Table_Operation import Table_Function
 
@@ -10,7 +11,7 @@ from src.studyMysql.Table_Operation import Table_Function
 
 lis = []
 
-dir = r"/root/project/COMFORT/data/JStestcases/testcases"
+dir = r"/root/Comfort_all/data/JStestcases"
 current = 0
 
 def readFileAll(path):

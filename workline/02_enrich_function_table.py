@@ -1,7 +1,7 @@
 # 从Table_Function读取方法，使用gpt变异，然后jshint语法检查,再写入Table_Function
 
 import sys
-sys.path.append('/root/project/COMFORT')
+# sys.path.append('/root/project/COMFORT')
 import os
 import re
 from workline.table_to_class.Table_Function_Class import Function_Object
