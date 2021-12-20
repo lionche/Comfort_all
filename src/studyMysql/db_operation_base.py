@@ -1,7 +1,8 @@
 import pymysql
 
 
-sql_config = dict(host='127.0.0.1',port = 8888,user='root',passwd = 'mysql123',db ='comfort',charset = 'utf8')
+# sql_config = dict(host='127.0.0.1',port = 8888,user='root',passwd = 'mysql123',db ='comfort',charset = 'utf8')
+sql_config = dict(host='10.15.0.26',port = 33060,user='root',passwd = 'mysql123',db ='comfort',charset = 'utf8')
 
 class DataBaseHandle(object):
     """定义MYSQL数据库操作类"""
