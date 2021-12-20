@@ -4,6 +4,8 @@ import sys
 # sys.path.append('/root/project/COMFORT')
 import os
 import re
+
+from src.utils.config import generate_model_dir, generate_model_name
 from workline.table_to_class.Table_Function_Class import Function_Object
 
 # sys.path.append(os.getcwd())
@@ -16,19 +18,14 @@ import tensorflow as tf
 tf.get_logger().setLevel('ERROR')
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Mask prompts for TensorFlow
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
-os.environ['CUDA_VISIBLE_DEVICES'] = "2"
+# os.environ['CUDA_VISIBLE_DEVICES'] = "2"
 
 import gpt_2_simple as gpt2
-
 
 table_Function = Table_Function()
 
 sess = gpt2.start_tf_sess()
 sess = gpt2.reset_session(sess)
-
-generate_model_dir = '/root/project/COMFORT/src/generate_model/models'
-generate_model_name = 'nisl_model'
-# generate_prefix_top2000 = "//JavascriptTop2000Functions\n"
 
 gpt2.load_gpt2(sess,
                model_dir=generate_model_dir,

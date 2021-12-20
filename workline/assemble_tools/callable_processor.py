@@ -4,8 +4,8 @@ import random
 import re
 
 from six import unichr
-from src.generate_model.type_inferer import TypeInferer
 
+from workline.assemble_tools.type_inferer import TypeInferer
 
 class CallableProcessor:
     def __init__(self, callables=['1'], function_name='NISLFuzzingFunc'):
