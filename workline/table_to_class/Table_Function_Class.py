@@ -7,8 +7,8 @@ import tempfile
 import time
 
 from src.studyMysql.Table_Operation import Table_Testcase, Table_Function
+from workline import step2_enrich_function_table
 from workline.assemble_tools.callable_processor import CallableProcessor
-# from workline.step2_read_orginal_gpt import sess
 import gpt_2_simple as gpt2
 
 
@@ -172,7 +172,7 @@ class Function_Object(object):
     def function_generate(self, function_prefix, sess):
 
         generate_prefix_top2000 = "//JavascriptTop2000Functions\n"
-        generate_model_dir = '/root/project/COMFORT/src/generate_model/models'
+        generate_model_dir = step2_enrich_function_table.generate_model_dir
         generate_model_name = 'nisl_model'
 
         generate_prefix = generate_prefix_top2000 + function_prefix
