@@ -14,6 +14,7 @@ from workline.table_to_class.Table_Function_Class import Function_Object
 from src.studyMysql.Table_Operation import Table_Function
 
 import tensorflow as tf
+sys.path.append('/root/Comfort_all')
 
 tf.get_logger().setLevel('ERROR')
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Mask prompts for TensorFlow

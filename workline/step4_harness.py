@@ -3,11 +3,13 @@
 '''
 import json
 import logging
+import sys
 import time
 
 from src.studyMysql.Table_Operation import Table_Testcase, Table_Result, Table_Suspicious_Result
 
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
+sys.path.append('/root/Comfort_all')
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中

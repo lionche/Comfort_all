@@ -10,7 +10,7 @@ import time
 
 from workline.table_to_class.Table_Function_Class import Function_Object
 
-sys.path.append('/root/project/COMFORT')
+sys.path.append('/root/Comfort_all')
 
 # sys.path.append(os.getcwd())
 # print(os.getcwd())

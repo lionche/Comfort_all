@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="root@10.15.10.87:10086" createEmptyFolders="true" remoteFilesAllowedToDisappearOnAutoupload="false" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" createEmptyFolders="true" remoteFilesAllowedToDisappearOnAutoupload="false" autoUploadExternalChanges="true">
     <serverData>
-      <paths name="root@10.15.10.87:10086">
+      <paths name="root@10.15.10.87:10086 password">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" />
           </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/data/generated_data" />
-          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>

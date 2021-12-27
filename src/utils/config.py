@@ -3,7 +3,7 @@ import json
 import os
 import pathlib
 
-generate_model_dir = '/root/project/COMFORT/src/generate_model/models'
+generate_model_dir = '/root/Comfort_all/data/model/'
 generate_model_name = 'nisl_model'
 #测试代码覆盖率
 # class Hparams_Coverage:
