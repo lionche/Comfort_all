@@ -1,16 +1,9 @@
 # 从Table_Function读取方法，组装用例,再写入Table_Testcase
-import itertools
-import math
-import os
-import re
-import subprocess
 import sys
-import tempfile
-import time
+sys.path.append('/root/Comfort_all')
 
 from workline.table_to_class.Table_Function_Class import Function_Object
 
-sys.path.append('/root/Comfort_all')
 
 # sys.path.append(os.getcwd())
 # print(os.getcwd())
