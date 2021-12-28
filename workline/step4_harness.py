@@ -5,18 +5,18 @@ import json
 import logging
 import sys
 import time
+#export LC_ALL=C
+sys.path.append('/root/Comfort_all')
 
 from src.studyMysql.Table_Operation import Table_Testcase, Table_Result, Table_Suspicious_Result
 
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
-sys.path.append('/root/Comfort_all')
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
 list_unfuzzing = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
 
 print("一共有%d条未差分的测试用例" % len(list_unfuzzing))
-
 
 def insertRessultTable(harness_result):
     table_Result = Table_Result()
@@ -42,19 +42,19 @@ def insertRessultTable(harness_result):
                                              None)
 
 
-def insertSuspiciousResultTable(interesting_test_results,SourceFun_id):
+def insertSuspiciousResultTable(interesting_test_results, SourceFun_id):
     table_suspicious_Result = Table_Suspicious_Result()
     interesting_test_result_json = json.loads(interesting_test_results.__str__())
 
     test_result = interesting_test_result_json['Differential Test Result']
-    #{'error_type': 'Most JS engines pass', 'testbed_id': 22, 'inconsistent_testbed': 'hermes', 'classify_result': None, 'classify_id': None}
+    # {'error_type': 'Most JS engines pass', 'testbed_id': 22, 'inconsistent_testbed': 'hermes', 'classify_result': None, 'classify_id': None}
     testcase_id = test_result['testcase_id']
     error_type = test_result['error_type']
     testbed_id = test_result['testbed_id']
     function_id = SourceFun_id
     remark = None
 
-    table_suspicious_Result.insertDataToTableSuspiciousResult(error_type,testcase_id, function_id,testbed_id, remark)
+    table_suspicious_Result.insertDataToTableSuspiciousResult(error_type, testcase_id, function_id, testbed_id, remark)
 
 
 for unfuzzing_item in list_unfuzzing:
@@ -64,11 +64,12 @@ for unfuzzing_item in list_unfuzzing:
     start_time = time.time()
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
-
     # 把结果插入到result数据库中
-    insertRessultTable(harness_result)
+    try:
+        insertRessultTable(harness_result)
+    except:
+        pass
 
-    # 进行投票，输出不一致的结果
     different_result_list = harness_result.differential_test()
 
     # 如果一个用例
@@ -78,29 +79,29 @@ for unfuzzing_item in list_unfuzzing:
     else:
 
         print("共触发了{}个引擎错误".format(len(different_result_list)))
-        testcase_object.add_interesting_times(len(different_result_list))
+        testcase_object.add_interesting_times(1)
 
-        print(f'Inconsistent behaviour found by differential testing:')
+        # print(f'Inconsistent behaviour found by differential testing:')
 
-        print(f"------------------------------------------------------\n")
+        # print(f"------------------------------------------------------\n")
 
         SourceFun_id = testcase_object.SourceFun_id
 
         for interesting_test_result in different_result_list:
-            print(interesting_test_result)
-            insertSuspiciousResultTable(interesting_test_result,SourceFun_id)
+            # print(interesting_test_result)
+            insertSuspiciousResultTable(interesting_test_result, SourceFun_id)
 
-        print(f"JS engines running results:")
+        # print(f"JS engines running results:")
 
-        print(f"------------------------------------------------------\n")
+        # print(f"------------------------------------------------------\n")
 
-        print(f"{harness_result}")
+        # print(f"{harness_result}")
 
-        print(f"------------------------------------------------------\n")
+        # print(f"------------------------------------------------------\n")
 
         # print(testcase_object.Fuzzing_times())
 
     print(f'共耗时{int(time.time() - start_time)}秒')
-        # 更新testcases表中的fuzzing次数和interesting次数
+    # 更新testcases表中的fuzzing次数和interesting次数
     table_Testcases.updateFuzzingTimesInterestintTimes(testcase_object.Fuzzing_times,
                                                        testcase_object.Interesting_times, testcase_object.id)
