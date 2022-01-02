@@ -20,13 +20,11 @@ class Function_Object(object):
         self.SourceFun_Id = function_object[2]
         self.Mutation_Method = function_object[3]
         self.Remark = function_object[4]
-        self.js_line_count = self.getJSfileSize(self.Function_Content,10)
+        self.js_line_count = self.getJSfileSize(self.Function_Content, 10)
         self.var_line_count = self.count_var_lines(self.Function_Content)
-        # gpt选择的前缀的行数
-        # self.all_functions = None
 
     def __str__(self):
-        return str(self.var_line_count)
+        return str(self.Function_Content)
 
     def count_var_lines(self, code: str):
         """
@@ -49,7 +47,7 @@ class Function_Object(object):
 
     def getJSfileSize(self, code: str, cut_max_line: int) -> int:
         lines_list = code.splitlines()
-        return min(len(lines_list),cut_max_line)
+        return min(len(lines_list), cut_max_line)
 
     def makeFunctionListToWrite(self, all_functions, SourceFun_id, mutation_type, Remark) -> list:
         # 将生成的代码写入数据库
@@ -64,22 +62,25 @@ class Function_Object(object):
 
         # Function_content, SourceFun_id, Mutation_method, Remark
 
-    def gpt_mutation_1_2(self, sess):
+    def gpt_mutation_1_2(self, sess, if_save_function):
         """
         gpt续写,gpt续写替换
         :return:
         """
         # gpt续写替换
+
+        all_start_time = time.time()
         IfReplaceBlock = True
 
         # 从保留变量定义的第一行到结尾，依次获取前缀
 
         print("1.正在使用gpt续写变异和gpt续写替换变异")
 
+        all_functions_generated = set()
+        all_functions_replaced_generated = set()
+
         for prefix_line in range(self.var_line_count, self.js_line_count):
 
-            all_functions = None
-            all_functions_pass = set()
             all_functions_replace_block = set()
 
             start_time = time.time()
@@ -145,19 +146,25 @@ class Function_Object(object):
 
                         except:
                             pass
-            # print(
-            #     f"A total of {len(all_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
             end_time = time.time()
 
-            print(
-                f"生成了{len(all_functions_pass)}个GPT续写用例，生成了{len(all_functions_replace_block)}个GPT续写替换用例，总耗时{int(end_time - start_time)}秒.")
-            function_list_to_write1 = self.makeFunctionListToWrite(all_functions=all_functions_pass,
-                                                                   SourceFun_id=self.Id,
-                                                                   mutation_type=1, Remark=None)
-            function_list_to_write2 = self.makeFunctionListToWrite(all_functions=all_functions_replace_block,
-                                                                   SourceFun_id=self.Id,
-                                                                   mutation_type=2, Remark=None)
-            self.write_to_Table_function(function_list_to_write1, function_list_to_write2)
+            if if_save_function:
+                print(
+                    f"生成了{len(all_functions_pass)}个GPT续写function，生成了{len(all_functions_replace_block)}个GPT续写替换function，总耗时{int(end_time - start_time)}秒.")
+                function_list_to_write1 = self.makeFunctionListToWrite(all_functions=all_functions_pass,
+                                                                       SourceFun_id=self.Id,
+                                                                       mutation_type=1, Remark=None)
+                function_list_to_write2 = self.makeFunctionListToWrite(all_functions=all_functions_replace_block,
+                                                                       SourceFun_id=self.Id,
+                                                                       mutation_type=2, Remark=None)
+                self.write_to_Table_function(function_list_to_write1, function_list_to_write2)
+            else:
+                all_functions_generated = all_functions_generated.union(all_functions_pass)
+                all_functions_replaced_generated = all_functions_replaced_generated.union(all_functions_replace_block)
+
+        print(
+            f"生成了{len(all_functions_generated)}GPT续写用例，生成了{len(all_functions_replaced_generated)}个GPT续写替换function，总耗时{int(time.time() - all_start_time)}秒.")
+        return all_functions_generated, all_functions_replaced_generated
 
     def write_to_Table_function(self, *lis):
         list_to_write = []
@@ -468,7 +475,7 @@ class Function_Object(object):
                 # print(temp_file_name)  # /tmp/tmp73zl8gmn
                 tmpfile.write(testcase_no_print.encode())
                 tmpfile.seek(0)
-                tmpTxt = tmpfile.read().decode()
+                # tmpTxt = tmpfile.read().decode()
                 # print(tmpTxt)
                 result = self.cmd_jshint(temp_file_path)
                 if result:
@@ -527,12 +534,12 @@ class Function_Object(object):
         try:
             function_assemle_list = set()
 
-            #连续组装10次
+            # 连续组装10次
             for i in range(0, 10):
                 function_assemle = callable_processor.get_self_calling(self.Function_Content)
                 function_assemle_list.add(function_assemle)
 
-            #用jshint检查用例语法
+            # 用jshint检查用例语法
             all_testcases_pass = self.jshint_check_testcases(function_assemle_list)
 
             testcases_list_to_write = self.makeTestcasesListToWrite(all_testcases_pass, self.Id, 0, 0, 0, 0, 0, 0, None)

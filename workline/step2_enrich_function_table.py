@@ -3,7 +3,6 @@
 import sys
 # sys.path.append('/root/project/COMFORT')
 import os
-import re
 
 from src.utils.config import generate_model_dir, generate_model_name
 from workline.table_to_class.Table_Function_Class import Function_Object
@@ -42,6 +41,6 @@ lis = table_Function.selectSourceIdFromTableFunction(0)
 for item in lis:
     function_object = Function_Object(item)
     print('*' * 25 + f'变异function{item[0]}' + '*' * 25)
-    function_object.gpt_mutation_1_2(sess)
+    function_object.gpt_mutation_1_2(sess,True)
     function_object.gpt_mutation_3(sess)
     # print('利用方法进行用例组装')

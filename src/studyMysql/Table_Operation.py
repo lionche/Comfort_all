@@ -188,6 +188,11 @@ class Table_Testcase(object):
         prames = (Fuzzing_times, Interesting_times, id)
         return self.__table.update(sql, prames)
 
+    def updateMutationTimes(self, MutationTimes, id):
+        sql = 'update Table_Testcase set Mutation_times= %s where id = %s'
+        prames = (MutationTimes, id)
+        return self.__table.update(sql, prames)
+
 
 # Table_Result
 class Table_Result(object):
@@ -298,6 +303,7 @@ class Table_Testbed(object):
     def selectAllIdAndLocateFromTableTestbed(self):
         sql = 'select Id,Testbed_location from Table_Testbed'
         return self.__table.selectall(sql)
+
 
 class Table_Suspicious_Result(object):
 
