@@ -96,6 +96,7 @@ class Testcase_Object(object):
         操作符替换，变异方法4
         :return:
         """
+        print("正在进行操作符替换")
         with tempfile.NamedTemporaryFile(delete=True) as tmpfile:
             temp_file_path = tmpfile.name
             # print(temp_file_name)  # /tmp/tmp73zl8gmn
