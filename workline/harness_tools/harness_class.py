@@ -6,14 +6,10 @@ import logging
 import pathlib
 import subprocess
 import gc
-import traceback
-import sys
-from enum import Enum
-from multiprocessing import Pool
 from threading import Thread
 from typing import List
 
-from src.studyMysql.Table_Operation import Table_Testbed
+from src.studyMysql.Table_Operation import Table_Testbed, Table_Result, Table_Suspicious_Result
 from src.utils import labdate
 
 Majority = collections.namedtuple('Majority', [
@@ -23,18 +19,21 @@ Majority = collections.namedtuple('Majority', [
 
 
 class DifferentialTestResult:
-    def __init__(self, testcase_id: int, bug_type: str, testbed_id: int, testbed_location: str):
+    def __init__(self, function_id: int, testcase_id: int, error_type: str, testbed_id: int, testbed_location: str):
+        self.function_id = function_id
         self.testcase_id = testcase_id
-        self.bug_type = bug_type
+        self.error_type = error_type
         self.testbed_id = testbed_id
         self.testbed_location = testbed_location
         self.classify_result = None
         self.classify_id = None
+        self.remark = None
 
     def serialize(self):
         return {"Differential Test Result": {"testcase_id": self.testcase_id,
-                                             "error_type": self.bug_type,
+                                             "error_type": self.error_type,
                                              "testbed_id": self.testbed_id,
+                                             "function_id": self.function_id,
                                              "inconsistent_testbed": self.testbed_location,
                                              "classify_result": self.classify_result,
                                              "classify_id": self.classify_id
@@ -43,6 +42,11 @@ class DifferentialTestResult:
     def __str__(self):
         return json.dumps(self.serialize(), indent=4)
 
+    def save_to_table(self):
+        table_suspicious_Result = Table_Suspicious_Result()
+        table_suspicious_Result.insertDataToTableSuspiciousResult(self.error_type, self.testcase_id, self.function_id, self.testbed_id,
+                                                                  self.remark)
+
 
 class HarnessResult:
     """
@@ -50,10 +54,11 @@ class HarnessResult:
     which is the type that holds the results of the execution at runtime.
     """
 
-    def __init__(self, testcase_id: int, testcase_context: str):
+    def __init__(self, function_id: int, testcase_id: int, testcase_context: str):
+        self.function_id = function_id
         self.testcase_id = testcase_id
         self.testcase_context = testcase_context
-        self.outputs = []
+        self.outputs: list[Output] = []
 
     def __str__(self):
         return json.dumps({"Harness Result": {"testcase_id": self.testcase_id,
@@ -88,24 +93,28 @@ class HarnessResult:
         for output in self.outputs:
             if output.output_class == "crash":
                 bugs_info.append(
-                    DifferentialTestResult(self.testcase_id, "crash", output.testbed_id, output.testbed_location))
+                    DifferentialTestResult(self.function_id, self.testcase_id, "crash", output.testbed_id,
+                                           output.testbed_location))
                 pass
             elif majority.majority_outcome != output.output_class and majority.outcome_majority_size >= math.ceil(
                     ratio * testbed_num):
                 if majority.majority_outcome == "pass":
                     bugs_info.append(
-                        DifferentialTestResult(self.testcase_id, "Most JS engines pass", output.testbed_id,
+                        DifferentialTestResult(self.function_id, self.testcase_id, "Most JS engines pass",
+                                               output.testbed_id,
                                                output.testbed_location))
                 elif majority.majority_outcome == "timeout":
                     # Usually, this is not a bug
                     pass
                 elif majority.majority_outcome == "crash":
                     bugs_info.append(
-                        DifferentialTestResult(self.testcase_id, "Most JS engines crash", output.testbed_id,
+                        DifferentialTestResult(self.function_id, self.testcase_id, "Most JS engines crash",
+                                               output.testbed_id,
                                                output.testbed_location))
                 elif majority.majority_outcome == "script_error":
                     bugs_info.append(
-                        DifferentialTestResult(self.testcase_id, "Majority JS engines throw runtime error/exception",
+                        DifferentialTestResult(self.function_id, self.testcase_id,
+                                               "Majority JS engines throw runtime error/exception",
                                                output.testbed_id,
                                                output.testbed_location))
             elif output.output_class == "pass" and majority.majority_outcome == output.output_class and \
@@ -116,6 +125,13 @@ class HarnessResult:
                         DifferentialTestResult(self.testcase_id, "Pass value *** run error", output.testbed_id,
                                                output.testbed_location))
         return bugs_info
+
+    def save_to_table(self):
+        table_result = Table_Result()
+        for output in self.outputs:
+            table_result.insertDataToTableResult(self.testcase_id, output.testbed_id, output.returncode, output.stdout,
+                                                 output.stderr, output.duration_ms, 0, 0,
+                                                 None)
 
 
 class Output:
@@ -141,7 +157,7 @@ class Output:
         The order in which branches are judged cannot be reversed，
         because Whether the test case has a syntax error or not, chakraCore's returnCode is equal to 0
         """
-        if self.returncode == -9 and self.duration_ms > 60 * 1000:
+        if self.returncode == -9 and self.duration_ms > 30 * 1000:
             return "timeout"
         elif self.returncode < 0:
             return "crash"
@@ -186,7 +202,7 @@ class ThreadLock(Thread):
         except BaseException as e:
             self.returnInfo = 1
 
-    def run_test_case(self, testbed_location: str, testcase_path: pathlib.Path, testbed_id, time: str = "60"):
+    def run_test_case(self, testbed_location: str, testcase_path: pathlib.Path, testbed_id, time: str = "30"):
         cmd = ["timeout", "-s9", time]
         for ob in testbed_location.split():
             cmd.append(ob)
@@ -223,16 +239,15 @@ class Harness:
         """
         self.engines = self.get_engines()
 
-
-
-    def run_testcase(self, testcase_id: int, testcase_context: str) -> HarnessResult:
+    def run_testcase(self, function_id: int, testcase_id: int, testcase_context: str) -> HarnessResult:
         """
         Execute test cases with multiple engines and return test results after execution of all engines.
+        :param function_id: executed function Id
         :param testcase_id:  executed Testcases Id
         :param testcase_context: Testcases to be executed
         :return: test results
         """
-        result = HarnessResult(testcase_id=testcase_id, testcase_context=testcase_context)
+        result = HarnessResult(function_id=function_id, testcase_id=testcase_id, testcase_context=testcase_context)
         with tempfile.NamedTemporaryFile(prefix="javascriptTestcase_", suffix=".js", delete=True) as f:
             testcase_path = pathlib.Path(f.name)
 

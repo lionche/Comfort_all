@@ -535,7 +535,7 @@ class Function_Object(object):
             function_assemle_list = set()
 
             # 连续组装10次
-            for i in range(0, 10):
+            for i in range(10):
                 function_assemle = callable_processor.get_self_calling(self.Function_Content)
                 function_assemle_list.add(function_assemle)
 

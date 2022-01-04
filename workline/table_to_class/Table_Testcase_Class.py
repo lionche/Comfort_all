@@ -6,7 +6,7 @@ import tempfile
 from typing import List
 
 from src.studyMysql.Table_Operation import Table_Testcase, Table_Function
-from workline.harness_tools.harness_class import HarnessResult, Output, Harness
+from workline.harness_tools.harness_class import Harness
 from workline.table_to_class.Table_Function_Class import Function_Object
 import re
 
@@ -27,7 +27,7 @@ class Testcase_Object(object):
     def engine_run_testcase(self):
         harness = Harness()
         print(f'正在使用{len(harness.get_engines())}个引擎进行测试')
-        harness_result = harness.run_testcase(self.id, self.Testcase_context)
+        harness_result = harness.run_testcase(self.SourceFun_id, self.id, self.Testcase_context)
         # 增加一次fuzzing次数
         self.Fuzzing_times += 1
         return harness_result
@@ -187,18 +187,26 @@ class Testcase_Object(object):
             all_functions_replaced_generated_testcases.add(result)
 
         all_functions_generated_testcases_pass = self.jshint_check_testcases(all_functions_generated_testcases)
-        all_functions_replaced_generated_testcases_pass = self.jshint_check_testcases(all_functions_replaced_generated_testcases)
+        all_functions_replaced_generated_testcases_pass = self.jshint_check_testcases(
+            all_functions_replaced_generated_testcases)
         table_testcase = Table_Testcase()
 
         # 把通过语法检查的用例存入数据库
-        all_functions_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(all_functions_generated_testcases_pass,
-                                                                                   self.SourceFun_id,
-                                                                                   self.id, 0, 1, 0, 0, 0, None)
-        all_functions_replaced_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(all_functions_replaced_generated_testcases_pass,
-                                                                                   self.SourceFun_id,
-                                                                                   self.id, 0, 2, 0, 0, 0, None)
+        all_functions_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            all_functions_generated_testcases_pass,
+            self.SourceFun_id,
+            self.id, 0, 1, 0, 0, 0, None)
+        all_functions_replaced_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            all_functions_replaced_generated_testcases_pass,
+            self.SourceFun_id,
+            self.id, 0, 2, 0, 0, 0, None)
 
         table_testcase.insertManyDataToTableTestcase(all_functions_generated_testcases_pass_list_to_write)
         table_testcase.insertManyDataToTableTestcase(all_functions_replaced_generated_testcases_pass_list_to_write)
 
-        return all_functions_generated_testcases_pass,all_functions_replaced_generated_testcases_pass
+        return all_functions_generated_testcases_pass, all_functions_replaced_generated_testcases_pass
+
+    def updateFuzzingTimesInterestintTimes(self):
+        table_Testcases = Table_Testcase()
+        table_Testcases.updateFuzzingTimesInterestintTimes(self.Fuzzing_times,
+                                                           self.Interesting_times, self.id)

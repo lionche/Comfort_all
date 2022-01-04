@@ -1,4 +1,7 @@
 import os
+import sys
+
+sys.path.append('/root/Comfort_all')
 
 from src.studyMysql.Table_Operation import Table_Testcase
 from src.utils.config import generate_model_dir, generate_model_name
