@@ -15,7 +15,7 @@ lis = table_Function.selectAllFromTableFunction()
 
 def muti_assemble(func):
     function_object = Function_Object(func)
-    print('*' * 25 + f'组装function{func[0]}' + '*' * 25)
+    print('*' * 25 + f'组装function{function_object.Id}' + '*' * 25)
     function_object.assemble_to_testcase()
 
 pool = ThreadPool()

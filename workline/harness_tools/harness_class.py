@@ -122,7 +122,7 @@ class HarnessResult:
                     majority.stdout_majority_size >= math.ceil(ratio * majority.outcome_majority_size):
                 if majority.outcome_majority_size >= math.ceil(ratio * testbed_num):
                     bugs_info.append(
-                        DifferentialTestResult(self.testcase_id, "Pass value *** run error", output.testbed_id,
+                        DifferentialTestResult(self.function_id,self.testcase_id, "Pass value *** run error", output.testbed_id,
                                                output.testbed_location))
         return bugs_info
 
