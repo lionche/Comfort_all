@@ -3,10 +3,11 @@
 '''
 import time
 #export LC_ALL=C
-import sys
 from multiprocessing.dummy import Pool as ThreadPool
-
-sys.path.append('/root/Comfort_all')
+import sys
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(BASE_DIR)
 
 from src.studyMysql.Table_Operation import Table_Testcase
 

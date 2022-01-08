@@ -26,7 +26,7 @@ class Testcase_Object(object):
 
     def engine_run_testcase(self):
         harness = Harness()
-        print(f'正在使用{len(harness.get_engines())}个引擎进行测试')
+        # print(f'正在使用{len(harness.get_engines())}个引擎进行测试')
         harness_result = harness.run_testcase(self.SourceFun_id, self.id, self.Testcase_context)
         # 增加一次fuzzing次数
         self.Fuzzing_times += 1

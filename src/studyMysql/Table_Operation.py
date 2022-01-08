@@ -104,6 +104,7 @@ class Table_Testcase(object):
         prames = (id)
         return self.__table.selectOne(sql, prames)
 
+
     def selectIdFromTableTestcase(self, id):
         """
         条件查询全部符合的数据\n
@@ -113,6 +114,17 @@ class Table_Testcase(object):
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
         sql = f'select * from Table_Testcase where Id={id}'
+        return self.__table.selectall(sql)
+
+    def selectInterestingTimeFromTableTestcase(self, Interesting_times):
+        """
+        条件查询全部符合的数据\n
+        查询初始的用例即SourceFun_id==0用例\n
+        :param SourceFun_id: 父用例id
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Testcase where Interesting_times={Interesting_times}'
         return self.__table.selectall(sql)
 
     def selectFuzzingTimeFromTableTestcase(self, Fuzzing_times):
@@ -323,6 +335,7 @@ class Table_Suspicious_Result(object):
         sql = 'INSERT INTO Table_Suspicious_Result( Error_type, Testcase_id, Function_id, Testbed_id,  Remark) values(%s,%s,%s,%s,%s)'
         prames = (Error_type, Testcase_id, Function_id, Testbed_id, Remark)
         return self.__table.insert(sql, prames)
+
 
 # if __name__ == '__main__':
 # table_testbed = Table_Testbed()

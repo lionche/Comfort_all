@@ -1,8 +1,10 @@
 # 从Table_Function读取方法，组装用例,再写入Table_Testcase
-import sys
 import time
 from multiprocessing.dummy import Pool as ThreadPool
-sys.path.append('/root/Comfort_all')
+import sys
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(BASE_DIR)
 from workline.table_to_class.Table_Function_Class import Function_Object
 from src.studyMysql.Table_Operation import Table_Function
 

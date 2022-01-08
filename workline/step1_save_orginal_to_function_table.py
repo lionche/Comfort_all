@@ -2,7 +2,9 @@
 
 import os
 import sys
-sys.path.append('/root/Comfort_all')
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(BASE_DIR)
 
 from src.studyMysql.Table_Operation import Table_Function
 
