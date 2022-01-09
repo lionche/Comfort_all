@@ -29,9 +29,9 @@ for unfuzzing_item in list_unfuzzing:
     testcase_object = Testcase_Object(unfuzzing_item)
     # 更新当前用例的mutation time+1
     testcase_object.Mutation_times += 1
-    table_testcase.updateMutationTimes(testcase_object.Mutation_times, testcase_object.id)
+    table_testcase.updateMutationTimes(testcase_object.Mutation_times, testcase_object.Id)
 
-    print('*' * 25 + f'变异testcase{testcase_object.id}' + '*' * 25)
+    print('*' * 25 + f'变异testcase{testcase_object.Id}' + '*' * 25)
 
     testcase_mutation_method1, testcase_mutation_method2 = testcase_object.mutation_method1_2(sess, False)
 

@@ -23,13 +23,13 @@ print("一共有%d条未差分的测试用例" % len(list_unfuzzing))
 def muti_harness(testcase):
     testcase_object = Testcase_Object(testcase)
 
-    print('*' * 25 + f'差分用例{testcase_object.id}' + '*' * 25)
+    print('*' * 25 + f'差分用例{testcase_object.Id}' + '*' * 25)
     start_time = time.time()
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
     # 把结果插入到result数据库中
     try:
-        harness_result.save_to_table()
+        harness_result.save_to_table_result()
     except:
         pass
     #投票
@@ -42,17 +42,17 @@ def muti_harness(testcase):
     else:
 
         print("共触发了{}个引擎错误".format(len(different_result_list)))
+
         testcase_object.add_interesting_times(1)
 
         # print(f'Inconsistent behaviour found by differential testing:')
 
         # print(f"------------------------------------------------------\n")
 
-
         #可疑结果存入数据库
         for interesting_test_result in different_result_list:
             # print(interesting_test_result)
-            interesting_test_result.save_to_table()
+            interesting_test_result.save_to_table_suspicious_Result()
 
         # print(f"JS engines running results:")
 

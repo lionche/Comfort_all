@@ -104,7 +104,6 @@ class Table_Testcase(object):
         prames = (id)
         return self.__table.selectOne(sql, prames)
 
-
     def selectIdFromTableTestcase(self, id):
         """
         条件查询全部符合的数据\n
@@ -336,6 +335,25 @@ class Table_Suspicious_Result(object):
         prames = (Error_type, Testcase_id, Function_id, Testbed_id, Remark)
         return self.__table.insert(sql, prames)
 
+    def selectErrorTypeFromTableFunction(self, ErrorType):
+        """
+        条件查询全部符合的数据\n
+        :param ErrorType: 错误类型
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f"select * from Table_Suspicious_Result where Error_type={ErrorType} ORDER BY Testcase_id"
+        return self.__table.selectall(sql)
+
+    def selectIdFromTableFunction(self, id):
+        """
+        条件查询全部符合的数据\n
+        :param ErrorType: 错位类型
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Suspicious_Result where Id={id}'
+        return self.__table.selectall(sql)
 
 # if __name__ == '__main__':
 # table_testbed = Table_Testbed()

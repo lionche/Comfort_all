@@ -42,7 +42,11 @@ class DifferentialTestResult:
     def __str__(self):
         return json.dumps(self.serialize(), indent=4)
 
-    def save_to_table(self):
+    def save_to_table_suspicious_Result(self):
+        """
+        Save the result to the database
+        :return:
+        """
         table_suspicious_Result = Table_Suspicious_Result()
         table_suspicious_Result.insertDataToTableSuspiciousResult(self.error_type, self.testcase_id, self.function_id, self.testbed_id,
                                                                   self.remark)
@@ -126,7 +130,11 @@ class HarnessResult:
                                                output.testbed_location))
         return bugs_info
 
-    def save_to_table(self):
+    def save_to_table_result(self):
+        """
+        Save the result to the database.
+        :return:
+        """
         table_result = Table_Result()
         for output in self.outputs:
             table_result.insertDataToTableResult(self.testcase_id, output.testbed_id, output.returncode, output.stdout,
