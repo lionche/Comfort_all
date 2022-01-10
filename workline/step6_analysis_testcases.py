@@ -78,5 +78,5 @@ if __name__ == '__main__':
     # findTypeId("'Majority JS engines throw runtime error/exception'")
     # findTypeId("'Most JS engines crash'")
 
-    interesting_testcase = table_Testcase.selectOneFromTableTestcase(31872)
+    interesting_testcase = table_Testcase.selectOneFromTableTestcase(24532)
     harness_testcase(interesting_testcase)

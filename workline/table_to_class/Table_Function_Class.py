@@ -493,7 +493,9 @@ class Function_Object(object):
         :param temp_file_path: 临时文件位置
         :return: 语法正确返回true,语法错误返回false
         """
-        cmd = ['timeout', '60s', 'jshint', temp_file_path]
+        # cmd = ['timeout', '60s', 'jshint', temp_file_path]
+        cmd = ['timeout', '60s', 'jshint', '-c', '/root/Comfort_all/data/.jshintrc', temp_file_path]
+
         if sys.platform.startswith('win'):  # 假如是windows
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         else:  # 假如是linux

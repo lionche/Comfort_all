@@ -69,7 +69,8 @@ class Testcase_Object(object):
         :param temp_file_path: 临时文件位置
         :return: 语法正确返回true,语法错误返回false
         """
-        cmd = ['timeout', '60s', 'jshint', temp_file_path]
+        # cmd = ['timeout', '60s', 'jshint', temp_file_path]
+        cmd = ['timeout', '60s', 'jshint', '-c', '/root/Comfort_all/data/.jshintrc', temp_file_path]
         if sys.platform.startswith('win'):  # 假如是windows
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         else:  # 假如是linux
@@ -121,7 +122,7 @@ class Testcase_Object(object):
         return all_mutation_testcases_pass
 
     def Testcase_Mutatiod4(self, file_name):
-        cmd = ['node', '/root/project/COMFORT/workline/mutator_testcase_tools/operator_replace.js', '-f', file_name]
+        cmd = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/operator_replace.js', '-f', file_name]
         pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = pro.communicate()

@@ -1,6 +1,0 @@
-function test0() {
-    var GiantPrintArray = [];
-    var test1 = require("./test1");
-    test1.assert(!!test1.spy.calledOnce);
-    test1.assert(!test1.calledOnce);
-}

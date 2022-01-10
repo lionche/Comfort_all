@@ -49,7 +49,7 @@ def coverage(report_dir, temp_dir, file_path):
 def jshint_checking(file_path):
     # 进行uglifyjs过滤
     # cmd = ['timeout', '60s', 'node', '--max_old_space_size=4096', 'jshint']
-    cmd = ['timeout', '60s', 'jshint', file_path]
+    cmd = ['timeout', '60s', 'jshint', '-c', '/root/Comfort_all/data/.jshintrc',file_path]
 
     if sys.platform.startswith('win'):  # 假如是windows
         p1 = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
