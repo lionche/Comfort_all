@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from src.studyMysql.Table_Operation import Table_Testcase
 from src.utils.config import generate_model_dir, generate_model_name

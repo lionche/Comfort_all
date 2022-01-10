@@ -1,7 +1,7 @@
 # 从Table_Function读取方法，使用gpt变异，然后jshint语法检查,再写入Table_Function
 import sys
 from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 import os
 from src.utils.config import generate_model_dir, generate_model_name

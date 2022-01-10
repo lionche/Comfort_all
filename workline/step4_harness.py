@@ -6,7 +6,7 @@ import time
 from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 
 from src.studyMysql.Table_Operation import Table_Testcase

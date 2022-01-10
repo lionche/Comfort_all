@@ -4,10 +4,9 @@ from pathlib import Path
 
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from src.studyMysql.Table_Operation import Table_Testcase, Table_Suspicious_Result
-from workline.table_to_class.Table_Suspicious_Result_Class import Suspicious_Result_Object
 
 table_Testcase = Table_Testcase()
 InterestingTimeList = table_Testcase.selectInterestingTimeFromTableTestcase(1)
@@ -29,7 +28,7 @@ Most_JS_engines_pass_list = table_Suspicious_Result.selectErrorTypeFromTableFunc
 def harness_testcase(testcase):
     testcase_object = Testcase_Object(testcase)
     print('*' * 25 + f'差分用例{testcase_object.Id}' + '*' * 25)
-    print(f'差分用例{testcase_object.Testcase_context}')
+    print(f'{testcase_object.Testcase_context}')
     start_time = time.time()
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
@@ -68,9 +67,25 @@ if __name__ == '__main__':
     #
     # print(len(crash_testcase_id_set))
     # print(crash_testcase_id_set)
+    # Majority_JS_engines_throw_runtime_error_exception_id_set = set()
+    # for item in Majority_JS_engines_throw_runtime_error_exception_list:
+    #     Majority_JS_engines_throw_runtime_error_exception_id_set.add(item[2])
+    #
+    # print(len(Majority_JS_engines_throw_runtime_error_exception_id_set))
+    # print(Majority_JS_engines_throw_runtime_error_exception_id_set)
+
+    # Most_JS_engines_pass_list_id_set = set()
+    # for item in Most_JS_engines_pass_list:
+    #     Most_JS_engines_pass_list_id_set.add(item[2])
+    #
+    # print(len(Most_JS_engines_pass_list_id_set))
+    # print(Most_JS_engines_pass_list_id_set)
+
     #
     # for testcase_id in crash_testcase_id_set:
     #     interesting_testcase = table_Testcase.selectOneFromTableTestcase(testcase_id)
     #     harness_testcase(interesting_testcase)
-    interesting_testcase = table_Testcase.selectOneFromTableTestcase(7552)
+
+
+    interesting_testcase = table_Testcase.selectOneFromTableTestcase(40475)
     harness_testcase(interesting_testcase)
