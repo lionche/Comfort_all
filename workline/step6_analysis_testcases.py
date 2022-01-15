@@ -10,14 +10,12 @@ sys.path.append(BASE_DIR)
 
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
-from src.studyMysql.Table_Operation import Table_Testcase, Table_Suspicious_Result
+from src.studyMysql.Table_Operation import Table_Suspicious_Result
 
-table_Testcase = Table_Testcase()
-InterestingTimeList = table_Testcase.selectInterestingTimeFromTableTestcase(1)
 
-table_Suspicious_Result = Table_Suspicious_Result()
 
 def findTypeId(type_name):
+    table_Suspicious_Result = Table_Suspicious_Result()
     testcase_list = table_Suspicious_Result.selectErrorTypeFromTableFunction(type_name)
     testcase_id_set = set()
     for item in testcase_list:
