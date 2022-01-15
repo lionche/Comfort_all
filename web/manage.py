@@ -3,10 +3,13 @@
 import os
 import sys
 
+from pathlib import Path
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
+sys.path.append(BASE_DIR)
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_analysis.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

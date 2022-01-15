@@ -1,4 +1,4 @@
-"""web_analysis URL Configuration
+"""web URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -17,14 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 
-
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('page/m', views.m_view),
-    path('page/1', views.page1_view),
-    path('page/2', views.page2_view),
-    path('page/<int:pg>', views.pagen_view),
-    path('test_static', views.test_static),
-    path('luo', views.luo),
-    path('analysis/', include('analysis.urls')),
+    path('h1', views.h1),
+    path('testbed', views.show_testbed),
+    path('testcase', views.show_testcase),
+    path('harness', views.harness)
+
 ]
