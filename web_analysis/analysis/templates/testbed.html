@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>testbed</title>
+</head>
+<body>
+
+<table border="=1">
+    <tr>
+        <th>id</th>
+        <th>Testbed_name</th>
+        <td>Testbed_version</td>
+        <td>Testbed_location</td>
+    </tr>
+    {% for testbed in all_testbed %}
+        <tr>
+            <td>{{ testbed.id }}</td>
+            <td>{{ testbed.Testbed_name }}</td>
+            <td>{{ testbed.Testbed_version }}</td>
+            <td>{{ testbed.Testbed_location }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

@@ -4,7 +4,8 @@ sql_config = dict(host='127.0.0.1',
                   port=8888,
                   user='root',
                   passwd='mysql123',
-                  db='comfort',
+                  # db='comfort',
+                  db='comfort_django',
                   charset='utf8mb4')
 
 

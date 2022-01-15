@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试用例</title>
+</head>
+<body>
+
+<form method="get">
+    <input name="id" type="number" placeholder="{{ Testcase_id }}" autocomplete="off">
+    <input type="submit" value="搜索">
+</form>
+{% if different_result_list|length != 0 %}
+    <form method="post">
+    <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}</textarea>
+        <input type="submit" value="提交"></form>
+{% endif %}
+
+<br>
+
+<form method="post">
+    <textarea name="testcase_content" rows="15" cols="100"
+              placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
+    <input type="submit" value="提交">
+    <input name="remake" type="submit" value="复原">
+
+</form>
+
+{#比对不同#}
+{% if different_result_list|length != 0 %}
+        <h1 style="text-align:center;font-size:40px;font-family:times;color:orange">问题如下</h1>
+
+    <table border="=100" style="position: center">
+        <tr>
+            <th>testcase id</th>
+            <th>Error_type</th>
+            <th>Testbed</th>
+        </tr>
+        {% for suspicious_result in different_result_list %}
+            <tr>
+                <td>{{ suspicious_result.testcase_id }}</td>
+                <td>{{ suspicious_result.error_type }}</td>
+                <td>{{ testbed_info|get_item:suspicious_result.testbed_id }}</td>
+
+                <td>{{ suspicious_result.Testcase_context }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <h1 style="text-align:center;font-size:40px;font-family:times;color:green">没有触发问题</h1>
+
+{% endif %}
+
+<br>
+
+<table border="=1">
+    <tr>
+        <th>Testcase Id</th>
+        <th>Engine</th>
+        <th>Stdout</th>
+        <th>Stderr</th>
+        <th>Returncode</th>
+    </tr>
+
+
+    {% for output in harness_result.outputs %}
+        <tr>
+            <td>{{ harness_result.testcase_id }}</td>
+            <td>{{ testbed_info|get_item:output.testbed_id }}</td>
+            <td>{{ output.stdout }}</td>
+            <td>{{ output.stderr }}</td>
+            <td>{{ output.returncode }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+</body>
+
+</html>
