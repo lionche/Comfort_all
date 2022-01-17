@@ -64,6 +64,8 @@ def harness(request):
 
     # if request.method == 'GET':
     Testcase_id = request.GET.get('id')
+    if not Testcase_id:
+        Testcase_id = 1
 
     all_testcase = Testcase.objects.filter(id=Testcase_id)
     all_suspicious_result = Suspicious_Result.objects.filter(Testcase_id=Testcase_id)
