@@ -33,8 +33,9 @@ for root, dirs, files in os.walk(dir):
         Function_content = readFileAll(file_path)
         SourceFun_id = 0
         Mutation_method = 0
+        Mutation_times = 0
         Remark = None
-        lis.append((Function_content, SourceFun_id, Mutation_method, Remark))
+        lis.append((Function_content, SourceFun_id, Mutation_method,Mutation_times, Remark))
 
 print(f'共获取到{len(lis)}条数据，准备添加到数据库中')
 table_Function = Table_Function()

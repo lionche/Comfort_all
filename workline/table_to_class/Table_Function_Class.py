@@ -19,12 +19,13 @@ class Function_Object(object):
         self.Function_Content: str = function_object[1]
         self.SourceFun_Id = function_object[2]
         self.Mutation_Method = function_object[3]
-        self.Remark = function_object[4]
+        self.Mutation_Times = function_object[4]
+        self.Remark = function_object[5]
         self.js_line_count = self.getJSfileSize(self.Function_Content, 10)
         self.var_line_count = self.count_var_lines(self.Function_Content)
 
-    def __str__(self):
-        return str(self.Function_Content)
+    # def __str__(self):
+    #     return str(self.Function_Content)
 
     def count_var_lines(self, code: str):
         """
@@ -49,14 +50,14 @@ class Function_Object(object):
         lines_list = code.splitlines()
         return min(len(lines_list), cut_max_line)
 
-    def makeFunctionListToWrite(self, all_functions, SourceFun_id, mutation_type, Remark) -> list:
+    def makeFunctionListToWrite(self, all_functions, SourceFun_id, mutation_type, mutation_times, Remark) -> list:
         # 将生成的代码写入数据库
 
         lis = []
 
         for function in all_functions:
             Function_content = function
-            item = [Function_content, SourceFun_id, mutation_type, Remark]
+            item = [Function_content, SourceFun_id, mutation_type, mutation_times, Remark]
             lis.append(item)
         return lis
 
@@ -114,7 +115,7 @@ class Function_Object(object):
                 for function in all_functions_pass:
                     gpt_block_list = self.analysis_js_block(function)
 
-                    block_num = self.fineBlockIdx(orginal_block_list, gpt_block_list, gpt_line_num + 1)
+                    block_num = self.fineBlockIdx(gpt_block_list, gpt_line_num + 1)
 
                     # 当前块不是最后一个块的话
                     if block_num != len(gpt_block_list):
@@ -153,10 +154,14 @@ class Function_Object(object):
                     f"生成了{len(all_functions_pass)}个GPT续写function，生成了{len(all_functions_replace_block)}个GPT续写替换function，总耗时{int(end_time - start_time)}秒.")
                 function_list_to_write1 = self.makeFunctionListToWrite(all_functions=all_functions_pass,
                                                                        SourceFun_id=self.Id,
-                                                                       mutation_type=1, Remark=None)
+                                                                       mutation_type=1,
+                                                                       mutation_times=0,
+                                                                       Remark=None)
                 function_list_to_write2 = self.makeFunctionListToWrite(all_functions=all_functions_replace_block,
                                                                        SourceFun_id=self.Id,
-                                                                       mutation_type=2, Remark=None)
+                                                                       mutation_type=2,
+                                                                       mutation_times=0,
+                                                                       Remark=None)
                 self.write_to_Table_function(function_list_to_write1, function_list_to_write2)
             else:
                 all_functions_generated = all_functions_generated.union(all_functions_pass)
@@ -186,7 +191,7 @@ class Function_Object(object):
         print("-" * 50 + f"\n选择前缀为:{function_prefix.strip()}")
         # print(self.prefix_line)
 
-        nsamples = 32
+        nsamples = 16
         batch_size = 16
         batches = int(math.ceil(nsamples / batch_size))
 
@@ -234,7 +239,7 @@ class Function_Object(object):
         # print('--')
         return function_cut
 
-    def fineBlockIdx(self, orginal_block_list, gpt_block_list, gpt_line_num):
+    def fineBlockIdx(self, gpt_block_list, gpt_line_num):
         """替换代码块
         :param orginal_block_list: 原文件的代码块
         :param gpt_block_list: gpt生成文件的代码块
@@ -311,7 +316,9 @@ class Function_Object(object):
                     function_list_to_write = self.makeFunctionListToWrite(
                         all_functions=all_functions_replace_block_pass,
                         SourceFun_id=self.Id,
-                        mutation_type=3, Remark=None)
+                        mutation_type=3,
+                        mutation_times=0,
+                        Remark=None)
 
                     self.write_to_Table_function(function_list_to_write)
 

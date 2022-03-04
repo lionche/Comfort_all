@@ -48,7 +48,8 @@ class DifferentialTestResult:
         :return:
         """
         table_suspicious_Result = Table_Suspicious_Result()
-        table_suspicious_Result.insertDataToTableSuspiciousResult(self.error_type, self.testcase_id, self.function_id, self.testbed_id,
+        table_suspicious_Result.insertDataToTableSuspiciousResult(self.error_type, self.testcase_id, self.function_id,
+                                                                  self.testbed_id,
                                                                   self.remark)
 
 
@@ -126,7 +127,8 @@ class HarnessResult:
                     majority.stdout_majority_size >= math.ceil(ratio * majority.outcome_majority_size):
                 if majority.outcome_majority_size >= math.ceil(ratio * testbed_num):
                     bugs_info.append(
-                        DifferentialTestResult(self.function_id,self.testcase_id, "Pass value *** run error", output.testbed_id,
+                        DifferentialTestResult(self.function_id, self.testcase_id, "Pass value *** run error",
+                                               output.testbed_id,
                                                output.testbed_location))
         return bugs_info
 
@@ -196,22 +198,23 @@ class Output:
 
 
 class ThreadLock(Thread):
-    def __init__(self, testbed_location, testcase_path, testbed_id):
+    def __init__(self, testbed_location, testcase_path, testbed_id, timeout):
         super().__init__()
         self.testbed_id = testbed_id
         self.output = None
         self.testbed_location = testbed_location
         self.testcase_path = testcase_path
         self.returnInfo = None
+        self.timeout = timeout
 
     def run(self):
         try:
-            self.output = self.run_test_case(self.testbed_location, self.testcase_path, self.testbed_id)
+            self.output = self.run_test_case(self.testbed_location, self.testcase_path, self.testbed_id, self.timeout)
         except BaseException as e:
             self.returnInfo = 1
 
-    def run_test_case(self, testbed_location: str, testcase_path: pathlib.Path, testbed_id, time: str = "30"):
-        cmd = ["timeout", "-s9", time]
+    def run_test_case(self, testbed_location: str, testcase_path: pathlib.Path, testbed_id, timeout):
+        cmd = ["timeout", "-s9", timeout]
         for ob in testbed_location.split():
             cmd.append(ob)
         cmd.append(str(testcase_path))
@@ -247,9 +250,10 @@ class Harness:
         """
         self.engines = self.get_engines()
 
-    def run_testcase(self, function_id: int, testcase_id: int, testcase_context: str) -> HarnessResult:
+    def run_testcase(self, function_id: int, testcase_id: int, testcase_context: str, timeout: str) -> HarnessResult:
         """
         Execute test cases with multiple engines and return test results after execution of all engines.
+        :param timeout: timeout kill process
         :param function_id: executed function Id
         :param testcase_id:  executed Testcases Id
         :param testcase_context: Testcases to be executed
@@ -266,13 +270,14 @@ class Harness:
                 logging.exception("\nWrite to file failure: ", e)
                 return result
 
-            result.outputs = self.multi_thread(testcase_path)
+            result.outputs = self.multi_thread(testcase_path, timeout)
 
         return result
 
-    def multi_thread(self, testcase_path: pathlib.Path) -> List[Output]:
+    def multi_thread(self, testcase_path: pathlib.Path, timeout: str) -> List[Output]:
         """
         Multithreading test execution test cases
+        :param timeout: time to kill process
         :param testcase_path: path of the test case
         :return: execution results of all engines
         """
@@ -281,7 +286,8 @@ class Harness:
         for engine in self.engines:
             testbed_id = engine[0]
             testbed_location = engine[1]
-            tmp = ThreadLock(testbed_location=testbed_location, testcase_path=testcase_path, testbed_id=testbed_id)
+            tmp = ThreadLock(testbed_location=testbed_location, testcase_path=testcase_path, testbed_id=testbed_id,
+                             timeout=timeout)
             threads_pool.append(tmp)
             tmp.start()
         for thread in threads_pool:

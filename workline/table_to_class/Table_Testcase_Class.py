@@ -21,10 +21,10 @@ class Testcase_Object(object):
         self.Probability = Testcase_item[8]
         self.Remark = Testcase_item[9]
 
-    def engine_run_testcase(self):
+    def engine_run_testcase(self, timeout="30"):
         harness = Harness()
         # print(f'正在使用{len(harness.get_engines())}个引擎进行测试')
-        harness_result = harness.run_testcase(self.SourceFun_id, self.Id, self.Testcase_context)
+        harness_result = harness.run_testcase(self.SourceFun_id, self.Id, self.Testcase_context, timeout)
         # 增加一次fuzzing次数
         self.Fuzzing_times += 1
         return harness_result

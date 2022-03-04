@@ -3,13 +3,12 @@ import time
 from pathlib import Path
 from typing import List
 
-from workline.harness_tools.harness_class import HarnessResult, DifferentialTestResult
 
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 
+from workline.harness_tools.harness_class import HarnessResult, DifferentialTestResult
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
-
 from src.studyMysql.Table_Operation import Table_Suspicious_Result
 
 

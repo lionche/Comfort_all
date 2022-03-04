@@ -23,6 +23,7 @@ class Function(models.Model):
     Function_content = models.TextField(null=True)
     SourceFun_id = models.IntegerField(null=True)
     Mutation_method = models.IntegerField(null=True)
+    Mutation_times = models.IntegerField(null=True)
     Remark = models.TextField(null=True)
 
     class Meta:
