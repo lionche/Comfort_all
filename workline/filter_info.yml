@@ -1,22 +1,25 @@
 returncode_type:
-  - id: 1
-    error_info: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(1)9(0)
-    error_type:
-      - Stdout:
-        Stderr:
-          engine: 8
-          info: 'warning: Direct call to eval(), but lexical scope is not supported.'
-        remark: hermes eval()传入字符串报错
+    - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(1)9(0)
+      id: 1
+      error_info:
+        - Stdout:
+          Stderr:
+            - engine: 8
+              info: 'warning: Direct call to eval(), but lexical scope is not supported.'
+          remark: hermes eval()传入字符串报错
+          remark-id: 1.1
 
-      - Stdout:
-        Stderr:
-          engine:
-          info:
-        remark: hermes eval()传入字符串报错
-  - id: 2
-    error_info: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
-    error_type:
-      - Stdout:
+    - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
+      id : 2
+      error_info:
+        - Stdout:
+            - engine: 2
+              info: 'ha'
+          Stderr:
+          remark: 'ha'
+          remark-id: 2.1
+
+        - Stdout:
           - engine: 1
             info: 'object global'
           - engine: 3
@@ -25,10 +28,6 @@ returncode_type:
             info: 'object Object'
           - engine: 6
             info: 'object Object'
-        remark: '误报，对于同一个api的命名不同'
-
-      - Stdout:
-          - engine: 2
-            info: 'ha'
-        Stderr:
-        remark: 'ha'
+          Stderr:
+          remark: '误报，对于同一个api的命名不同'
+          remark-id: 2.1
