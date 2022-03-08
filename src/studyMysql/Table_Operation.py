@@ -97,7 +97,7 @@ class Table_Function(object):
         prames = (MutationTimes, id)
         return self.__table.update(sql, prames)
 
-    def selectMutationTimesFromTableFunction(self, Mutation_Times,SourceFun_id):
+    def selectMutationTimesFromTableFunction(self, Mutation_Times, SourceFun_id):
         """
         条件查询全部符合的数据\n
         查询初始的用例即SourceFun_id==0用例\n
@@ -107,6 +107,7 @@ class Table_Function(object):
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
         sql = f'select * from Table_Function where Mutation_times={Mutation_Times} AND SourceFun_id = {SourceFun_id} '
         return self.__table.selectall(sql)
+
 
 # 对表Table_Testcase进行操作
 class Table_Testcase(object):
@@ -250,12 +251,10 @@ class Table_Result(object):
         # 实例化 DataBaseHandle()
         self.__table = DataBaseHandle()
 
-    # 单行查询
-    def selectOneFromTableResult(self, id):
-        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        sql = 'select * from Table_Result where id=%s'
-        prames = (id)
-        return self.__table.selectOne(sql, prames)
+    # 按用例编号查询
+    def selectTestcasesFromTableResult(self, Testcase_id):
+        sql = f'select * from Table_Result where Testcase_id={Testcase_id}'
+        return self.__table.selectall(sql)
 
     # def selectFuzzingTimeFromTableResult(self, Fuzzing_times):
     #     """
@@ -269,12 +268,6 @@ class Table_Result(object):
     #     return self.__table.selectall(sql)
 
     # return self.__table.selectOne(sql, prames)
-
-    # ???从指定id开始查询Number条数据
-    # def selectFromTableResultForNumber(self, id, number):
-    #     sql = 'select * from Table_Result where id=%s limit %s'
-    #     prames = (id, number)
-    #     return self.__table.selectmany(sql, prames)
 
     # 全部查询
     def selectAllFromTableResult(self):
@@ -348,17 +341,18 @@ class Table_Suspicious_Result(object):
         # 实例化 DataBaseHandle()
         self.__table = DataBaseHandle()
 
-    def insertDataToTableSuspiciousResult(self, Error_type, Testcase_id, Function_id, Testbed_id, Remark):
+    def insertDataToTableSuspiciousResult(self, Error_type, Testcase_id, Function_id, Testbed_id, Remark, Is_filtered):
         """插入单行数据
         :param Error_type: 错误类型
         :param Testcase_id: 用例ip
         :param Function_id: 方法id
         :param Testbed_id: 引擎id
         :param Remark:
+        :param Is_filtered:是否有被过滤过，0是没有，1是有
         :return:
         """
-        sql = 'INSERT INTO Table_Suspicious_Result( Error_type, Testcase_id, Function_id, Testbed_id,  Remark) values(%s,%s,%s,%s,%s)'
-        prames = (Error_type, Testcase_id, Function_id, Testbed_id, Remark)
+        sql = 'INSERT INTO Table_Suspicious_Result( Error_type, Testcase_id, Function_id, Testbed_id,  Remark,Is_filtered) values(%s,%s,%s,%s,%s,%s)'
+        prames = (Error_type, Testcase_id, Function_id, Testbed_id, Remark, Is_filtered)
         return self.__table.insert(sql, prames)
 
     def selectErrorTypeFromTableFunction(self, ErrorType):
@@ -371,7 +365,7 @@ class Table_Suspicious_Result(object):
         sql = f"select * from Table_Suspicious_Result where Error_type={ErrorType} ORDER BY Testcase_id"
         return self.__table.selectall(sql)
 
-    def selectIdFromTableFunction(self, id):
+    def selectIdFromTable_Suspicious_Result(self, id):
         """
         条件查询全部符合的数据\n
         :param ErrorType: 错位类型
@@ -379,6 +373,26 @@ class Table_Suspicious_Result(object):
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
         sql = f'select * from Table_Suspicious_Result where Id={id}'
+        return self.__table.selectall(sql)
+
+    def selectUnFilteredFromTable_Suspicious_Result_with_error_type(self, error_type):
+        """
+        条件查询全部符合的数据\n
+        :param error_type: 错误类型
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Suspicious_Result where Is_filtered=0 AND error_type = {error_type}'
+        return self.__table.selectall(sql)
+
+    def selectUnFilteredFromTable_Suspicious_Result(self):
+        """
+        条件查询全部符合的数据\n
+        :param error_type: 错误类型
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Suspicious_Result where Is_filtered=0'
         return self.__table.selectall(sql)
 
 # if __name__ == '__main__':

@@ -35,6 +35,7 @@ class Suspicious_Result(models.Model):
     Testcase_id = models.IntegerField(null=True)
     Function_id = models.IntegerField(null=True)
     Testbed_id = models.IntegerField(null=True)
+    Is_filtered = models.IntegerField(null=True)
     Remark = models.TextField(null=True)
 
     class Meta:

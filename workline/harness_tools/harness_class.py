@@ -50,7 +50,7 @@ class DifferentialTestResult:
         table_suspicious_Result = Table_Suspicious_Result()
         table_suspicious_Result.insertDataToTableSuspiciousResult(self.error_type, self.testcase_id, self.function_id,
                                                                   self.testbed_id,
-                                                                  self.remark)
+                                                                  self.remark, 0)
 
 
 class HarnessResult:
