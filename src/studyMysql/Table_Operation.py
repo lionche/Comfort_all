@@ -392,9 +392,14 @@ class Table_Suspicious_Result(object):
         :return:所有符合条件的数据的List
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        sql = f'select * from Table_Suspicious_Result where Is_filtered=0'
+        sql = f"select * from Table_Suspicious_Result where Is_filtered='0'"
         return self.__table.selectall(sql)
 
+    # 更改数据
+    def updateIs_filtered(self, id, Is_filtered):
+        sql = 'update Table_Suspicious_Result set Is_filtered= %s where id = %s'
+        prames = (Is_filtered, id)
+        return self.__table.update(sql, prames)
 # if __name__ == '__main__':
 # table_testbed = Table_Testbed()
 # print(table_testbed.selectAllIdAndLocateFromTableTestbed())

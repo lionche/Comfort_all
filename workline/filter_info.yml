@@ -1,25 +1,31 @@
 returncode_type:
-    - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(1)9(0)
-      id: 1
-      error_info:
-        - Stdout:
-          Stderr:
-            - engine: 8
-              info: 'warning: Direct call to eval(), but lexical scope is not supported.'
-          remark: hermes eval()传入字符串报错
-          remark-id: 1.1
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(1)9(0)
+    id: 1
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: 'warning: Direct call to eval(), but lexical scope is not supported.'
+        remark: 误报，hermes eval()传入字符串报错
+        remark-id: 1.1
 
-    - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
-      id : 2
-      error_info:
-        - Stdout:
-            - engine: 2
-              info: 'ha'
-          Stderr:
-          remark: 'ha'
-          remark-id: 2.1
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: "ReferenceError: 'SharedArrayBuffer' is not defined"
+          - engine: 8
+            info: "Uncaught ReferenceError: Property 'SharedArrayBuffer' doesn't exist"
+          - engine: 9
+            info: "ReferenceError: 'SharedArrayBuffer' is not defined"
+        remark: 误报，chakra，hermes中没有SharedArrayBuffer()方法，所以报错。
+        remark-id: 1.2
 
-        - Stdout:
+
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
+    id: 2
+    error_info:
+      - Stdout:
           - engine: 1
             info: 'object global'
           - engine: 3
@@ -28,6 +34,102 @@ returncode_type:
             info: 'object Object'
           - engine: 6
             info: 'object Object'
-          Stderr:
-          remark: '误报，对于同一个api的命名不同'
-          remark-id: 2.1
+          - engine: 8
+            info: 'object global'
+        Stderr:
+        remark: '误报，对于同一个api的命名不同'
+        remark-id: 2.1
+
+
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: 'warning: Direct call to eval(), but lexical scope is not supported.'
+        remark: 误报，hermes eval()传入字符串报错
+        remark-id: 2.2
+
+      - Stdout:
+          - engine: 3
+            info: "."
+          - engine: 9
+            info: "."
+        Stderr:
+        remark: chakra小数计算不一致。
+        remark-id: 2.3
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(2)9(0)
+    id: 3
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: "error: invalid statement encountered.\n    class"
+        remark: 误报，hermes 关键词不是class
+        remark-id: 3.1
+
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: "error: async functions are unsupported"
+        remark: 误报，hermes没有async相关方法
+        remark-id: 3.2
+
+
+  - returncode: 1(0)2(0)3(0)4(3)5(0)6(1)7(0)8(1)9(0)
+    id: 4
+    error_info:
+      - Stdout:
+          - engine: 4
+            info: "Exception: TypeError: undefined is not an object (evaluating 'console.log')"
+        Stderr:
+          - engine: 6
+            info: "ReferenceError: console is not defined"
+          - engine: 8
+            info: "Uncaught ReferenceError: Property 'console' doesn't exist"
+        remark: 误报，部分引擎不支持console.log()
+        remark-id: 4.1
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(7)8(0)9(0)
+    id: 5
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 7
+            info: "Packages.org.mozilla.javascript.Context.getCurrentContext is not a function"
+        remark: 误报，graaljs导入了一个不存在的包
+        remark-id: 5.1
+
+  - returncode: 1(1)2(3)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
+    id: 6
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: "object Promise"
+          - engine: 2
+            info: "object Promise"
+          - engine: 3
+            info: "object Promise"
+          - engine: 4
+            info: "object Promise"
+          - engine: 5
+            info: "object Promise"
+          - engine: 6
+            info: "object Promise"
+          - engine: 7
+            info: "object Promise"
+          - engine: 8
+            info: "object Object"
+          - engine: 9
+            info: "object Promise"
+        Stderr:
+        remark: hermes对于Promise对象不识别，打印出来是Object
+        remark-id: 6.1
+
+      - Stdout:
+          - engine: 1
+            info: "Error: Unhandled Promise."
+        Stderr:
+          - engine: 2
+            info: "Unhandled rejection"
+        remark: v8,spiderMonkey不支持Promise函数
+        remark-id: 6.2

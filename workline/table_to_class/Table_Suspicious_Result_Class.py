@@ -54,33 +54,55 @@ class Suspicious_Result_Object(object):
         :return:返回两个list，里面分别是stdout和stderr
         """
         flag = True
+        error_type_list = []
 
         for error_info_item in error_info_list:
-            stdoutList = error_info_item['Stdout']
-            stderrList = error_info_item['Stderr']
-            # print(stdoutList)
-            # print(stderrList)
-            if stdoutList is not None:
-                flag = self.compareInfo('Stdout', stdoutList)
-            if stderrList is not None:
-                flag = self.compareInfo('Stderr', stderrList)
-            if flag:
-                return flag, error_info_item
-        return flag, error_info_item
+            if f"'engine': {self.Testbed_id}" in str(error_info_item):
+                stdoutList = error_info_item['Stdout']
+                stderrList = error_info_item['Stderr']
+                # print(stdoutList)
+                # print(stderrList)
+                if stdoutList is not None:
+                    flag = self.compareInfo('Stdout', stdoutList)
+                if stderrList is not None:
+                    flag = self.compareInfo('Stderr', stderrList)
+                if flag:
+                    error_type_list.append(error_info_item)
+                else:
+                    # print(f"remark-id是{error_info_item['remark-id']},报错信息不匹配")
+                    pass
+            else:
+                # print(f"remark-id是{error_info_item['remark-id']},缺少报错引擎的info")
+                pass
+        # print(error_type_list)
+        return error_type_list
 
     def analysis(self):
         Returncode_block = self.extractYaml1()
-        if Returncode_block:
-            # print(Returncode_block['error_info'])
-            ifAnalysisSuccess, error_info_item = self.extractYaml2(Returncode_block['error_info'])
-            if (ifAnalysisSuccess):
-                print('成果匹配，remark-id为',error_info_item['remark-id'],'错误原因是',error_info_item['remark'])
-            else:
-                print('只匹配到return code',self.Returncode)
-                # todo 进行人工分析
-        else:
-            print('没有匹配到return code')
+        if not Returncode_block:
+            # print('没有匹配到return code')
             # todo 进行人工分析
+            pass
+        else:
+            # print('匹配到return code', self.Returncode)
+
+            error_info_list = self.extractYaml2(Returncode_block['error_info'])
+            if len(error_info_list) == 0:
+                pass
+                # print('info对不上')
+                # todo 进行人工分析
+            else:
+                remark_id = ""
+                for error_info_item in error_info_list:
+                    # print(f"remark-id是{error_info_item['remark-id']},错误原因是:{error_info_item['remark']}")
+                    remark_id += f"({str(error_info_item['remark-id'])})"
+                table_suspicious_Result = Table_Suspicious_Result()
+                try:
+                    table_suspicious_Result.updateIs_filtered(self.Id, remark_id)
+                    # print(f'将{remark_id}存入数据库')
+                except:
+                    # print('存入数据库失败')
+                    pass
 
     def judgeInfo(self, stdout: str, info: str):
         if info in stdout:
@@ -91,28 +113,30 @@ class Suspicious_Result_Object(object):
     def compareInfo(self, type, stdList):
         for std in stdList:
             # print('engine:', std['engine'])
-                # print('info:', std['info'])
-                if type == 'Stdout':
-                    if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
-                        # print("Stdout:", self.ResultList[std['engine'] - 1].Stdout)
-                        if self.judgeInfo(self.ResultList[std['engine'] - 1].Stdout, std['info']):
-                            pass
-                            # print('合格')
-                        else:
-                            # print('不合格')
-                            return False
-                            # break
+            # print('info:', std['info'])
+            if type == 'Stdout':
+                if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
+                    print('stdout:', self.ResultList[std['engine'] - 1].Stdout)
+                    print('info:',std['info'])
+                    if self.judgeInfo(self.ResultList[std['engine'] - 1].Stdout, std['info']):
+                        pass
+                        # print('合格')
+                    else:
+                        # print('不合格')
+                        return False
+                        # break
 
-                if type == 'Stderr':
-                    if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
-                        # print('stderr:', self.ResultList[std['engine'] - 1].Stderr)
-                        if self.judgeInfo(self.ResultList[std['engine'] - 1].Stderr, std['info']):
-                            pass
-                            # print('合格')
-                        else:
-                            # print('不合格')
-                            return False
-                            # break
+            if type == 'Stderr':
+                if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
+                    # print('stderr:', self.ResultList[std['engine'] - 1].Stderr)
+                    # print('info:',std['info'])
+                    if self.judgeInfo(self.ResultList[std['engine'] - 1].Stderr, std['info']):
+                        pass
+                        # print('合格')
+                    else:
+                        # print('不合格')
+                        return False
+                        # break
         return True
 
         # if type == 'stdout':

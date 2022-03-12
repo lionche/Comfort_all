@@ -28,7 +28,6 @@ for root, dirs, files in os.walk(dir):
     # folderList是列表
 
     for file in files:
-
         file_path = os.path.join(root, file)
         Function_content = readFileAll(file_path)
         SourceFun_id = 0
