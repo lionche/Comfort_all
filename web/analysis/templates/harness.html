@@ -12,7 +12,8 @@
 </form>
 {% if different_result_list|length != 0 %}
     <form method="post">
-    <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}</textarea>
+        <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}
+            {{ now_remark }}{% endif %}</textarea>
         <input type="submit" value="提交"></form>
 {% endif %}
 
@@ -28,21 +29,22 @@
 
 {#比对不同#}
 {% if different_result_list|length != 0 %}
-{#        <h1 style="text-align:center;font-size:40px;font-family:times;color:orange">问题如下</h1>#}
+    {#        <h1 style="text-align:center;font-size:40px;font-family:times;color:orange">问题如下</h1>#}
 
     <table border="=100" style="position: center">
         <tr>
             <th>testcase id</th>
             <th>Error_type</th>
-            <th>Testbed</th>
+            <th>Engine Id</th>
+            <th>Engine</th>
         </tr>
         {% for suspicious_result in different_result_list %}
             <tr>
                 <td>{{ suspicious_result.testcase_id }}</td>
                 <td>{{ suspicious_result.error_type }}</td>
+                <td>{{ suspicious_result.testbed_id }}</td>
                 <td>{{ testbed_info|get_item:suspicious_result.testbed_id }}</td>
 
-                <td>{{ suspicious_result.Testcase_context }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -56,6 +58,7 @@
 <table border="=1">
     <tr>
         <th>Testcase Id</th>
+        <th>Engine Id</th>
         <th>Engine</th>
         <th>Stdout</th>
         <th>Stderr</th>
@@ -66,6 +69,7 @@
     {% for output in harness_result.outputs %}
         <tr>
             <td>{{ harness_result.testcase_id }}</td>
+            <td>{{ output.testbed_id }}</td>
             <td>{{ testbed_info|get_item:output.testbed_id }}</td>
             <td>{{ output.stdout }}</td>
             <td>{{ output.stderr }}</td>

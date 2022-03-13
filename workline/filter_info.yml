@@ -6,6 +6,7 @@ returncode_type:
         Stderr:
           - engine: 8
             info: 'warning: Direct call to eval(), but lexical scope is not supported.'
+        Code:
         remark: 误报，hermes eval()传入字符串报错
         remark-id: 1.1
 
@@ -17,9 +18,9 @@ returncode_type:
             info: "Uncaught ReferenceError: Property 'SharedArrayBuffer' doesn't exist"
           - engine: 9
             info: "ReferenceError: 'SharedArrayBuffer' is not defined"
+        Code:
         remark: 误报，chakra，hermes中没有SharedArrayBuffer()方法，所以报错。
         remark-id: 1.2
-
 
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
@@ -37,6 +38,7 @@ returncode_type:
           - engine: 8
             info: 'object global'
         Stderr:
+        Code:
         remark: '误报，对于同一个api的命名不同'
         remark-id: 2.1
 
@@ -45,6 +47,7 @@ returncode_type:
         Stderr:
           - engine: 8
             info: 'warning: Direct call to eval(), but lexical scope is not supported.'
+        Code:
         remark: 误报，hermes eval()传入字符串报错
         remark-id: 2.2
 
@@ -54,8 +57,204 @@ returncode_type:
           - engine: 9
             info: "."
         Stderr:
-        remark: chakra小数计算不一致。
+        Code:
+        remark: "chakra小数计算不一致。"
         remark-id: 2.3
+      - Stdout:
+          - engine: 6
+            info: "{ /* ecmascript */ }"
+          - engine: 8
+            info: "[bytecode]"
+        Stderr:
+        Code:
+        remark: 'jerryscript,hermes不支持在方法内返回一个新定义的方法。'
+        remark-id: 2.4
+
+      - Stdout:
+          - engine: 1
+            info: "asm.js"
+        Stderr:
+        Code:
+        remark: 'V8 使用use asm报错'
+        remark-id: 2.5
+
+      - Stdout:
+          - engine: 6
+            info: "{ /* ecmascript */ }"
+          - engine: 7
+            info: "\n\n"
+          - engine: 8
+            info: "[bytecode]"
+        Stderr:
+        Code:
+        remark: "graaljs在返回方法时语句没有分号,导致返回的内容多回车了一行"
+        remark-id: 2.6
+
+      - Stdout:
+          - engine: 1
+            info: "object Promise"
+          - engine: 2
+            info: "object Promise"
+          - engine: 3
+            info: "object Promise"
+          - engine: 4
+            info: "object Promise"
+          - engine: 5
+            info: "object Promise"
+          - engine: 6
+            info: "object Promise"
+          - engine: 7
+            info: "object Promise"
+          - engine: 8
+            info: "object Object"
+          - engine: 9
+            info: "object Promise"
+        Stderr:
+        Code:
+        remark: "hermes对于Promise对象不识别，打印出来是Object"
+        remark-id: 2.7
+
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: "SyntaxError: Expected identifier, string or number"
+        Code:
+        remark: "老版chakra中，浅拷贝对象会报错"
+        remark-id: 2.8
+
+
+      - Stdout:
+          - engine: 2
+            info: "undefined"
+          - engine: 4
+            info: "toString"
+          - engine: 5
+            info: "toString"
+        Stderr:
+        Code:
+        remark: "各个引擎对于函数属性的支持的不完全一致"
+        remark-id: 2.9
+
+      - Stdout:
+          - engine: 2
+            info: "toSource"
+        Stderr:
+        Code:
+        remark: "各个引擎对于函数属性的支持的不完全一致"
+        remark-id: 2.9
+
+      - Stdout:
+          - engine: 2
+            info: "toString"
+          - engine: 4
+            info: "toString"
+          - engine: 5
+            info: "toString"
+        Stderr:
+        Code:
+        remark: "各个引擎对于函数属性的支持的不完全一致"
+        remark-id: 2.9
+
+      - Stdout:
+          - engine: 2
+            info: "toSource"
+          - engine: 4
+            info: "toString"
+          - engine: 5
+            info: "toString"
+        Stderr:
+        Code:
+        remark: "各个引擎对于函数属性的支持的不完全一致"
+        remark-id: 2.9
+
+
+      - Stdout:
+          - engine: 2
+            info: "valueOf"
+          - engine: 4
+            info: "toString"
+          - engine: 5
+            info: "toString"
+        Stderr:
+        Code:
+        remark: "各个引擎对于函数属性的支持的不完全一致"
+        remark-id: 2.9
+
+      - Stdout:
+          - engine: 6
+            info: "."
+        Stderr:
+        Code:
+        remark: "jerryscript,小数最后几位不精确"
+        remark-id: 2.10
+
+      - Stdout:
+          - engine: 8
+            info: ""
+        Stderr:
+        Code:
+          - content: "arguments"
+        remark: "bug,hermes arguments[]和 形参不是一个"
+        remark-id: 2.11
+
+      - Stdout:
+          - engine: 2
+            info: ""
+        Stderr:
+        Code:
+          - content: "delete"
+          - content: "for"
+        remark: "bug,spiderMonkey错误，原因未知"
+        remark-id: 2.12
+
+      - Stdout:
+          - engine: 1
+            info: ""
+          - engine: 2
+            info: ""
+          - engine: 3
+            info: ""
+          - engine: 4
+            info: ""
+          - engine: 5
+            info: ""
+          - engine: 6
+            info: ""
+          - engine: 7
+            info: ""
+          - engine: 8
+            info: ""
+          - engine: 9
+            info: ""
+        Stderr:
+        Code:
+          - content: "Math.random()"
+        remark: "误报，随机数引擎的"
+        remark-id: 2.13
+
+
+      - Stdout:
+          - engine: 3
+            info: ""
+          - engine: 9
+            info: ""
+
+        Stderr:
+        Code:
+          - content: "new Date()"
+        remark: "chakra的时间计算不一样"
+        remark-id: 2.14
+
+      - Stdout:
+          - engine: 6
+            info: ""
+          - engine: 8
+            info: ""
+        Stderr:
+        Code:
+          - content: "[..."
+        remark: "jerryscript,hermes不一致，未知原因"
+        remark-id: 2.15
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(2)9(0)
     id: 3
@@ -64,6 +263,7 @@ returncode_type:
         Stderr:
           - engine: 8
             info: "error: invalid statement encountered.\n    class"
+        Code:
         remark: 误报，hermes 关键词不是class
         remark-id: 3.1
 
@@ -71,9 +271,26 @@ returncode_type:
         Stderr:
           - engine: 8
             info: "error: async functions are unsupported"
+        Code:
         remark: 误报，hermes没有async相关方法
         remark-id: 3.2
 
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: "Destructuring in catch parameters is currently unsupported"
+        Code:
+        remark: 误报，hermes暂不支持在catch中定义内容
+        remark-id: 3.3
+
+      - Stdout:
+          - engine: 6
+            info: ""
+        Stderr:
+        Code:
+          - content: "let"
+        remark: jerryscript对于let定义域有问题
+        remark-id: 3.4
 
   - returncode: 1(0)2(0)3(0)4(3)5(0)6(1)7(0)8(1)9(0)
     id: 4
@@ -86,6 +303,7 @@ returncode_type:
             info: "ReferenceError: console is not defined"
           - engine: 8
             info: "Uncaught ReferenceError: Property 'console' doesn't exist"
+        Code:
         remark: 误报，部分引擎不支持console.log()
         remark-id: 4.1
 
@@ -96,6 +314,7 @@ returncode_type:
         Stderr:
           - engine: 7
             info: "Packages.org.mozilla.javascript.Context.getCurrentContext is not a function"
+        Code:
         remark: 误报，graaljs导入了一个不存在的包
         remark-id: 5.1
 
@@ -122,6 +341,7 @@ returncode_type:
           - engine: 9
             info: "object Promise"
         Stderr:
+        Code:
         remark: hermes对于Promise对象不识别，打印出来是Object
         remark-id: 6.1
 
@@ -131,5 +351,106 @@ returncode_type:
         Stderr:
           - engine: 2
             info: "Unhandled rejection"
+        Code:
         remark: v8,spiderMonkey不支持Promise函数
         remark-id: 6.2
+
+  - returncode: 1(0)2(3)3(0)4(3)5(1)6(1)7(7)8(1)9(0)
+    id: 7
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: ""
+          - engine: 4
+            info: "Can't find variable: write"
+        Stderr:
+          - engine: 2
+            info: "ReferenceError: write is not defined"
+          - engine: 3
+            info: "ReferenceError: 'write' is not defined"
+          - engine: 5
+            info: "ReferenceError: 'write' is not defined"
+          - engine: 6
+            info: "ReferenceError: write is not defined"
+          - engine: 7
+            info: "ReferenceError: write is not defined"
+          - engine: 8
+            info: "Uncaught ReferenceError: Property 'write' doesn't exist"
+          - engine: 9
+            info: "ReferenceError: 'write' is not defined"
+        Code:
+        remark: 误报，只有v8支持write函数，其他引擎报错
+        remark-id: 7.1
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(-9)7(0)8(-9)9(0)
+    id: 8
+    error_info:
+      - Stdout:
+          - engine: 6
+            info: ""
+          - engine: 8
+            info: ""
+        Stderr:
+        Code:
+        remark: jerryscript,hermes计算大量数据时超时
+        remark-id: 8.1
+
+  - returncode: 1(0)2(3)3(0)4(3)5(1)6(1)7(0)8(1)9(0)
+    id: 9
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: "console.info"
+          - engine: 4
+            info: "Exception: TypeError: undefined is not an object (evaluating 'console.info')"
+        Stderr:
+          - engine: 2
+            info: "TypeError: console.info is not a function"
+          - engine: 3
+            info: "TypeError: Object doesn't support property or method 'info'"
+          - engine: 5
+            info: "TypeError: not a function"
+          - engine: 6
+            info: "ReferenceError: console is not defined"
+          - engine: 8
+            info: "Uncaught ReferenceError: Property 'console' doesn't exist"
+          - engine: 9
+            info: "TypeError: Object doesn't support property or method 'info'"
+        Code:
+        remark: 误报，只有v8,graaljs支持了console.info
+        remark-id: 9.1
+
+  - returncode: 1(0)2(0)3(0)4(0)5(-9)6(0)7(0)8(0)9(0)
+    id: 10
+    error_info:
+      - Stdout:
+          - engine: 5
+            info: ""
+        Stderr:
+        Code:
+        remark: 误报，quickjs超时
+        remark-id: 10.1
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(-9)7(0)8(0)9(0)
+    id: 11
+    error_info:
+      - Stdout:
+          - engine: 6
+            info: ""
+        Stderr:
+        Code:
+        remark: 误报，quickjs超时
+        remark-id: 11.1
+
+  - returncode: 1(0)2(3)3(0)4(3)5(1)6(0)7(7)8(1)9(0)
+    id: 12
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: "undefined"
+          - engine: 6
+            info: "Symbol()"
+        Stderr:
+        Code:
+        remark: 误报，quickjs超时
+        remark-id: 12.1

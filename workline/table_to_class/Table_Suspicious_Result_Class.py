@@ -1,6 +1,6 @@
 from pprint import pprint
 
-from src.studyMysql.Table_Operation import Table_Suspicious_Result, Table_Result
+from src.studyMysql.Table_Operation import Table_Suspicious_Result, Table_Result, Table_Testcase
 from workline.table_to_class.Table_Result_Class import Result_Object
 
 import yaml
@@ -19,6 +19,12 @@ class Suspicious_Result_Object(object):
         self.Remark = Suspicious_Result_Item[5]
         self.Is_filtered = Suspicious_Result_Item[6]
         self.ResultList, self.Returncode = self.getResultListAndReturnCode()
+        self.Code_content = self.getCodeContent()
+
+    def getCodeContent(self):
+        table_Testcase = Table_Testcase()
+        testcase = table_Testcase.selectOneFromTableTestcase(self.Testcase_id)
+        return testcase[1]
 
     def getResultListAndReturnCode(self):
         """
@@ -60,12 +66,18 @@ class Suspicious_Result_Object(object):
             if f"'engine': {self.Testbed_id}" in str(error_info_item):
                 stdoutList = error_info_item['Stdout']
                 stderrList = error_info_item['Stderr']
+                codeList = error_info_item['Code']
+
                 # print(stdoutList)
                 # print(stderrList)
+                # print(codeList)
+
                 if stdoutList is not None:
                     flag = self.compareInfo('Stdout', stdoutList)
                 if stderrList is not None:
                     flag = self.compareInfo('Stderr', stderrList)
+                if codeList is not None:
+                    flag = self.compareInfo('Code', codeList)
                 if flag:
                     error_type_list.append(error_info_item)
                 else:
@@ -116,15 +128,14 @@ class Suspicious_Result_Object(object):
             # print('info:', std['info'])
             if type == 'Stdout':
                 if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
-                    print('stdout:', self.ResultList[std['engine'] - 1].Stdout)
-                    print('info:',std['info'])
+                    # print('stdout:', self.ResultList[std['engine'] - 1].Stdout)
+                    # print('info:',std['info'])
                     if self.judgeInfo(self.ResultList[std['engine'] - 1].Stdout, std['info']):
                         pass
                         # print('合格')
                     else:
                         # print('不合格')
                         return False
-                        # break
 
             if type == 'Stderr':
                 if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
@@ -136,7 +147,14 @@ class Suspicious_Result_Object(object):
                     else:
                         # print('不合格')
                         return False
-                        # break
+            if type == 'Code':
+                if self.judgeInfo(self.Code_content, std['content']):
+                    pass
+                    # print('合格')
+                else:
+                    # print('不合格')
+                    return False
         return True
 
         # if type == 'stdout':
+

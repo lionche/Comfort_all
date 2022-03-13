@@ -365,6 +365,16 @@ class Table_Suspicious_Result(object):
         sql = f"select * from Table_Suspicious_Result where Error_type={ErrorType} ORDER BY Testcase_id"
         return self.__table.selectall(sql)
 
+    def selectErrorTypeUnfilteredFromTableFunction(self, ErrorType):
+        """
+        条件查询全部符合的数据\n
+        :param ErrorType: 错误类型
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f"select * from Table_Suspicious_Result where Error_type={ErrorType} And Is_filtered='0' ORDER BY Testcase_id"
+        return self.__table.selectall(sql)
+
     def selectIdFromTable_Suspicious_Result(self, id):
         """
         条件查询全部符合的数据\n
@@ -382,7 +392,7 @@ class Table_Suspicious_Result(object):
         :return:所有符合条件的数据的List
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        sql = f'select * from Table_Suspicious_Result where Is_filtered=0 AND error_type = {error_type}'
+        sql = f"select * from Table_Suspicious_Result where Is_filtered='0' AND error_type = {error_type}"
         return self.__table.selectall(sql)
 
     def selectUnFilteredFromTable_Suspicious_Result(self):
