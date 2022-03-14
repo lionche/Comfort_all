@@ -6,6 +6,9 @@ import time
 from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
+
+from tqdm import tqdm
+
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 
@@ -16,14 +19,16 @@ start_time = time.time()
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-list_unfuzzing = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+print("一共有%d条未差分的测试用例" % len(list_unharness))
 
-print("一共有%d条未差分的测试用例" % len(list_unfuzzing))
+pbar = tqdm(total=len(list_unharness))
 
 def muti_harness(testcase):
     testcase_object = Testcase_Object(testcase)
 
-    print('*' * 25 + f'差分用例{testcase_object.Id}' + '*' * 25)
+    # print('*' * 25 + f'差分用例{testcase_object.Id}' + '*' * 25)
+    pbar.update(1)
     start_time = time.time()
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
@@ -37,11 +42,11 @@ def muti_harness(testcase):
 
     # 如果一个用例
     if not len(different_result_list):
-
-        print("该用例差分没有触发问题")
+        pass
+        # print("该用例差分没有触发问题")
     else:
 
-        print("共触发了{}个引擎错误".format(len(different_result_list)))
+        # print("共触发了{}个引擎错误".format(len(different_result_list)))
 
         testcase_object.add_interesting_times(1)
 
@@ -63,16 +68,16 @@ def muti_harness(testcase):
         # print(f"------------------------------------------------------\n")
 
 
-    print(f'共耗时{int(time.time() - start_time)}秒')
+    # print(f'共耗时{int(time.time() - start_time)}秒')
     # 更新testcases表中的fuzzing次数和interesting次数
     testcase_object.updateFuzzingTimesInterestintTimes()
 
 pool = ThreadPool()
-results = pool.map(muti_harness, list_unfuzzing)
+results = pool.map(muti_harness, list_unharness)
 pool.close()
 pool.join()
 
-
+pbar.close()
 end_time =time.time()
 
 print(f'take {int(end_time-start_time)}s')

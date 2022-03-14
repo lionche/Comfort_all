@@ -23,10 +23,13 @@ gpt2.load_gpt2(sess,
                model_name=generate_model_name,
                multi_gpu=True)
 table_testcase = Table_Testcase()
-list_unfuzzing = table_testcase.selectIdFromTableTestcase(11)
-print("一共有%d条需要变异的测试用例" % len(list_unfuzzing))
-for unfuzzing_item in list_unfuzzing:
-    testcase_object = Testcase_Object(unfuzzing_item)
+
+# list_unfuzzing = table_testcase.selectIdFromTableTestcase(11)
+list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(1)
+
+print("一共有%d条需要变异的测试用例" % len(list_unMutate))
+for unMutate_item in list_unMutate:
+    testcase_object = Testcase_Object(unMutate_item)
     # 更新当前用例的mutation time+1
     testcase_object.Mutation_times += 1
     table_testcase.updateMutationTimes(testcase_object.Mutation_times, testcase_object.Id)

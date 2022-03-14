@@ -470,7 +470,7 @@ class Function_Object(object):
         :return:
         """
         start_time = time.time()
-        print("正在对生成的用例使用jshint进行语法检查")
+        # print("正在对生成的用例使用jshint进行语法检查")
         all_testcases_pass = set()
         for testcase in all_testcases:
             # 通过with语句创建临时文件，with会自动关闭临时文件
@@ -490,8 +490,8 @@ class Function_Object(object):
 
         end_time = time.time()
 
-        print(
-            f"共组装了{len(all_testcases)}个用例，其中语法正确的用例共{len(all_testcases_pass)}个，检测总耗时{int(end_time - start_time)}秒.")
+        # print(
+        #     f"共组装了{len(all_testcases)}个用例，其中语法正确的用例共{len(all_testcases_pass)}个，检测总耗时{int(end_time - start_time)}秒.")
         return all_testcases_pass
 
     def cmd_jshint(self, temp_file_path):

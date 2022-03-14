@@ -13,7 +13,7 @@ from src.studyMysql.Table_Operation import Table_Function
 
 lis = []
 
-dir = r"/root/Comfort_all/data/JStestcases"
+dir = r"/root/Comfort_all/data/JStestcases/poc"
 current = 0
 
 def readFileAll(path):
