@@ -20,11 +20,5 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('page/m', views.m_view),
-    path('page/1', views.page1_view),
-    path('page/2', views.page2_view),
-    path('page/<int:pg>', views.pagen_view),
-    path('test_static', views.test_static),
-    path('luo', views.luo),
     path('analysis/', include('analysis.urls')),
 ]

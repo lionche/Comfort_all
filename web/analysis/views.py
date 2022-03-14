@@ -3,11 +3,6 @@ from django.shortcuts import render
 from .models import Testbed, Testcase, Result, Suspicious_Result
 from workline.step6_analysis_testcases import harness_testcase
 
-def h1(request):
-    html = "<h1>analysis这是1的页面</h1>"
-    return HttpResponse(html)
-
-
 def show_testbed(request):
     all_testbed = Testbed.objects.all()
     # v8 = Testbed.objects.filter(Testbed_name__exact='v8')
