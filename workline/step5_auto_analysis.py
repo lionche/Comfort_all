@@ -4,12 +4,12 @@ from pprint import pprint
 import sys
 from pathlib import Path
 
-from workline.mysql_tools.Table_Operation import Table_Suspicious_Result
 
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from tqdm import tqdm
 from workline.table_to_class.Table_Suspicious_Result_Class import Suspicious_Result_Object
+from workline.mysql_tools.Table_Operation import Table_Suspicious_Result
 
 table_suspicious_Result = Table_Suspicious_Result()
 # 分析未分析的可以用例

@@ -7,10 +7,10 @@ from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
 from tqdm import tqdm
-from workline.mysql_tools.Table_Operation import Table_Testcase
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 
+from workline.mysql_tools.Table_Operation import Table_Testcase
 
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 

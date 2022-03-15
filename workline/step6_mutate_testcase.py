@@ -2,13 +2,13 @@ import os
 import sys
 from pathlib import Path
 
-from workline.mysql_tools.Table_Operation import Table_Testcase
 
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from src.utils.config import generate_model_dir, generate_model_name
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 import tensorflow as tf
+from workline.mysql_tools.Table_Operation import Table_Testcase
 
 tf.get_logger().setLevel('ERROR')
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Mask prompts for TensorFlow
