@@ -3,16 +3,12 @@ import time
 from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
-
 from tqdm import tqdm
-
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from workline.table_to_class.Table_Function_Class import Function_Object
-from src.Mysql.Table_Operation import Table_Function
-
+from workline.mysql_tools.Table_Operation import Table_Function
 start_time =time.time()
-
 table_Function = Table_Function()
 
 # 获取function表中全部方法

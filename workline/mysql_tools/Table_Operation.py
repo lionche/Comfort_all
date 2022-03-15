@@ -1,8 +1,5 @@
-import os
-
 # 对表Table_Function进行操作
 from workline.mysql_tools.db_operation_base import DataBaseHandle
-
 
 class Table_Function(object):
     def __init__(self):
