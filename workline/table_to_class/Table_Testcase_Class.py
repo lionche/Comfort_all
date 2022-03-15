@@ -1,4 +1,3 @@
-
 # import os
 # import sys
 # from pathlib import Path
@@ -99,45 +98,147 @@ class Testcase_Object(object):
         操作符替换，变异方法4
         :return:
         """
-        print("正在进行操作符替换")
+        print("正在进行人工规则替换")
         with tempfile.NamedTemporaryFile(delete=True) as tmpfile:
             temp_file_path = tmpfile.name
             # print(temp_file_name)  # /tmp/tmp73zl8gmn
             tmpfile.write(self.Testcase_context.encode())
             tmpfile.seek(0)
-            # tmpTxt = tmpfile.read().decode()
-            # print(tmpTxt)
-            all_mutation_testcases = self.Testcase_Mutatiod4(temp_file_path)
+            tmpTxt = tmpfile.read().decode()
+            print(tmpTxt)
+            # 返回 随机代码块删除， While与If代码块互换， 条件代码块包裹， 操作符替换， 语义相近的API替换， 返回值相同的API替换， 原型链污染， 属性篡改， 热点函数优化
+            random_block_remove, while_if_swap, condition_code_add, replaceOperator, replace_similar_API, replace_return_API, proto_pollution, property_modification, hotspot_optimization = self.design_Testcase_Mutation(
+                temp_file_path)
             # print(len(result))
             # for item in result:
             #     print(item)
             #     print('-----------------------------------------------------')
 
-        all_mutation_testcases_pass = self.jshint_check_testcases(all_mutation_testcases)
+        random_block_remove_pass = self.jshint_check_testcases(random_block_remove)
+        while_if_swap_pass = self.jshint_check_testcases(while_if_swap)
+        condition_code_add_pass = self.jshint_check_testcases(condition_code_add)
+        replaceOperator_pass = self.jshint_check_testcases(replaceOperator)
+        replace_similar_API_pass = self.jshint_check_testcases(replace_similar_API)
+        replace_return_API_pass = self.jshint_check_testcases(replace_return_API)
+        proto_pollution_pass = self.jshint_check_testcases(proto_pollution)
+        property_modification_pass = self.jshint_check_testcases(property_modification)
+        hotspot_optimization_pass = self.jshint_check_testcases(hotspot_optimization)
 
         table_testcase = Table_Testcase()
 
         # 把通过语法检查的用例存入数据库
-        testcases_list_to_write = self.make_all_mutation_testcases_passListToWrite(all_mutation_testcases_pass,
-                                                                                   self.SourceFun_id,
-                                                                                   self.Id, 0, 4, 0, 0, 0, None)
+        random_block_remove_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            random_block_remove_pass,
+            self.SourceFun_id,
+            self.Id, 0, 4, 0, 0, 0, None)
+        while_if_swap_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(while_if_swap_pass,
+                                                                                            self.SourceFun_id,
+                                                                                            self.Id, 0, 5, 0, 0, 0,
+                                                                                            None)
+        condition_code_add_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            condition_code_add_pass,
+            self.SourceFun_id,
+            self.Id, 0, 6, 0, 0, 0, None)
+        replaceOperator_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(replaceOperator_pass,
+                                                                                              self.SourceFun_id,
+                                                                                              self.Id, 0, 7, 0, 0, 0,
+                                                                                              None)
+        replace_similar_API_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            replace_similar_API_pass,
+            self.SourceFun_id,
+            self.Id, 0, 8, 0, 0, 0, None)
+        replace_return_API_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            replace_return_API_pass,
+            self.SourceFun_id,
+            self.Id, 0, 9, 0, 0, 0, None)
+        proto_pollution_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(proto_pollution_pass,
+                                                                                              self.SourceFun_id,
+                                                                                              self.Id, 0, 10, 0, 0, 0,
+                                                                                              None)
+        property_modification_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            property_modification_pass,
+            self.SourceFun_id,
+            self.Id, 0, 11, 0, 0, 0, None)
+        hotspot_optimization_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+            hotspot_optimization_pass,
+            self.SourceFun_id,
+            self.Id, 0, 12, 0, 0, 0, None)
 
-        table_testcase.insertManyDataToTableTestcase(testcases_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(random_block_remove_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(while_if_swap_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(condition_code_add_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(replaceOperator_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(replace_similar_API_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(replace_return_API_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(proto_pollution_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(property_modification_pass_list_to_write)
+        table_testcase.insertManyDataToTableTestcase(hotspot_optimization_pass_list_to_write)
 
-        return all_mutation_testcases_pass
+        return random_block_remove_pass, while_if_swap_pass, condition_code_add_pass, replaceOperator_pass, replace_similar_API_pass, replace_return_API_pass, proto_pollution_pass, property_modification_pass, hotspot_optimization_pass
 
-    def Testcase_Mutatiod4(self, file_name):
-        cmd = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/operator_replace.js', '-f', file_name]
-        pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, universal_newlines=True)
-        stdout, stderr = pro.communicate()
-        testcase = []
-        result = stdout.split("------------------------------")
-        for i in result:
+    def design_Testcase_Mutation(self, file_name):
+        random_block_remove = []
+        while_if_swap = []
+        condition_code_add = []
+        replaceOperator = []
+        replace_similar_API = []
+        replace_return_API = []
+        proto_pollution = []
+        property_modification = []
+        hotspot_optimization = []
+        cmd1 = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/universal_mutation.js', '-f', file_name]
+        pro1 = subprocess.Popen(cmd1, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, universal_newlines=True)
+        stdout1, stderr1 = pro1.communicate()
+        print(stderr1)
+
+        result1 = stdout1.split("------------------------------")
+        for i in result1:
             i = i.strip()
-            if i != "":
-                testcase.append(i)
-        return testcase
+            if (i != ""):
+                split_i = i.split("\n")
+                if split_i[-1] == "random_block_remove" and (i not in random_block_remove):
+                    random_block_remove.append(i[:i.rfind('\n')])
+                elif split_i[-1] == "while_if_swap" and (i not in while_if_swap):
+                    while_if_swap.append(i[:i.rfind('\n')])
+                elif split_i[-1] == "condition_code_add" and (i not in condition_code_add):
+                    condition_code_add.append(i[:i.rfind('\n')])
+                elif split_i[-1] == "replaceOperator" and (i not in replaceOperator):
+                    replaceOperator.append(i[:i.rfind('\n')])
+        cmd2 = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/universal_mutation.js', '-f', file_name]
+        pro2 = subprocess.Popen(cmd2, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, universal_newlines=True)
+        stdout2, stderr2 = pro2.communicate()
+        result2 = stdout2.split("------------------------------")
+        for j in result2:
+            j = j.strip()
+            if (j != ""):
+                split_j = j.split("\n")
+                if split_j[-1] == "replace_similar_API" and (j not in replace_similar_API):
+                    replace_similar_API.append(j[:j.rfind('\n')])
+                elif split_j[-1] == "replace_return_API" and (j not in replace_return_API):
+                    replace_return_API.append(j[:j.rfind('\n')])
+                elif split_j[-1] == "proto_pollution" and (j not in proto_pollution):
+                    proto_pollution.append(j[:j.rfind('\n')])
+                elif split_j[-1] == "property_modification" and (j not in property_modification):
+                    property_modification.append(j[:j.rfind('\n')])
+                elif split_j[-1] == "hotspot_optimization" and (j not in hotspot_optimization):
+                    hotspot_optimization.append(j[:j.rfind('\n')])
+        # 返回 随机代码块删除， While与If代码块互换， 条件代码块包裹， 操作符替换， 语义相近的API替换， 返回值相同的API替换， 原型链污染， 属性篡改， 热点函数优化
+        return random_block_remove, while_if_swap, condition_code_add, replaceOperator, replace_similar_API, replace_return_API, proto_pollution, property_modification, hotspot_optimization
+
+    # def Testcase_Mutatiod4(self, file_name):
+    #     cmd = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/operator_replace.js', '-f', file_name]
+    #     pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+    #                            stderr=subprocess.PIPE, universal_newlines=True)
+    #     stdout, stderr = pro.communicate()
+    #     testcase = []
+    #     result = stdout.split("------------------------------")
+    #     for i in result:
+    #         i = i.strip()
+    #         if i != "":
+    #             testcase.append(i)
+    #     return testcase
 
     def make_all_mutation_testcases_passListToWrite(self, all_mutation_testcases_pass, SourceFun_id, SourceTestcase_id,
                                                     Fuzzing_times,
@@ -153,7 +254,6 @@ class Testcase_Object(object):
                     Mutation_times, Interesting_times, Probability, Remark]
             lis.append(item)
         return lis
-
 
     def get_function_content(self):
         """
