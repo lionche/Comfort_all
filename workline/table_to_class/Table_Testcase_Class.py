@@ -1,9 +1,14 @@
+
+# import os
+# import sys
+# from pathlib import Path
+# BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
+# sys.path.append(BASE_DIR)
 import subprocess
 import sys
 import tempfile
-
-from src.studyMysql.Table_Operation import Table_Testcase, Table_Function
 from workline.harness_tools.harness_class import Harness
+from workline.mysql_tools.Table_Operation import Table_Testcase, Table_Function
 from workline.table_to_class.Table_Function_Class import Function_Object
 import re
 
@@ -149,7 +154,6 @@ class Testcase_Object(object):
             lis.append(item)
         return lis
 
-    pass
 
     def get_function_content(self):
         """

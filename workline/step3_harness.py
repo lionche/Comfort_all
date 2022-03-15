@@ -2,28 +2,35 @@
 差分测试
 '''
 import time
-#export LC_ALL=C
+# export LC_ALL=C
 from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
+from typing import List
 
 from tqdm import tqdm
+
+from workline.harness_tools.harness_class import HarnessResult, DifferentialTestResult
+from workline.mysql_tools.Table_Operation import Table_Testcase
 
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 
-from src.studyMysql.Table_Operation import Table_Testcase
 
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
-start_time = time.time()
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
 list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
-print("一共有%d条未差分的测试用例" % len(list_unharness))
 
 pbar = tqdm(total=len(list_unharness))
 
+
+
+
+print("一共有%d条未差分的测试用例" % len(list_unharness))
+
+# 存入数据库
 def muti_harness(testcase):
     testcase_object = Testcase_Object(testcase)
 
@@ -37,7 +44,7 @@ def muti_harness(testcase):
         harness_result.save_to_table_result()
     except:
         pass
-    #投票
+    # 投票
     different_result_list = harness_result.differential_test()
 
     # 如果一个用例
@@ -54,7 +61,7 @@ def muti_harness(testcase):
 
         # print(f"------------------------------------------------------\n")
 
-        #可疑结果存入数据库
+        # 可疑结果存入数据库
         for interesting_test_result in different_result_list:
             # print(interesting_test_result)
             interesting_test_result.save_to_table_suspicious_Result()
@@ -67,10 +74,10 @@ def muti_harness(testcase):
 
         # print(f"------------------------------------------------------\n")
 
-
     # print(f'共耗时{int(time.time() - start_time)}秒')
     # 更新testcases表中的fuzzing次数和interesting次数
     testcase_object.updateFuzzingTimesInterestintTimes()
+
 
 pool = ThreadPool()
 results = pool.map(muti_harness, list_unharness)
@@ -78,6 +85,3 @@ pool.close()
 pool.join()
 
 pbar.close()
-end_time =time.time()
-
-print(f'take {int(end_time-start_time)}s')

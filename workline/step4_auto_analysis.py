@@ -3,18 +3,15 @@ from multiprocessing.pool import ThreadPool
 from pprint import pprint
 import sys
 from pathlib import Path
-
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from tqdm import tqdm
-
-from src.studyMysql.Table_Operation import Table_Suspicious_Result
+from src.Mysql.Table_Operation import Table_Suspicious_Result
 from workline.table_to_class.Table_Suspicious_Result_Class import Suspicious_Result_Object
 
 table_suspicious_Result = Table_Suspicious_Result()
 # 分析未分析的可以用例
 unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result()
-# unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result_with_error_type("'Most JS engines pass'")
 # unfiltered_list = table_suspicious_Result.selectIdFromTable_Suspicious_Result(4258)
 pbar = tqdm(total=len(unfiltered_list))
 #

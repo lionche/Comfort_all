@@ -9,7 +9,7 @@ from tqdm import tqdm
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from workline.table_to_class.Table_Function_Class import Function_Object
-from src.studyMysql.Table_Operation import Table_Function
+from src.Mysql.Table_Operation import Table_Function
 
 start_time =time.time()
 

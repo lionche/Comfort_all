@@ -6,7 +6,7 @@ import sys
 import tempfile
 import time
 
-from src.studyMysql.Table_Operation import Table_Testcase, Table_Function
+from workline.mysql_tools.Table_Operation import Table_Testcase, Table_Function
 from src.utils.config import generate_model_dir, generate_model_name
 from workline.assemble_tools.callable_processor import CallableProcessor
 import gpt_2_simple as gpt2

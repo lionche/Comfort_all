@@ -1,6 +1,6 @@
 from pprint import pprint
 
-from src.studyMysql.Table_Operation import Table_Suspicious_Result, Table_Result, Table_Testcase
+from src.Mysql.Table_Operation import Table_Suspicious_Result, Table_Result, Table_Testcase
 from workline.table_to_class.Table_Result_Class import Result_Object
 
 import yaml

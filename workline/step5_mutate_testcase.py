@@ -1,9 +1,11 @@
 import os
 import sys
 from pathlib import Path
+
+from workline.mysql_tools.Table_Operation import Table_Testcase
+
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
-from src.studyMysql.Table_Operation import Table_Testcase
 from src.utils.config import generate_model_dir, generate_model_name
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 import tensorflow as tf
@@ -24,7 +26,6 @@ gpt2.load_gpt2(sess,
                multi_gpu=True)
 table_testcase = Table_Testcase()
 
-# list_unfuzzing = table_testcase.selectIdFromTableTestcase(11)
 list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(1)
 
 print("一共有%d条需要变异的测试用例" % len(list_unMutate))
@@ -37,7 +38,7 @@ for unMutate_item in list_unMutate:
     print('*' * 25 + f'变异testcase{testcase_object.Id}' + '*' * 25)
 
     testcase_mutation_method1, testcase_mutation_method2 = testcase_object.mutation_method1_2(sess, False)
-
+    #操作符变异
     testcase_mutation_method4 = testcase_object.mutation_method4()
 
     all_len = len(testcase_mutation_method1) + len(testcase_mutation_method2) + len(testcase_mutation_method4)

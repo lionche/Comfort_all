@@ -1,13 +1,16 @@
+from typing import List
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from workline.step6 import harness_testcase
 from .models import Testbed, Testcase, Result, Suspicious_Result
-from workline.step6_analysis_testcases import harness_testcase
 
 def show_testbed(request):
     all_testbed = Testbed.objects.all()
     # v8 = Testbed.objects.filter(Testbed_name__exact='v8')
     # return render(request, 'analysis/testbed.html', {'all_testbed': all_testbed})
     return render(request, 'testbed.html', locals())
+
+
 
 
 def show_testcase(request):
@@ -108,4 +111,5 @@ def harness(request):
     # #     print(all_testcase[0].Testcase_context)
     # #     print(remark)
     #     return render(request, 'testcase.html', locals())
+
 
