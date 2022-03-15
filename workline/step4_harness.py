@@ -6,13 +6,8 @@ import time
 from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
-from typing import List
-
 from tqdm import tqdm
-
-from workline.harness_tools.harness_class import HarnessResult, DifferentialTestResult
 from workline.mysql_tools.Table_Operation import Table_Testcase
-
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 
@@ -25,15 +20,6 @@ list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
 
 pbar = tqdm(total=len(list_unharness))
 #不存入数据库
-def harness_testcase(testcase):
-    testcase_object = Testcase_Object(testcase)
-    # print('*' * 25 + f'差分用例{testcase_object.Id}' + '*' * 25)
-    # start_time = time.time()
-    # 获得差分结果，各个引擎输出
-    harness_result = testcase_object.engine_run_testcase()
-    # 投票
-    different_result_list = harness_result.differential_test()
-    return harness_result, different_result_list
 
 print("一共有%d条未差分的测试用例" % len(list_unharness))
 

@@ -1,8 +1,6 @@
-from typing import List
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from workline.step4_harness import harness_testcase
+from workline.harness_tools.harness_for_web import harness_testcase
 from .models import Testbed, Testcase, Result, Suspicious_Result
 
 def show_testbed(request):
