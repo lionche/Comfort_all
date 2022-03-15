@@ -2,13 +2,14 @@
 import sys
 from pathlib import Path
 
+
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 import os
 from src.utils.config import generate_model_dir, generate_model_name
 from workline.table_to_class.Table_Function_Class import Function_Object
-from src.Mysql.Table_Operation import Table_Function
 import tensorflow as tf
+from workline.mysql_tools.Table_Operation import Table_Function
 
 tf.get_logger().setLevel('ERROR')
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Mask prompts for TensorFlow

@@ -1,8 +1,5 @@
-import json
 import sys
 sys.path.append('/root/Comfort_all')
-from src.Mysql.Table_Operation import Table_Result
-
 
 class Result_Object(object):
 
