@@ -1,13 +1,10 @@
 # 将初始用例从文件夹中存入Table_Function表中
-
 import os
 import sys
 from pathlib import Path
-
-from workline.mysql_tools.Table_Operation import Table_Function
-
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
+from workline.mysql_tools.Table_Operation import Table_Function
 
 
 # Table_Function格式
