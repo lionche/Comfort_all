@@ -124,7 +124,7 @@
 
 3. `docker exec -it comfort_container bash`进入容器
 
-4. `bash /root/Comfort_all/initialize.sh`: 创建数据库，恢复初始种子池和差分引擎数据库(可能需要半小时)
+4. `bash /root/Comfort_all/initialize.sh`: 创建数据库，恢复初始种子池和差分引擎数据库(可能需要半小时)。如果失败是因为mysql没有启动，等一会就好。
 
 
 
