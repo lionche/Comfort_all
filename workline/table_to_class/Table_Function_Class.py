@@ -438,7 +438,7 @@ class Function_Object(object):
         :return:
         """
         start_time = time.time()
-        print("正在对生成的function使用jshint进行语法检查")
+        # print("正在对生成的function使用jshint进行语法检查")
         all_functions_pass = set()
         for function in all_functions:
             # 通过with语句创建临时文件，with会自动关闭临时文件
