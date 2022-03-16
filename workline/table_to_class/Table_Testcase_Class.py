@@ -49,7 +49,7 @@ class Testcase_Object(object):
         :param all_functions: 所有方法的list
         :return:
         """
-        print("正在对生成的用例使用jshint进行语法检查")
+        # print("正在对生成的用例使用jshint进行语法检查")
         all_testcases_pass = set()
         for testcase in all_testcases:
             # 通过with语句创建临时文件，with会自动关闭临时文件

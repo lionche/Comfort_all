@@ -134,7 +134,7 @@
 
 将`/root/Comfort_all/data/JStestcases`中的方法存到数据库中。
 
-`python /root/Comfort_all/workline/01_save_orginal_to_function_table.py`
+`python /root/Comfort_all/workline/step1_save_orginal_to_function_table.py`
 
 
 
