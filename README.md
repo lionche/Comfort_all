@@ -2,7 +2,7 @@
 
 
 
-## 1.步骤流程
+## 1.代码说明
 * **step1_save_orginal_to_function_table.py**:构建种子池
 * **step2_enrich_function_table.py**: 对种子池进行扩充
 * **step3_assemble_function_to_testcases.py**:将种子池中的方法组装成方法。
@@ -12,7 +12,7 @@
 
 
 
-### 2.数据库
+### 2.数据库说明
 
 1. **Table_Function**:方法表
 2. **Table_Testcase**:用例表
@@ -82,7 +82,7 @@
 |  4   |   `Returncode`    | 引擎返回值 |   int(11)    |
 |  5   |     `Stdout`      |  正确输出  |   longtext   |
 |  6   |     `Stderr`      |  错误信息  |   longtext   |
-|  7   |   `Duration_ms`   |  执行市场  |   int(11)    |
+|  7   |   `Duration_ms`   |  执行时长  |   int(11)    |
 |  8   |  `Seed_coverage`  | 种子覆盖率 | decimal(5,3) |
 |  9   | `Engine_coverage` | 引擎覆盖率 | decimal(5,3) |
 |  10  |     `Remark`      |    备注    |   longtext   |
@@ -124,7 +124,7 @@
 
 3. `docker exec -it comfort_container bash`进入容器
 
-4. `bash /root/Comfort_all/initialize.sh`: 创建数据库，恢复初始种子池和差分引擎数据库
+4. `bash /root/Comfort_all/initialize.sh`: 创建数据库，恢复初始种子池和差分引擎数据库(可能需要半小时)
 
 
 
@@ -173,8 +173,6 @@
 从用例表中取出用例进行差分，所有结果存入差分结果表，可疑结果存入可疑结果表
 
 `python /root/Comfort_all/workline/step6_mutate_testcase.py`
-
-
 
 #### 6.1生成变异
 
