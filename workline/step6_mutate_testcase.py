@@ -43,16 +43,12 @@ for unMutate_item in list_unMutate:
     testcase_mutation_method1, testcase_mutation_method2 = testcase_object.mutation_method1_2(sess, False)
 
     random_block_remove_pass, while_if_swap_pass, condition_code_add_pass, replaceOperator_pass, replace_similar_API_pass, replace_return_API_pass, proto_pollution_pass, property_modification_pass, hotspot_optimization_pass = testcase_object.mutation_method4()
+
     pbar.update(1)
-    # print("random_block_remove_pass:", len(random_block_remove_pass))
-    # print("while_if_swap_pass:", len(while_if_swap_pass))
-    # print("condition_code_add_pass:", len(condition_code_add_pass))
-    # print("replaceOperator_pass:", len(replaceOperator_pass))
-    # print("replace_similar_API_pass:", len(replace_similar_API_pass))
-    # print("replace_return_API_pass:", len(replace_return_API_pass))
-    # print("proto_pollution_pass:", len(proto_pollution_pass))
-    # print("property_modification_pass:", len(property_modification_pass))
-    # print("hotspot_optimization_pass:", len(hotspot_optimization_pass))
+    num = len(random_block_remove_pass) + len(while_if_swap_pass) + len(condition_code_add_pass) + len(
+        replaceOperator_pass) + len(replace_similar_API_pass) + len(replace_return_API_pass) + len(
+        proto_pollution_pass) + len(property_modification_pass) + len(hotspot_optimization_pass)
+    print(f'规则变异出{num}个用例')
 
     # all_len = len(testcase_mutation_method1) + len(testcase_mutation_method2) + len(testcase_mutation_method4)
 

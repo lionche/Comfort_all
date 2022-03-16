@@ -105,7 +105,6 @@ class Testcase_Object(object):
             tmpfile.write(self.Testcase_context.encode())
             tmpfile.seek(0)
             tmpTxt = tmpfile.read().decode()
-            print(tmpTxt)
             # 返回 随机代码块删除， While与If代码块互换， 条件代码块包裹， 操作符替换， 语义相近的API替换， 返回值相同的API替换， 原型链污染， 属性篡改， 热点函数优化
             random_block_remove, while_if_swap, condition_code_add, replaceOperator, replace_similar_API, replace_return_API, proto_pollution, property_modification, hotspot_optimization = self.design_Testcase_Mutation(
                 temp_file_path)
@@ -190,7 +189,7 @@ class Testcase_Object(object):
         pro1 = subprocess.Popen(cmd1, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, universal_newlines=True)
         stdout1, stderr1 = pro1.communicate()
-        print(stderr1)
+        # print(stderr1)
 
         result1 = stdout1.split("------------------------------")
         for i in result1:
