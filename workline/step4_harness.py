@@ -19,7 +19,6 @@ table_Testcases = Table_Testcase()
 list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
 
 pbar = tqdm(total=len(list_unharness))
-#不存入数据库
 
 print("一共有%d条未差分的测试用例" % len(list_unharness))
 
