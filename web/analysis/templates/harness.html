@@ -23,7 +23,6 @@
     <textarea name="testcase_content" rows="15" cols="100"
               placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
     <input type="submit" value="提交">
-    <input name="remake" type="submit" value="复原">
 
 </form>
 
@@ -77,7 +76,8 @@
         </tr>
     {% endfor %}
 </table>
-
+<br>
+{{ returncode }}
 
 </body>
 

@@ -100,6 +100,13 @@ def harness(request):
 
     harness_result, different_result_list = harness_testcase(testcase)
 
+    result_object_list = []
+    returncode = ''
+
+    for output in harness_result.outputs:
+        returncode += str(output.testbed_id)
+        returncode += f'({output.returncode})'
+
     return render(request, 'harness.html', locals())
 
     # if request.method == 'POST':

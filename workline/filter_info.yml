@@ -123,6 +123,7 @@ returncode_type:
         remark-id: 2.8
 
 
+
       - Stdout:
           - engine: 2
             info: "undefined"
@@ -255,6 +256,14 @@ returncode_type:
           - content: "[..."
         remark: "jerryscript,hermes不一致，未知原因"
         remark-id: 2.15
+
+      - Stdout:
+        Stderr:
+          - engine: 2
+            info: "setTimeout is not defined"
+        Code:
+        remark: "spiderMonkey 没有setTimeout方法"
+        remark-id: 2.16
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(2)9(0)
     id: 3
