@@ -382,6 +382,16 @@ class Table_Suspicious_Result(object):
         sql = f'select * from Table_Suspicious_Result where Id={id}'
         return self.__table.selectall(sql)
 
+    def selectTestcseIdFromTable_Suspicious_Result(self, Testcase_id):
+        """
+        条件查询全部符合的数据\n
+        :param ErrorType: 错位类型
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Suspicious_Result where Testcase_id={Testcase_id}'
+        return self.__table.selectall(sql)
+
     def selectUnFilteredFromTable_Suspicious_Result_with_error_type(self, error_type):
         """
         条件查询全部符合的数据\n

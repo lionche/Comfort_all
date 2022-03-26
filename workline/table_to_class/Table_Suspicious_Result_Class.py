@@ -61,8 +61,9 @@ class Suspicious_Result_Object(object):
         """
         flag = True
         error_type_list = []
-
+        # print(error_info_list)
         for error_info_item in error_info_list:
+            # print(error_info_item['remark-id'])
             if f"'engine': {self.Testbed_id}" in str(error_info_item):
                 stdoutList = error_info_item['Stdout']
                 stderrList = error_info_item['Stderr']
@@ -74,11 +75,12 @@ class Suspicious_Result_Object(object):
 
                 if stdoutList is not None:
                     flag = self.compareInfo('Stdout', stdoutList)
-                if stderrList is not None:
+                if stderrList is not None and flag:
                     flag = self.compareInfo('Stderr', stderrList)
-                if codeList is not None:
+                if codeList is not None and flag:
                     flag = self.compareInfo('Code', codeList)
                 if flag:
+                    # print(error_info_item['remark-id'],'合格')
                     error_type_list.append(error_info_item)
                 else:
                     # print(f"remark-id是{error_info_item['remark-id']},报错信息不匹配")
@@ -97,7 +99,6 @@ class Suspicious_Result_Object(object):
             pass
         else:
             # print('匹配到return code', self.Returncode)
-
             error_info_list = self.extractYaml2(Returncode_block['error_info'])
             if len(error_info_list) == 0:
                 pass
@@ -122,6 +123,24 @@ class Suspicious_Result_Object(object):
         else:
             return False
 
+    def judgeInfoByRegex(self, stdout: str, info: str):
+        # coding=utf8
+        # the above tag defines encoding for this document and is for Python 2.x compatibility
+
+        import re
+
+        regex = info
+
+        test_str = stdout
+
+        matches = re.finditer(regex, test_str, re.MULTILINE)
+
+        for matchNum, match in enumerate(matches, start=1):
+            # print('正则匹配成功')
+            return True
+
+        # print('正则匹配失败')
+        return False
     def compareInfo(self, type, stdList):
         for std in stdList:
             # print('engine:', std['engine'])
@@ -130,29 +149,33 @@ class Suspicious_Result_Object(object):
                 if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
                     # print('stdout:', self.ResultList[std['engine'] - 1].Stdout)
                     # print('info:',std['info'])
-                    if self.judgeInfo(self.ResultList[std['engine'] - 1].Stdout, std['info']):
+                    if self.judgeInfoByRegex(self.ResultList[std['engine'] - 1].Stdout, std['info']):
+                    # if self.judgeInfo(self.ResultList[std['engine'] - 1].Stdout, std['info']):
                         pass
-                        # print('合格')
+                        # print('stdout合格')
                     else:
-                        # print('不合格')
+                        # print('stdout不合格')
                         return False
 
             if type == 'Stderr':
                 if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
                     # print('stderr:', self.ResultList[std['engine'] - 1].Stderr)
                     # print('info:',std['info'])
-                    if self.judgeInfo(self.ResultList[std['engine'] - 1].Stderr, std['info']):
+                    # if self.judgeInfo(self.ResultList[std['engine'] - 1].Stderr, std['info']):
+                    if self.judgeInfoByRegex(self.ResultList[std['engine'] - 1].Stderr, std['info']):
                         pass
-                        # print('合格')
+                        # print('stderr合格')
                     else:
-                        # print('不合格')
+                        # print('stderr不合格')
                         return False
             if type == 'Code':
-                if self.judgeInfo(self.Code_content, std['content']):
+                # if self.judgeInfo(self.Code_content, std['content']):
+                # print('content:',std['content'])
+                if self.judgeInfoByRegex(self.Code_content, std['content']):
                     pass
-                    # print('合格')
+                    # print('code合格')
                 else:
-                    # print('不合格')
+                    # print('code不合格')
                     return False
         return True
 

@@ -7,11 +7,11 @@ from multiprocessing.dummy import Pool as ThreadPool
 import sys
 from pathlib import Path
 from tqdm import tqdm
+
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
-
-from workline.mysql_tools.Table_Operation import Table_Testcase
-
+from workline.table_to_class.Table_Suspicious_Result_Class import Suspicious_Result_Object
+from workline.mysql_tools.Table_Operation import Table_Testcase, Table_Suspicious_Result
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
 table_Testcases = Table_Testcase()
@@ -57,6 +57,11 @@ def muti_harness(testcase):
         for interesting_test_result in different_result_list:
             # print(interesting_test_result)
             interesting_test_result.save_to_table_suspicious_Result()
+
+            unfiltered_list = Table_Suspicious_Result().selectTestcseIdFromTable_Suspicious_Result(testcase_object.Id)
+            for suspicious_testcase in unfiltered_list:
+                suspicious_result = Suspicious_Result_Object(suspicious_testcase)
+                suspicious_result.analysis()
 
         # print(f"JS engines running results:")
 

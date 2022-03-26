@@ -117,5 +117,3 @@ def harness(request):
     # #     print(all_testcase[0].Testcase_context)
     # #     print(remark)
     #     return render(request, 'testcase.html', locals())
-
-

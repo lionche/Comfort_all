@@ -29,6 +29,7 @@ class DifferentialTestResult:
         self.classify_result = None
         self.classify_id = None
         self.remark = None
+        self.Is_filtered = 0
 
     def serialize(self):
         return {"Differential Test Result": {"testcase_id": self.testcase_id,
@@ -51,7 +52,7 @@ class DifferentialTestResult:
         table_suspicious_Result = Table_Suspicious_Result()
         table_suspicious_Result.insertDataToTableSuspiciousResult(self.error_type, self.testcase_id, self.function_id,
                                                                   self.testbed_id,
-                                                                  self.remark, 0)
+                                                                  self.remark, self.Is_filtered)
 
 
 class HarnessResult:
