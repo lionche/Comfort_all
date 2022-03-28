@@ -14,11 +14,16 @@ from workline.mysql_tools.Table_Operation import Table_Suspicious_Result
 table_suspicious_Result = Table_Suspicious_Result()
 # 分析未分析的可以用例
 unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result()
-# unfiltered_list = table_suspicious_Result.selectIdFromTable_Suspicious_Result(12)
+# unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result_with_error_type("'Pass value *** run error'")
+# unfiltered_list = table_suspicious_Result.selectIdFromTable_Suspicious_Result(36093)
 pbar = tqdm(total=len(unfiltered_list))
 #
 # for item in unfiltered_list:
-#     suspicious_result = Suspicious_Result_Object(item)
+#     try:
+#         suspicious_result = Suspicious_Result_Object(item)
+#     except:
+#         print('*' * 25 + f'自动分析用例{suspicious_result.Testcase_id}出错' + '*' * 25)
+#         pass
 #     # print('*' * 25 + f'自动分析用例{suspicious_result.Testcase_id}' + '*' * 25)
 #     suspicious_result.analysis()
 #     pbar.update(1)

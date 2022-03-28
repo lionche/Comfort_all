@@ -8,7 +8,7 @@ returncode_type:
             info: 'warning: Direct call to eval(), but lexical scope is not supported.'
         Code:
         remark: 误报，hermes eval()传入字符串报错
-        remark-id: 1.1
+        remark-id: '1.1'
 
       - Stdout:
         Stderr:
@@ -20,7 +20,7 @@ returncode_type:
             info: "ReferenceError: 'SharedArrayBuffer' is not defined"
         Code:
         remark: 误报，chakra，hermes中没有SharedArrayBuffer()方法，所以报错。
-        remark-id: 1.2
+        remark-id: '1.2'
 
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
@@ -40,46 +40,36 @@ returncode_type:
         Stderr:
         Code:
         remark: '误报，对于同一个api的命名不同'
-        remark-id: 2.1
+        remark-id: '2.1'
 
 
       - Stdout:
         Stderr:
           - engine: 8
-            info: 'warning: Direct call to eval(), but lexical scope is not supported.'
+            info: 'warning: Direct call to eval\(\), but lexical scope is not supported.'
         Code:
-        remark: 误报，hermes eval()传入字符串报错
+        remark: '误报，hermes eval()传入字符串报错'
         remark-id: 2.2
 
       - Stdout:
           - engine: 3
-            info: '.'
+            info: '\.'
           - engine: 9
-            info: '.'
+            info: '\.'
         Stderr:
         Code:
         remark: 'chakra小数计算不一致。'
-        remark-id: 2.3
-
-#      - Stdout:
-#          - engine: 3
-#            info: '.'
-#          - engine: 9
-#            info: '.'
-#        Stderr:
-#        Code:
-#        remark: 'chakra小数计算不一致。'
-#        remark-id: 2.3
+        remark-id: '2.3'
 
       - Stdout:
           - engine: 6
-            info: '{ /* ecmascript */ }'
+            info: '{ \/\* ecmascript \*\/ }'
           - engine: 8
-            info: '[bytecode]'
+            info: '\[bytecode\]'
         Stderr:
         Code:
         remark: 'jerryscript,hermes不支持在方法内返回一个新定义的方法。'
-        remark-id: 2.4
+        remark-id: '2.4'
 
       - Stdout:
           - engine: 1
@@ -88,19 +78,19 @@ returncode_type:
         Code:
           - content: 'use asm'
         remark: 'V8 使用use asm报错'
-        remark-id: 2.5
+        remark-id: '2.5'
 
       - Stdout:
           - engine: 6
-            info: '{ /* ecmascript */ }'
+            info: '{ \/\* ecmascript \*\/ }'
           - engine: 7
             info: '\n\n'
           - engine: 8
-            info: '[bytecode]'
+            info: '\[bytecode\]'
         Stderr:
         Code:
         remark: 'graaljs在返回方法时语句没有分号,导致返回的内容多回车了一行'
-        remark-id: 2.6
+        remark-id: '2.6'
 
       - Stdout:
           - engine: 1
@@ -132,7 +122,7 @@ returncode_type:
             info: 'SyntaxError: Expected identifier, string or number'
         Code:
         remark: '老版chakra中，浅拷贝对象会报错'
-        remark-id: 2.8
+        remark-id: '2.8'
 
 
 
@@ -166,7 +156,7 @@ returncode_type:
         Stderr:
         Code:
         remark: '各个引擎对于函数属性的支持的不完全一致'
-        remark-id: 2.9
+        remark-id: '2.9'
 
       - Stdout:
           - engine: 2
@@ -178,7 +168,7 @@ returncode_type:
         Stderr:
         Code:
         remark: '各个引擎对于函数属性的支持的不完全一致'
-        remark-id: 2.9
+        remark-id: '2.9'
 
 
       - Stdout:
@@ -191,11 +181,11 @@ returncode_type:
         Stderr:
         Code:
         remark: '各个引擎对于函数属性的支持的不完全一致'
-        remark-id: 2.9
+        remark-id: '2.9'
 
       - Stdout:
           - engine: 6
-            info: '.'
+            info: '\.'
         Stderr:
         Code:
         remark: 'jerryscript,小数最后几位不精确'
@@ -206,9 +196,9 @@ returncode_type:
             info: ''
         Stderr:
         Code:
-          - content: 'arguments'
+          - content: 'arguments\[\w+\]'
         remark: 'bug,hermes arguments[]和 形参不是一个'
-        remark-id: 2.11
+        remark-id: '2.11'
 
       - Stdout:
           - engine: 2
@@ -218,7 +208,7 @@ returncode_type:
           - content: 'delete'
           - content: 'for'
         remark: 'bug,spiderMonkey错误，原因未知'
-        remark-id: 2.12
+        remark-id: '2.12'
 
       - Stdout:
           - engine: 1
@@ -241,7 +231,7 @@ returncode_type:
             info: ''
         Stderr:
         Code:
-          - content: 'Math.random()'
+          - content: 'Math\.random()'
         remark: '误报，随机数引擎的'
         remark-id: '2.13'
 
@@ -254,8 +244,8 @@ returncode_type:
 
         Stderr:
         Code:
-          - content: 'new Date()'
-        remark: 'chakra的时间计算不一样'
+          - content: 'new Date\(\)'
+        remark: 'chakra的时间计算new Date不一样,'
         remark-id: '2.14'
 
       - Stdout:
@@ -266,9 +256,9 @@ returncode_type:
 
         Stderr:
         Code:
-          - content: 'Date.now()'
-        remark: 'chakra的时间计算不一样'
-        remark-id: 2.14
+          - content: 'Date\.now\(\)'
+        remark: 'chakra的时间计算Date.now()不一样'
+        remark-id: '2.14'
 
 
       - Stdout:
@@ -280,7 +270,7 @@ returncode_type:
         Code:
           - content: '\[\.\.\.'
         remark: 'jerryscript,hermes不一致，未知原因'
-        remark-id: 2.15
+        remark-id: '2.15'
 
       - Stdout:
         Stderr:
@@ -288,16 +278,16 @@ returncode_type:
             info: 'setTimeout is not defined'
         Code:
         remark: 'spiderMonkey 没有setTimeout方法'
-        remark-id: 2.16
+        remark-id: '2.16'
 
       - Stdout:
           - engine: 7
             info: ''
         Stderr:
         Code:
-          - content: 'String.fromCharCode'
+          - content: 'String\.fromCharCode\(.*\)'
         remark: '静态 String.fromCharCode() 方法返回由指定的 UTF-16 代码单元序列创建的字符串,graaljs出错'
-        remark-id: 2.17
+        remark-id: '2.17'
 
       - Stdout:
           - engine: 7
@@ -306,16 +296,16 @@ returncode_type:
         Code:
           - content: 'ud800'
         remark: '编码问题,graaljs出错'
-        remark-id: 2.17
+        remark-id: '2.17'
 
       - Stdout:
           - engine: 5
             info: ''
         Stderr:
         Code:
-          - content: '.toString\(.+\)'
-        remark: 'number.toString(radix),指定要用于数字到字符串的转换的基数(从2到36)。如果未指定 radix 参数，则默认值为 10;,quickjs只能是10出错'
-        remark-id: 2.18
+          - content: '\.toString\(\d+\)'
+        remark: 'number.toString(radix),指定要用于数字到字符串的转换的基数(从2到36)。如果未指定 radix 参数，则默认值为 10;,quickjs不支持对小数的转换'
+        remark-id: '2.18'
 
       - Stdout:
           - engine: 6
@@ -327,7 +317,7 @@ returncode_type:
         Stderr:
         Code:
         remark: 'jsc输出语句function后面多一个空格'
-        remark-id: 2.19
+        remark-id: '2.19'
 
       - Stdout:
         Stderr:
@@ -337,6 +327,15 @@ returncode_type:
         remark: 'hermes字典重复key警告'
         remark-id: '2.20'
 
+      - Stdout:
+          - engine: 7
+            info: ''
+        Stderr:
+        Code:
+          - content: 'new ArrayBuffer\(\d+\)'
+        remark: '创建arraybuffer过大时，graaljs创建失败'
+        remark-id: '2.21'
+
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(2)9(0)
     id: 3
@@ -344,7 +343,7 @@ returncode_type:
       - Stdout:
         Stderr:
           - engine: 8
-            info: 'error: invalid statement encountered.\n    class'
+            info: 'error: invalid statement encountered'
         Code:
         remark: 误报，hermes 关键词不是class
         remark-id: 3.1
@@ -355,7 +354,7 @@ returncode_type:
             info: 'error: async functions are unsupported'
         Code:
         remark: 误报，hermes没有async相关方法
-        remark-id: 3.2
+        remark-id: '3.2'
 
       - Stdout:
         Stderr:
@@ -363,7 +362,7 @@ returncode_type:
             info: 'Destructuring in catch parameters is currently unsupported'
         Code:
         remark: 误报，hermes暂不支持在catch中定义内容
-        remark-id: 3.3
+        remark-id: '3.3'
 
       - Stdout:
           - engine: 6
@@ -372,22 +371,32 @@ returncode_type:
         Code:
           - content: 'let'
         remark: jerryscript对于let定义域有问题
-        remark-id: 3.4
+        remark-id: '3.4'
 
   - returncode: 1(0)2(0)3(0)4(3)5(0)6(1)7(0)8(1)9(0)
     id: 4
     error_info:
       - Stdout:
           - engine: 4
-            info: "Exception: TypeError: undefined is not an object (evaluating 'console.log')"
+            info: "Exception: TypeError: undefined is not an object \\(evaluating 'console.log'\\)"
         Stderr:
           - engine: 6
             info: 'ReferenceError: console is not defined'
           - engine: 8
             info: "Uncaught ReferenceError: Property 'console' doesn't exist"
         Code:
-        remark: 误报，部分引擎不支持console.log()
-        remark-id: 4.1
+        remark: '误报，部分引擎不支持console.log()'
+        remark-id: '4.1'
+
+      - Stdout:
+          - engine: 3
+            info: '\.'
+          - engine: 9
+            info: '\.'
+        Stderr:
+        Code:
+        remark: 'chakra小数计算不一致。'
+        remark-id: '4.2'
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(7)8(0)9(0)
     id: 5
@@ -395,10 +404,10 @@ returncode_type:
       - Stdout:
         Stderr:
           - engine: 7
-            info: 'Packages.org.mozilla.javascript.Context.getCurrentContext is not a function'
+            info: 'Packages\.org\.mozilla\.javascript\.Context\.getCurrentContext is not a function'
         Code:
-        remark: 误报，graaljs导入了一个不存在的包
-        remark-id: 5.1
+        remark: '误报，graaljs导入了一个不存在的包'
+        remark-id: '5.1'
 
   - returncode: 1(1)2(3)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
     id: 6
@@ -425,7 +434,7 @@ returncode_type:
         Stderr:
         Code:
         remark: hermes对于Promise对象不识别，打印出来是Object
-        remark-id: 6.1
+        remark-id: '6.1'
 
       - Stdout:
           - engine: 1
@@ -435,7 +444,7 @@ returncode_type:
             info: 'Unhandled rejection'
         Code:
         remark: v8,spiderMonkey不支持Promise函数
-        remark-id: 6.2
+        remark-id: '6.2'
 
   - returncode: 1(0)2(3)3(0)4(3)5(1)6(1)7(7)8(1)9(0)
     id: 7
@@ -462,7 +471,7 @@ returncode_type:
             info: "ReferenceError: 'write' is not defined"
         Code:
         remark: 误报，只有v8支持write函数，其他引擎报错
-        remark-id: 7.1
+        remark-id: '7.1'
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(-9)7(0)8(-9)9(0)
     id: 8
@@ -475,19 +484,19 @@ returncode_type:
         Stderr:
         Code:
         remark: jerryscript,hermes计算大量数据时超时
-        remark-id: 8.1
+        remark-id: '8.1'
 
   - returncode: 1(0)2(3)3(0)4(3)5(1)6(1)7(0)8(1)9(0)
     id: 9
     error_info:
       - Stdout:
           - engine: 1
-            info: 'console.info'
+            info: 'console\.info'
           - engine: 4
-            info: "Exception: TypeError: undefined is not an object (evaluating 'console.info')"
+            info: "Exception: TypeError: undefined is not an object \\(evaluating 'console\\.info'\\)"
         Stderr:
           - engine: 2
-            info: 'TypeError: console.info is not a function'
+            info: 'TypeError: console\.info is not a function'
           - engine: 3
             info: "TypeError: Object doesn't support property or method 'info'"
           - engine: 5
@@ -499,8 +508,8 @@ returncode_type:
           - engine: 9
             info: "TypeError: Object doesn't support property or method 'info'"
         Code:
-        remark: 误报，只有v8,graaljs支持了console.info
-        remark-id: 9.1
+        remark: '误报，只有v8,graaljs支持了console.info'
+        remark-id: '9.1'
 
   - returncode: 1(0)2(0)3(0)4(0)5(-9)6(0)7(0)8(0)9(0)
     id: 10
@@ -510,8 +519,8 @@ returncode_type:
             info: ''
         Stderr:
         Code:
-        remark: 误报，quickjs超时
-        remark-id: 10.1
+        remark: 'quickjs超时'
+        remark-id: '10.1'
 
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(-9)7(0)8(0)9(0)
     id: 11
@@ -521,8 +530,8 @@ returncode_type:
             info: ''
         Stderr:
         Code:
-        remark: 误报，quickjs超时
-        remark-id: 11.1
+        remark: 'jerry超时'
+        remark-id: '11.1'
 
   - returncode: 1(0)2(3)3(0)4(3)5(1)6(0)7(7)8(1)9(0)
     id: 12
@@ -531,8 +540,53 @@ returncode_type:
           - engine: 1
             info: 'undefined'
           - engine: 6
-            info: 'Symbol()'
+            info: 'Symbol\(\)'
         Stderr:
         Code:
-        remark: 误报，quickjs超时
-        remark-id: 12.1
+        remark: '对Symbol()的支持不完全'
+        remark-id: '12.1'
+
+  - returncode: 2(0)3(0)4(0)7(0)8(0)9(0)
+    id: 13
+    error_info:
+      - Stdout:
+          - engine: 7
+            info: '\?'
+        Stderr:
+        Code:
+          - content: 'String\.fromCharCode\(.*\)'
+        remark: '静态 String.fromCharCode() 方法返回由指定的 UTF-16 代码单元序列创建的字符串,graaljs出错'
+        remark-id: '13.1'
+
+  - returncode: 1(0)2(3)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
+    id: 14
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'object Promise'
+          - engine: 3
+            info: 'object Promise'
+          - engine: 4
+            info: 'object Promise'
+          - engine: 5
+            info: 'object Promise'
+          - engine: 6
+            info: 'object Promise'
+          - engine: 7
+            info: 'object Promise'
+          - engine: 8
+            info: 'object Object'
+          - engine: 9
+            info: 'object Promise'
+        Stderr:
+        Code:
+        remark: 'hermes对于Promise对象不识别，打印出来是Object'
+        remark-id: '14.1'
+
+      - Stdout:
+        Stderr:
+          - engine: 2
+            info: 'setTimeout is not defined'
+        Code:
+        remark: 'spiderMonkey不支持setTimeOut方法'
+        remark-id: '14.2'

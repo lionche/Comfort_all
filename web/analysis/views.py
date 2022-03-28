@@ -26,6 +26,8 @@ def show_testcase(request):
 
     # if request.method == 'GET':
     Testcase_id = request.GET.get('id')
+    if not Testcase_id:
+        Testcase_id = 1
     # print(Testcase_id)
     all_testcase = Testcase.objects.filter(id=Testcase_id)
     testcase_result = Result.objects.filter(Testcase_id=Testcase_id)

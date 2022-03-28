@@ -410,6 +410,7 @@ class Table_Suspicious_Result(object):
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
         sql = f"select * from Table_Suspicious_Result where Is_filtered='0'"
+        # sql = f"select * from Table_Suspicious_Result where Is_filtered='0' LIMIT 0,50"
         return self.__table.selectall(sql)
 
     # 更改数据

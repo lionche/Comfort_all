@@ -18,7 +18,7 @@ class Suspicious_Result_Object(object):
         self.Testbed_id = Suspicious_Result_Item[4]
         self.Remark = Suspicious_Result_Item[5]
         self.Is_filtered = Suspicious_Result_Item[6]
-        self.ResultList, self.Returncode = self.getResultListAndReturnCode()
+        self.ResultDict, self.Returncode = self.getResultListAndReturnCode()
         self.Code_content = self.getCodeContent()
 
     def getCodeContent(self):
@@ -33,14 +33,14 @@ class Suspicious_Result_Object(object):
         """
         table_Result = Table_Result()
         Result_list = table_Result.selectTestcasesFromTableResult(self.Testcase_id)
-        result_object_list = []
+        result_object_dict = {}
         returncode = ''
         for item in Result_list:
             result_object = Result_Object(item)
             returncode += str(result_object.Testbed_Id)
             returncode += f'({result_object.Returncode})'
-            result_object_list.append(result_object)
-        return result_object_list, returncode
+            result_object_dict[result_object.Testbed_Id] = result_object
+        return result_object_dict, returncode
 
     def extractYaml1(self):
         """
@@ -146,31 +146,25 @@ class Suspicious_Result_Object(object):
             # print('engine:', std['engine'])
             # print('info:', std['info'])
             if type == 'Stdout':
-                if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
-                    # print('stdout:', self.ResultList[std['engine'] - 1].Stdout)
-                    # print('info:',std['info'])
-                    if self.judgeInfoByRegex(self.ResultList[std['engine'] - 1].Stdout, std['info']):
-                    # if self.judgeInfo(self.ResultList[std['engine'] - 1].Stdout, std['info']):
-                        pass
-                        # print('stdout合格')
-                    else:
-                        # print('stdout不合格')
-                        return False
+                # print('stdout:', self.ResultDict.get(std['engine']).Stdout)
+                # print('info:',std['info'])
+                if self.judgeInfoByRegex(self.ResultDict.get(std['engine']).Stdout, std['info']):
+                    pass
+                    # print('stdout合格')
+                else:
+                    # print('stdout不合格')
+                    return False
 
             if type == 'Stderr':
-                if self.ResultList[std['engine'] - 1].Testbed_Id == std['engine']:
-                    # print('stderr:', self.ResultList[std['engine'] - 1].Stderr)
-                    # print('info:',std['info'])
-                    # if self.judgeInfo(self.ResultList[std['engine'] - 1].Stderr, std['info']):
-                    if self.judgeInfoByRegex(self.ResultList[std['engine'] - 1].Stderr, std['info']):
-                        pass
-                        # print('stderr合格')
-                    else:
-                        # print('stderr不合格')
-                        return False
+                # print('stderr:', self.ResultDict.get(std['engine']).Stderr)
+                # print('info:',std['info'])
+                if self.judgeInfoByRegex(self.ResultDict.get(std['engine']).Stderr, std['info']):
+                    pass
+                    # print('stderr合格')
+                else:
+                    # print('stderr不合格')
+                    return False
             if type == 'Code':
-                # if self.judgeInfo(self.Code_content, std['content']):
-                # print('content:',std['content'])
                 if self.judgeInfoByRegex(self.Code_content, std['content']):
                     pass
                     # print('code合格')
