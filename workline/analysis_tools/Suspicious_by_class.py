@@ -12,8 +12,8 @@ def findTypeId(type_name):
 
 
 if __name__ == '__main__':
-    findTypeId("'crash'")
+    # findTypeId("'crash'")
     findTypeId("'Pass value *** run error'")
-    findTypeId("'Most JS engines pass'")
-    findTypeId("'Majority JS engines throw runtime error/exception'")
-    findTypeId("'Most JS engines crash'")
+    # findTypeId("'Most JS engines pass'")
+    # findTypeId("'Majority JS engines throw runtime error/exception'")
+    # findTypeId("'Most JS engines crash'")

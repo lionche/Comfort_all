@@ -63,9 +63,15 @@ returncode_type:
 
       - Stdout:
           - engine: 6
-            info: '{ \/\* ecmascript \*\/ }'
+            info: '\/\* ecmascript|\[native code\]'
+        Stderr:
+        Code:
+        remark: 'jerryscript,hermes不支持在方法内返回一个新定义的方法。'
+        remark-id: '2.4'
+
+      - Stdout:
           - engine: 8
-            info: '\[bytecode\]'
+            info: '\[bytecode\]|\[native code\]'
         Stderr:
         Code:
         remark: 'jerryscript,hermes不支持在方法内返回一个新定义的方法。'
@@ -114,7 +120,7 @@ returncode_type:
         Stderr:
         Code:
         remark: 'hermes对于Promise对象不识别，打印出来是Object'
-        remark-id: 2.7
+        remark-id: '2.7'
 
       - Stdout:
         Stderr:
@@ -291,7 +297,7 @@ returncode_type:
 
       - Stdout:
           - engine: 7
-            info: ''
+            info: '\?'
         Stderr:
         Code:
           - content: 'ud800'
@@ -309,11 +315,11 @@ returncode_type:
 
       - Stdout:
           - engine: 6
-            info: '{ /\* ecmascript \*/ }'
+            info: '{ /\* ecmascript|\[native code\]'
           - engine: 4
             info: 'function \('
           - engine: 8
-            info: '\[bytecode\]'
+            info: '\[bytecode\]|\[native code\]'
         Stderr:
         Code:
         remark: 'jsc输出语句function后面多一个空格'
@@ -336,7 +342,78 @@ returncode_type:
         remark: '创建arraybuffer过大时，graaljs创建失败'
         remark-id: '2.21'
 
+      - Stdout:
+          - engine: 8
+            info: ''
+        Stderr:
+        Code:
+          - content: 'let'
+        remark: 'hermes对let支持不完整，需要人工进一步确认'
+        remark-id: '2.22'
 
+      - Stdout:
+          - engine: 1
+            info: 'Failed to resolve the resource'
+          - engine: 2
+            info: 'Failed to resolve the resource'
+          - engine: 3
+            info: 'Failed to resolve the resource'
+          - engine: 4
+            info: ''
+          - engine: 5
+            info: 'Failed to resolve the resource'
+          - engine: 6
+            info: ''
+          - engine: 7
+            info: 'Failed to resolve the resource'
+          - engine: 8
+            info: ''
+          - engine: 9
+            info: 'Failed to resolve the resource'
+        Stderr:
+        Code:
+          - content: 'new Promise'
+        remark: '不支持Promise函数'
+        remark-id: '2.23'
+
+      - Stdout:
+          - engine: 7
+            info: 'NaN'
+        Stderr:
+        Code:
+          - content: 'Number\.parseInt'
+        remark: 'bug,graaljs的Number.parseInt方法有问题'
+        remark-id: '2.24'
+
+      - Stdout:
+          - engine: 5
+            info: 'NaN'
+          - engine: 8
+            info: 'NaN'
+        Stderr:
+        Code:
+          - content: 'new Date\(\s\)'
+          - content: 'getFullYear\(\)|getTimezoneOffset\(\)'
+        remark: 'quickjs,hermes当构造Date时传入2013/12/03时，getFullYear不能返回结果'
+        remark-id: '2.25'
+
+      - Stdout:
+          - engine: 1
+            info: 'function write\(\) { \[native code\] }'
+        Stderr:
+        Code:
+          - content: '\.write'
+        remark: 'quickjs,hermes当构造Date时传入2013/12/03时，getFullYear不能返回结果'
+        remark-id: '2.26'
+
+      - Stdout:
+          - engine: 6
+            info: ''
+        Stderr:
+        Code:
+          - content: '.+sort\(function\(.+\) *'
+        remark: '当排序时使用没有的属性时，其他引擎不会改变数组顺序，而jerry会改成倒序。'
+        remark-id: '2.27'
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(2)9(0)
     id: 3
     error_info:
@@ -346,7 +423,7 @@ returncode_type:
             info: 'error: invalid statement encountered'
         Code:
         remark: 误报，hermes 关键词不是class
-        remark-id: 3.1
+        remark-id: '3.1'
 
       - Stdout:
         Stderr:
@@ -372,6 +449,14 @@ returncode_type:
           - content: 'let'
         remark: jerryscript对于let定义域有问题
         remark-id: '3.4'
+
+      - Stdout:
+          - engine: 6
+            info: '\/\* ecmascript|\[native code\]'
+        Stderr:
+        Code:
+        remark: 'jerryscript,hermes不支持在方法内返回一个新定义的方法。'
+        remark-id: '2.4'
 
   - returncode: 1(0)2(0)3(0)4(3)5(0)6(1)7(0)8(1)9(0)
     id: 4
@@ -554,9 +639,26 @@ returncode_type:
             info: '\?'
         Stderr:
         Code:
-          - content: 'String\.fromCharCode\(.*\)'
+          - content: 'String\.fromCharCode'
         remark: '静态 String.fromCharCode() 方法返回由指定的 UTF-16 代码单元序列创建的字符串,graaljs出错'
         remark-id: '13.1'
+
+      - Stdout:
+          - engine: 7
+            info: '\?'
+        Stderr:
+        Code:
+          - content: 'ud800'
+        remark: '编码问题,graaljs出错'
+        remark-id: '13.2'
+
+      - Stdout:
+          - engine: 8
+            info: '\[bytecode\]'
+        Stderr:
+        Code:
+        remark: 'jerryscript,hermes不支持在方法内返回一个新定义的方法。'
+        remark-id: '2.4'
 
   - returncode: 1(0)2(3)3(0)4(0)5(0)6(0)7(0)8(0)9(0)
     id: 14

@@ -13,7 +13,7 @@
 {% if different_result_list|length != 0 %}
     <form method="post">
         <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}
-            {{ now_remark }}{% endif %}</textarea>
+{{ now_remark }}{% endif %}</textarea>
         <input type="submit" value="提交"></form>
 {% endif %}
 

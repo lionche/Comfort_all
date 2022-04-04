@@ -59,10 +59,11 @@ class Suspicious_Result_Object(object):
         检索error info，提取出stdout，和stderr。
         :return:返回两个list，里面分别是stdout和stderr
         """
-        flag = True
+        # flag = True
         error_type_list = []
         # print(error_info_list)
         for error_info_item in error_info_list:
+            flag = True
             # print(error_info_item['remark-id'])
             if f"'engine': {self.Testbed_id}" in str(error_info_item):
                 stdoutList = error_info_item['Stdout']
