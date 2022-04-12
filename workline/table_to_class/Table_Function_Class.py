@@ -33,7 +33,6 @@ class Function_Object(object):
         :param file_path: 文件的地址
         :return: 最后一个var的行数,也就是前缀的行数
         """
-
         regex = r'function.*\n( {4}"use strict";\n)?( {4}var.*\n)*'
 
         matches = re.finditer(regex, code, re.MULTILINE)

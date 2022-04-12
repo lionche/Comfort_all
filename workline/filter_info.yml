@@ -243,6 +243,8 @@ returncode_type:
 
 
       - Stdout:
+          - engine: 2
+            info: ''
           - engine: 3
             info: ''
           - engine: 9
@@ -255,6 +257,8 @@ returncode_type:
         remark-id: '2.14'
 
       - Stdout:
+          - engine: 2
+            info: ''
           - engine: 3
             info: ''
           - engine: 9
@@ -414,6 +418,25 @@ returncode_type:
           - content: '.+sort\(function\(.+\) *'
         remark: '当排序时使用没有的属性时，其他引擎不会改变数组顺序，而jerry会改成倒序。'
         remark-id: '2.27'
+
+      - Stdout:
+          - engine: 5
+            info: ''
+        Stderr:
+        Code:
+          - content: '\.localeCompare\(.?\)'
+        remark: 'quickjs的localeCompare属性返回值是正数负数和0就可以，不一定要1，-1，0'
+        remark-id: '2.28'
+
+      - Stdout:
+          - engine: 8
+            info: ''
+        Stderr:
+        Code:
+          - content: 'HermesInternal'
+        remark: 'HermesInternal是hermes自己定义的内容'
+        remark-id: '2.29'
+
   - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(2)9(0)
     id: 3
     error_info:
