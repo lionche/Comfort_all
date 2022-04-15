@@ -1,15 +1,25 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<script src="https://cdn.bootcss.com/ace/1.4.6/ace.js"></script>
-<script src="https://cdn.bootcss.com/ace/1.4.6/ext-beautify.js"></script>
-<script src="https://cdn.bootcss.com/ace/1.4.6/ext-language_tools.js"></script>
-<script src="https://cdn.bootcss.com/ace/1.4.6/theme-monokai.js"></script>
+
+
+{#<script src="https://cdn.bootcss.com/ace/1.4.6/ace.js"></script>#}
+{#<script src="https://cdn.bootcss.com/ace/1.4.6/ext-beautify.js"></script>#}
+{#<script src="https://cdn.bootcss.com/ace/1.4.6/ext-language_tools.js"></script>#}
+{#<script src="https://cdn.bootcss.com/ace/1.4.6/theme-monokai.js"></script>#}
+
+
+<script src="{% static "js/ace/src/ace.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/ace/src/ext-beautify.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/ace/src/ext-language_tools.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/ace/src/theme-monokai.js" %}" type="text/javascript" charset="utf-8"></script>
+
 <body>
 
 {#id搜索框#}
 <form method="get" onsubmit="check()">
     <input name="id" type="number" placeholder="{{ Testcase_id }}" autocomplete="off" id="testcase_id"
-           >
+    >
     <input type="submit" value="搜索🆔">
 </form>
 <br>
@@ -45,7 +55,7 @@
 
 <script>
 
-{#    代码编辑框#}
+    {#    代码编辑框#}
     var editor = ace.edit('editor');
     var text = `{{ harness_result.testcase_context|safe }}`
     {#console.log(text)#}
@@ -75,19 +85,21 @@
     editor.setFontSize(13)
 
     {#如果搜索id是空则返回当前id#}
+
     function check() {
         var testcase_id = document.getElementById('testcase_id')
         {#console.log(testcase_id.value)#}
         {#console.log(testcase_id.value==='')#}
-        if(testcase_id.value===''){
+        if (testcase_id.value === '') {
 
             {#alert("不能为空");#}
-            testcase_id.value = {{ Testcase_id }}
+            testcase_id.value =
+            {{ Testcase_id }}
             {#console.log(testcase_id.value)#}
             {#return false#}
 
         }
-        return  true
+        return true
 
     }
 </script>
