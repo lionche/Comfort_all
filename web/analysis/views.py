@@ -4,13 +4,12 @@ from django.shortcuts import render
 from workline.harness_tools.harness_for_web import harness_testcase
 from .models import Testbed, Testcase, Result, Suspicious_Result
 
+
 def show_testbed(request):
     all_testbed = Testbed.objects.all()
     # v8 = Testbed.objects.filter(Testbed_name__exact='v8')
     # return render(request, 'analysis/testbed.html', {'all_testbed': all_testbed})
     return render(request, 'testbed.html', locals())
-
-
 
 
 def show_testcase(request):
@@ -51,6 +50,9 @@ def show_testcase(request):
     #     return render(request, 'testcase.html', locals())
 
 
+testcase = None
+
+
 def harness(request):
     testbed_info = {1: 'v8',
                     2: 'spiderMonkey',
@@ -69,6 +71,7 @@ def harness(request):
 
     all_testcase = Testcase.objects.filter(id=Testcase_id)
     all_suspicious_result = Suspicious_Result.objects.filter(Testcase_id=Testcase_id)
+    global testcase
     testcase = [all_testcase.first().id,
                 all_testcase.first().Testcase_context,
                 all_testcase.first().SourceFun_id,
@@ -89,8 +92,6 @@ def harness(request):
 
     # if request.method == 'POST':
     testcase_content = request.POST.get('testcase_content')
-    testcase_content = request.POST.get('testcase_content_ajax')
-
 
     if testcase_content:
         testcase[1] = testcase_content
@@ -105,14 +106,11 @@ def harness(request):
 
     harness_result, different_result_list = harness_testcase(testcase)
 
-    result_object_list = []
     returncode = ''
 
     for output in harness_result.outputs:
         returncode += str(output.testbed_id)
         returncode += f'({output.returncode})'
-
-
 
     return render(request, 'harness.html', locals())
 
@@ -130,3 +128,15 @@ def blogtitle(request):
     bloggtitle = request.GET.get("blogtitle")
 
     return HttpResponse(bloggtitle)
+
+
+def herness_ajax(request):
+    herness_ajax = request.GET.get("herness_ajax")
+    # print(herness_ajax)
+    global testcase
+    testcase[1] = herness_ajax
+    # print(testcase)
+    harness_result, different_result_list = harness_testcase(testcase)
+
+    # return HttpResponse(request,locals())
+    return HttpResponse(harness_result)
