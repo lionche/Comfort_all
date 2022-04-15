@@ -44,7 +44,8 @@
 
 
 <script>
-    //初始化id字符串（不加#）
+
+{#    代码编辑框#}
     var editor = ace.edit('editor');
     var text = `{{ harness_result.testcase_context|safe }}`
     {#console.log(text)#}
@@ -68,8 +69,7 @@
         enableLiveAutocompletion: true
     });
 
-    {#editor.setTheme("ace/theme/monokai");#}
-    {#editor.setTheme("ace/theme/twilight");#}
+    editor.setTheme("ace/theme/monokai");
 
     editor.getSession().setMode("ace/mode/javascript")
     editor.setFontSize(13)
