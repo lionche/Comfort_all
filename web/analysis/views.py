@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from workline.harness_tools.harness_for_web import harness_testcase
@@ -88,6 +89,8 @@ def harness(request):
 
     # if request.method == 'POST':
     testcase_content = request.POST.get('testcase_content')
+    testcase_content = request.POST.get('testcase_content_ajax')
+
 
     if testcase_content:
         testcase[1] = testcase_content
@@ -121,3 +124,9 @@ def harness(request):
     # #     print(all_testcase[0].Testcase_context)
     # #     print(remark)
     #     return render(request, 'testcase.html', locals())
+
+
+def blogtitle(request):
+    bloggtitle = request.GET.get("blogtitle")
+
+    return HttpResponse(bloggtitle)

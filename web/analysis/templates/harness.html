@@ -13,6 +13,7 @@
 <script src="{% static "js/ace/src/ext-beautify.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/ext-language_tools.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/theme-monokai.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/jquery-3.6.0.js" %}" type="text/javascript" charset="utf-8"></script>
 
 <body>
 
@@ -33,7 +34,7 @@
 
 <br>
 {#代码编辑框#}
-<div id="editor"></div>
+{#<div id="editor"></div>#}
 <br>
 {#代码提交框#}
 <form method="post">
@@ -62,7 +63,7 @@
     {#var text_context = {{ harness_result.testcase_context }}#}
     editor.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
 
-    var content_textarea = document.getElementById('testcase_content_id')
+    {#var content_textarea = document.getElementById('testcase_content_id')#}
 
     content_textarea.hidden = true
 
@@ -70,7 +71,7 @@
         {#textarea.val(editor.getSession().getValue());#}
         content_textarea.value = editor.getSession().getValue()
 
-        console.log('内容有变化')
+        {#console.log('内容有变化')#}
     });
     {#代码提示#}
     editor.setOptions({
@@ -164,5 +165,115 @@
     <meta charset="UTF-8">
     <title>测试用例</title>
 </head>
+
+
+<div>
+
+<input type="text" id="title">
+<p class="text"></p>
+<input type="button" value="AJAX提交" id="b2">
+
+<script>
+  $(document).ready(function(){
+  $("#b2").on("click", function () {
+    $.ajax({
+      url:"/analysis/ajax_text/",<!--为什么这个url只能使用原生url里的链接-->
+      type:"GET",
+      data:{
+     "blogtitle":$("#title").val(),
+     },
+      success:function (data) {
+        $(".text").html(data);
+      }
+    })
+  })
+  })
+
+</script>
+
+</div>
+
+
+
+<br>
+<div id="editor"></div>
+{#代码提交框#}
+<form method="post">
+    <textarea name="testcase_content_ajax" id="testcase_content_ajax_id" rows="15" cols="100"
+              placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
+    <input type="submit" value="开始测试！">
+</form>
+
+
+<br>
+
+
+<style>
+    #editor_ajax {
+        width: 800px;
+        height: 400px;
+    }
+</style>
+
+
+<script>
+
+    {#    代码编辑框#}
+    var editor_ajax = ace.edit('editor');
+    {#console.log(text)#}
+    {#var text_context = {{ harness_result.testcase_context }}#}
+    editor_ajax.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
+
+    var content_ajax_textarea = document.getElementById('testcase_content_ajax_id')
+
+    content_ajax_textarea.hidden = true
+
+    editor_ajax.getSession().on('change', function (e) {
+        {#textarea.val(editor.getSession().getValue());#}
+        content_ajax_textarea.value = editor_ajax.getSession().getValue()
+    });
+    {#代码提示#}
+    editor_ajax.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+
+    editor_ajax.setTheme("ace/theme/monokai");
+
+    editor_ajax.getSession().setMode("ace/mode/javascript")
+    editor_ajax.setFontSize(13)
+
+
+</script>
+
+<br>
+
+<div>
+
+    <table border="=1">
+    <tr>
+        <th>Testcase Id</th>
+        <th>Engine Id</th>
+        <th>Engine</th>
+        <th>Stdout</th>
+        <th>Stderr</th>
+        <th>Returncode</th>
+    </tr>
+
+
+    {% for output in harness_result.outputs %}
+        <tr>
+            <td>{{ harness_result.testcase_id }}</td>
+            <td>{{ output.testbed_id }}</td>
+            <td>{{ testbed_info|get_item:output.testbed_id }}</td>
+            <td>{{ output.stdout }}</td>
+            <td>{{ output.stderr }}</td>
+            <td>{{ output.returncode }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+</div>
 
 </html>
