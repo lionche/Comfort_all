@@ -109,6 +109,8 @@ def harness(request):
         returncode += str(output.testbed_id)
         returncode += f'({output.returncode})'
 
+
+
     return render(request, 'harness.html', locals())
 
     # if request.method == 'POST':

@@ -1,31 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>测试用例</title>
-</head>
+<script src="https://cdn.bootcss.com/ace/1.4.6/ace.js"></script>
+<script src="https://cdn.bootcss.com/ace/1.4.6/ext-beautify.js"></script>
+<script src="https://cdn.bootcss.com/ace/1.4.6/ext-language_tools.js"></script>
+<script src="https://cdn.bootcss.com/ace/1.4.6/theme-monokai.js"></script>
 <body>
 
-<form method="get">
-    <input name="id" type="number" placeholder="{{ Testcase_id }}" autocomplete="off">
-    <input type="submit" value="搜索">
+{#id搜索框#}
+<form method="get" onsubmit="check()">
+    <input name="id" type="number" placeholder="{{ Testcase_id }}" autocomplete="off" id="testcase_id"
+           >
+    <input type="submit" value="搜索🆔">
 </form>
+<br>
+{#输入分析框#}
 {% if different_result_list|length != 0 %}
     <form method="post">
         <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}
-{{ now_remark }}{% endif %}</textarea>
+            {{ now_remark }}{% endif %}</textarea>
         <input type="submit" value="提交"></form>
 {% endif %}
 
 <br>
-
+{#代码编辑框#}
+<div id="editor"></div>
+<br>
+{#代码提交框#}
 <form method="post">
-    <textarea name="testcase_content" rows="15" cols="100"
+    <textarea name="testcase_content" id="testcase_content_id" rows="15" cols="100"
               placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
-    <input type="submit" value="提交">
-
+    <input type="submit" value="开始测试！">
 </form>
 
+
+<br>
+
+<style>
+    #editor {
+        width: 800px;
+        height: 400px;
+    }
+</style>
+
+
+<script>
+    //初始化id字符串（不加#）
+    var editor = ace.edit('editor');
+    var text = `{{ harness_result.testcase_context|safe }}`
+    {#console.log(text)#}
+    {#var text_context = {{ harness_result.testcase_context }}#}
+    editor.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
+
+    var content_textarea = document.getElementById('testcase_content_id')
+
+    content_textarea.hidden = true
+
+    editor.getSession().on('change', function (e) {
+        {#textarea.val(editor.getSession().getValue());#}
+        content_textarea.value = editor.getSession().getValue()
+
+        console.log('内容有变化')
+    });
+    {#代码提示#}
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+
+    {#editor.setTheme("ace/theme/monokai");#}
+    {#editor.setTheme("ace/theme/twilight");#}
+
+    editor.getSession().setMode("ace/mode/javascript")
+    editor.setFontSize(13)
+
+    {#如果搜索id是空则返回当前id#}
+    function check() {
+        var testcase_id = document.getElementById('testcase_id')
+        {#console.log(testcase_id.value)#}
+        {#console.log(testcase_id.value==='')#}
+        if(testcase_id.value===''){
+
+            {#alert("不能为空");#}
+            testcase_id.value = {{ Testcase_id }}
+            {#console.log(testcase_id.value)#}
+            {#return false#}
+
+        }
+        return  true
+
+    }
+</script>
+
+<br>
 {#比对不同#}
 {% if different_result_list|length != 0 %}
     {#        <h1 style="text-align:center;font-size:40px;font-family:times;color:orange">问题如下</h1>#}
@@ -81,5 +148,9 @@
 {{ returncode }}
 
 </body>
+<head>
+    <meta charset="UTF-8">
+    <title>测试用例</title>
+</head>
 
 </html>
