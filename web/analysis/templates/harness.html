@@ -7,7 +7,8 @@
 {#<script src="https://cdn.bootcss.com/ace/1.4.6/ext-beautify.js"></script>#}
 {#<script src="https://cdn.bootcss.com/ace/1.4.6/ext-language_tools.js"></script>#}
 {#<script src="https://cdn.bootcss.com/ace/1.4.6/theme-monokai.js"></script>#}
-
+{#<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js" type="text/javascript"></script>#}
+{#<script src="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" type="text/javascript"></script>#}
 
 <script src="{% static "js/ace/src/ace.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/ext-beautify.js" %}" type="text/javascript" charset="utf-8"></script>
@@ -23,181 +24,26 @@
     >
     <input type="submit" value="搜索🆔">
 </form>
+
 <br>
+
+
 {#输入分析框#}
 {% if different_result_list|length != 0 %}
     <form method="post">
-        <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}
-            {{ now_remark }}{% endif %}</textarea>
+        <textarea name="remark" rows="5" cols="100" placeholder='请输入分析' autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}</textarea>
         <input type="submit" value="提交"></form>
 {% endif %}
 
 <br>
-{#代码编辑框#}
-{#<div id="editor"></div>#}
-<br>
-{#代码提交框#}
-<form method="post">
-    <textarea name="testcase_content" id="testcase_content_id" rows="15" cols="100"
-              placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
-    <input type="submit" value="开始测试！">
-</form>
 
-
-<br>
-
-<style>
-    #editor {
-        width: 800px;
-        height: 400px;
-    }
-</style>
-
-
-<script>
-
-    {#    代码编辑框#}
-    var editor = ace.edit('editor');
-    var text = `{{ harness_result.testcase_context|safe }}`
-    {#console.log(text)#}
-    {#var text_context = {{ harness_result.testcase_context }}#}
-    editor.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
-
-    {#var content_textarea = document.getElementById('testcase_content_id')#}
-
-    content_textarea.hidden = true
-
-    editor.getSession().on('change', function (e) {
-        {#textarea.val(editor.getSession().getValue());#}
-        content_textarea.value = editor.getSession().getValue()
-
-        {#console.log('内容有变化')#}
-    });
-    {#代码提示#}
-    editor.setOptions({
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: true
-    });
-
-    editor.setTheme("ace/theme/monokai");
-
-    editor.getSession().setMode("ace/mode/javascript")
-    editor.setFontSize(13)
-
-    {#如果搜索id是空则返回当前id#}
-
-    function check() {
-        var testcase_id = document.getElementById('testcase_id')
-        {#console.log(testcase_id.value)#}
-        {#console.log(testcase_id.value==='')#}
-        if (testcase_id.value === '') {
-
-            {#alert("不能为空");#}
-            testcase_id.value =
-            {{ Testcase_id }}
-            {#console.log(testcase_id.value)#}
-            {#return false#}
-
+<div>
+    <style>
+        #editor {
+            width: 800px;
+            height: 400px;
         }
-        return true
-
-    }
-</script>
-
-<br>
-{#比对不同#}
-{% if different_result_list|length != 0 %}
-    {#        <h1 style="text-align:center;font-size:40px;font-family:times;color:orange">问题如下</h1>#}
-
-    <table border="=100" style="position: center">
-        <tr>
-            <th>testcase id</th>
-            <th>Error_type</th>
-            <th>Engine Id</th>
-            <th>Engine</th>
-
-        </tr>
-        {% for suspicious_result in different_result_list %}
-            <tr>
-                <td>{{ suspicious_result.testcase_id }}</td>
-                <td>{{ suspicious_result.error_type }}</td>
-                <td>{{ suspicious_result.testbed_id }}</td>
-                <td>{{ testbed_info|get_item:suspicious_result.testbed_id }}</td>
-
-            </tr>
-        {% endfor %}
-    </table>
-{% else %}
-    <h1 style="text-align:center;font-size:40px;font-family:times;color:green">没有触发问题</h1>
-
-{% endif %}
-
-<br>
-
-<table border="=1">
-    <tr>
-        <th>Testcase Id</th>
-        <th>Engine Id</th>
-        <th>Engine</th>
-        <th>Stdout</th>
-        <th>Stderr</th>
-        <th>Returncode</th>
-    </tr>
-
-
-    {% for output in harness_result.outputs %}
-        <tr>
-            <td>{{ harness_result.testcase_id }}</td>
-            <td>{{ output.testbed_id }}</td>
-            <td>{{ testbed_info|get_item:output.testbed_id }}</td>
-            <td>{{ output.stdout }}</td>
-            <td>{{ output.stderr }}</td>
-            <td>{{ output.returncode }}</td>
-        </tr>
-    {% endfor %}
-</table>
-<br>
-{{ returncode }}
-
-</body>
-<head>
-    <meta charset="UTF-8">
-    <title>测试用例</title>
-</head>
-
-
-<div>
-
-    <input type="text" id="title">
-    <p class="text">test</p>
-    <input type="button" value="AJAX提交" id="b2">
-
-    <script>
-        $(document).ready(function () {
-            $("#b2").on("click", function () {
-                $.ajax({
-                    url: "/analysis/ajax_text/",<!--为什么这个url只能使用原生url里的链接-->
-                    type: "GET",
-                    data: {
-                        "blogtitle": $("#title").val(),
-                    },
-                    success: function (data) {
-                        $(".text").html(data);
-                    }
-                })
-            })
-        })
-
-    </script>
-
-</div>
-
-
-<br>
-
-<div>
-
+    </style>
     <div id="editor"></div>
     {#代码提交框#}
     <form>
@@ -205,29 +51,112 @@
               placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
         <input type="button" value="开始测试！" id="b3">
     </form>
-{#    <p class="text1">{{ harness_result }}</p>#}
     <script>
-    $(document).ready(function () {
-        $("#b3").on("click", function () {
-            $.ajax({
-                url: "/analysis/herness_ajax/",
-                type: "GET",
-                data: {
-                    "herness_ajax": $("#testcase_content_ajax_id").val(),
-                },
-                success: function (data) {
-                    $(".text1").html(data);
-                }
+
+        $(document).ready(function () {
+            $("#b3").on("click", function () {
+                $.ajax({
+                    url: "/analysis/herness_ajax/",
+                    type: "POST",
+                    data: {
+                        "herness_ajax": $("#testcase_content_ajax_id").val(),
+                    },
+                    success: function (data) {
+                        const obj = JSON.parse(data);
+                        {#console.log(obj)#}
+                        {#console.log(obj.harness_result)#}
+                        const obj_harness_result = JSON.parse(obj.harness_result);
+                        const obj_different_result_list = JSON.parse(obj.different_result_list);
+                        {#console.log(obj_different_result_list)#}
+                        createTable_harness_result(obj_harness_result.Harness_Result);
+                        createTable_different_result_list(obj_different_result_list);
+                    }
+                })
             })
         })
-    })
 
-</script>
+        var testbed_info = {
+            1: 'v8',
+            2: 'spiderMonkey',
+            3: 'chakra',
+            4: 'jsc',
+            5: 'quickjs',
+            6: 'jerryscript',
+            7: 'graaljs',
+            8: 'hermes',
+            9: 'chakra-beta'
+        }
+
+        function createTable_harness_result(obj) {
+            var data = obj.outputs
+            var tableStr = "<table border='1'>";
+            tableStr = tableStr
+                + "<tr>"
+                + "<th >Testcase Id</th>"
+                + "<th >Engine Id</th>"
+                + "<th >Engine</th>"
+                + "<th>Stdout</th>"
+                + "<th>Stderr</th>"
+                + "<th>Returncode</th>"
+                + "</tr>";
+
+            var len = data.length;
+
+            for (var i = 0; i < len; i++) {
+                tableStr = tableStr + "<tr>"
+                    + "<td>" + obj.testcase_id + "</td>"
+                    + "<td>" + data[i].testbed_id + "</td>"
+                    + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
+                    + "<td>" + data[i].stdout + "</td>"
+                    + "<td>" + data[i].stderr + "</td>"
+                    + "<td>" + data[i].returncode + "</td>"
+                    + "</tr>";
+            }
+
+            tableStr = tableStr + "</table>";
+            //添加到div中
+            console.log(tableStr)
+            $("#tableHarnessResultAjax").html(tableStr);
+        }
+
+        function createTable_different_result_list(obj) {
+            var tableStr = '<h1 style="text-align:center;font-size:40px;font-family:times;color:green">没有触发问题</h1>'
+
+            var len = obj.length;
+            if (len != 0) {
+                tableStr = "<table border='1'>";
+                tableStr = tableStr
+                    + "<tr>"
+                    + "<th >Testcase Id</th>"
+                    + "<th >Error Type</th>"
+                    + "<th >Engine Id</th>"
+                    + "<th >Engine</th>"
+                    + "</tr>";
+
+            }
+            for (var i = 0; i < len; i++) {
+
+                {#console.log(obj[i].testcase_id)#}
+                {#console.log(obj[i].error_type)#}
+                {#console.log(obj[i].testbed_id)#}
+
+                tableStr = tableStr + "<tr>"
+                    + "<td>" + obj[i].testcase_id + "</td>"
+                    + "<td>" + obj[i].error_type + "</td>"
+                    + "<td>" + obj[i].testbed_id + "</td>"
+                    + "<td>" + testbed_info[obj[i].testbed_id] + "</td>"
+                    + "</tr>";
+            }
+
+            tableStr = tableStr + "</table>";
+            //添加到div中
+            console.log(tableStr)
+            $("#tableDifferentResultAjax").html(tableStr);
+        }
+
+    </script>
 
 </div>
-
-
-<br>
 
 
 <script>
@@ -258,10 +187,67 @@
 
 </script>
 
-<br>
-{#{{ harness_result.outputs.0.stdout }}#}
-<div >
 
+<br>
+
+
+<script>
+
+
+    {#如果搜索id是空则返回当前id#}
+
+    function check() {
+        var testcase_id = document.getElementById('testcase_id')
+        {#console.log(testcase_id.value)#}
+        {#console.log(testcase_id.value==='')#}
+        if (testcase_id.value === '') {
+
+            {#alert("不能为空");#}
+            testcase_id.value =
+            {{ Testcase_id }}
+            {#console.log(testcase_id.value)#}
+            {#return false#}
+
+        }
+        return true
+
+    }
+</script>
+
+<br>
+{#比对不同#}
+    <div id="tableDifferentResultAjax">
+
+{% if different_result_list|length != 0 %}
+
+    <table border="=1">
+        <tr>
+            <th>testcase id</th>
+            <th>Error_type</th>
+            <th>Engine Id</th>
+            <th>Engine</th>
+
+        </tr>
+        {% for suspicious_result in different_result_list %}
+            <tr>
+                <td>{{ suspicious_result.testcase_id }}</td>
+                <td>{{ suspicious_result.error_type }}</td>
+                <td>{{ suspicious_result.testbed_id }}</td>
+                <td>{{ testbed_info|get_item:suspicious_result.testbed_id }}</td>
+
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <h1 style="text-align:center;font-size:40px;font-family:times;color:green">没有触发问题</h1>
+
+{% endif %}
+
+</div>
+
+<br>
+
+<div id="tableHarnessResultAjax">
     <table border="=1">
         <tr>
             <th>Testcase Id</th>
@@ -284,7 +270,20 @@
             </tr>
         {% endfor %}
     </table>
-
 </div>
+<br>
+{{ returncode }}
+
+</body>
+<head>
+    <meta charset="UTF-8">
+    <title>测试用例</title>
+</head>
+
+
+<br>
+
+<br>
+
 
 </html>

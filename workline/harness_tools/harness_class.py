@@ -1,4 +1,3 @@
-
 import collections
 import json
 import math
@@ -31,14 +30,15 @@ class DifferentialTestResult:
         self.remark = None
         self.Is_filtered = 0
 
+
     def serialize(self):
         return {"Differential Test Result": {"testcase_id": self.testcase_id,
                                              "error_type": self.error_type,
                                              "testbed_id": self.testbed_id,
-                                             "function_id": self.function_id,
-                                             "inconsistent_testbed": self.testbed_location,
-                                             "classify_result": self.classify_result,
-                                             "classify_id": self.classify_id
+                                             # "function_id": self.function_id,
+                                             # "inconsistent_testbed": self.testbed_location,
+                                             # "classify_result": self.classify_result,
+                                             # "classify_id": self.classify_id
                                              }}
 
     def __str__(self):
@@ -68,11 +68,13 @@ class HarnessResult:
         self.outputs: list[Output] = []
 
     def __str__(self):
-        return json.dumps({"Harness Result": {"testcase_id": self.testcase_id,
+        return json.dumps({"Harness_Result": {"testcase_id": self.testcase_id,
                                               "testcase_context": self.testcase_context,
                                               "outputs": [e.serialize() for e in self.outputs]
                                               }
                            }, indent=4)
+
+
 
     def get_majority_output(self) -> Majority:
         """Majority vote on testcase outcomes and outputs."""

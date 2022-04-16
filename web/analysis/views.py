@@ -1,8 +1,13 @@
+import json
+
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.generic import ListView
+from django_tables2 import tables, SingleTableView, RequestConfig
 
 from workline.harness_tools.harness_for_web import harness_testcase
 from .models import Testbed, Testcase, Result, Suspicious_Result
+from .tables import TestbedTable
 
 
 def show_testbed(request):
@@ -87,7 +92,7 @@ def harness(request):
     except:
         now_remark = None
 
-    print(f'now_remark:{now_remark}')
+    # print(f'now_remark:{now_remark}')
     # print(all_suspicious_result.first.Testcase_id)
 
     # if request.method == 'POST':
@@ -101,7 +106,7 @@ def harness(request):
         all_suspicious_result.update(Remark=remark)
         now_remark = remark
 
-    print(f'now_remark_post:{now_remark}')
+    # print(f'now_remark_post:{now_remark}')
     # print(testcase_content)
 
     harness_result, different_result_list = harness_testcase(testcase)
@@ -124,19 +129,39 @@ def harness(request):
     #     return render(request, 'testcase.html', locals())
 
 
-def blogtitle(request):
-    bloggtitle = request.GET.get("blogtitle")
-
-    return HttpResponse(bloggtitle)
-
-
 def herness_ajax(request):
-    herness_ajax = request.GET.get("herness_ajax")
+    # herness_ajax = request.GET.get("herness_ajax")
+    herness_ajax = request.POST.get("herness_ajax")
     # print(herness_ajax)
     global testcase
     testcase[1] = herness_ajax
     # print(testcase)
     harness_result, different_result_list = harness_testcase(testcase)
 
-    # return HttpResponse(request,locals())
-    return HttpResponse(harness_result)
+    def obj_different_result_2_json(obj):
+        return {
+            'testcase_id': obj.testcase_id,
+            "error_type": obj.error_type,
+            "testbed_id": obj.testbed_id,
+        }
+
+    different_result_list = json.dumps(different_result_list, default=obj_different_result_2_json)
+
+    # print(harness_result)
+    # print(different_result_list)
+
+    dic = {'harness_result': str(harness_result), 'different_result_list': different_result_list}
+    dic = json.dumps(dic)
+    print(dic)
+    # name_dict = {'harness_result': harness_result, 'twz': 'Love python and Django'}
+
+    # return HttpResponse(harness_result, different_result_list)
+
+    # return HttpResponse(harness_result)
+    return HttpResponse(dic)
+
+
+class testbed(SingleTableView):
+    model = Testbed
+    table_class = TestbedTable
+    template_name = 'testbed.html'

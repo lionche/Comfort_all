@@ -20,7 +20,7 @@ from . import views
 urlpatterns = [
     path('testcase', views.show_testcase),
     path('harness', views.harness),
-    path('ajax_text/', views.blogtitle),
     path('herness_ajax/', views.herness_ajax),
+    path('testbed', views.testbed.as_view()),
 
 ]
