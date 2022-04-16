@@ -18,7 +18,7 @@ def show_testbed(request):
 
 
 def show_testcase(request):
-    Testcase_id = 7
+    # Testcase_id = 7
     testbed_info = {1: 'v8',
                     2: 'spiderMonkey',
                     3: 'chakra',
@@ -96,15 +96,15 @@ def harness(request):
     # print(all_suspicious_result.first.Testcase_id)
 
     # if request.method == 'POST':
-    testcase_content = request.POST.get('testcase_content')
+    # testcase_content = request.POST.get('testcase_content')
 
-    if testcase_content:
-        testcase[1] = testcase_content
+    # if testcase_content:
+    #     testcase[1] = testcase_content
 
-    remark = request.POST.get('remark')
-    if remark is not None:
-        all_suspicious_result.update(Remark=remark)
-        now_remark = remark
+    # remark = request.POST.get('remark')
+    # if remark is not None:
+    #     all_suspicious_result.update(Remark=remark)
+    #     now_remark = remark
 
     # print(f'now_remark_post:{now_remark}')
     # print(testcase_content)
@@ -160,6 +160,13 @@ def herness_ajax(request):
     # return HttpResponse(harness_result)
     return HttpResponse(dic)
 
+def remark_ajax(request):
+    remark_ajax = request.POST.get("remark_ajax")
+    # print(remark_ajax)
+    all_suspicious_result = Suspicious_Result.objects.filter(Testcase_id=testcase[0])
+    all_suspicious_result.update(Remark=remark_ajax)
+
+    return HttpResponse("remark保存成功")
 
 class testbed(SingleTableView):
     model = Testbed
