@@ -132,7 +132,7 @@ def harness(request):
 def herness_ajax(request):
     # herness_ajax = request.GET.get("herness_ajax")
     herness_ajax = request.POST.get("herness_ajax")
-    # print(herness_ajax)
+    print(herness_ajax)
     global testcase
     testcase[1] = herness_ajax
     # print(testcase)
@@ -152,7 +152,7 @@ def herness_ajax(request):
 
     dic = {'harness_result': str(harness_result), 'different_result_list': different_result_list}
     dic = json.dumps(dic)
-    print(dic)
+    # print(dic)
     # name_dict = {'harness_result': harness_result, 'twz': 'Love python and Django'}
 
     # return HttpResponse(harness_result, different_result_list)
@@ -162,7 +162,7 @@ def herness_ajax(request):
 
 def remark_ajax(request):
     remark_ajax = request.POST.get("remark_ajax")
-    # print(remark_ajax)
+    print(remark_ajax)
     all_suspicious_result = Suspicious_Result.objects.filter(Testcase_id=testcase[0])
     all_suspicious_result.update(Remark=remark_ajax)
 

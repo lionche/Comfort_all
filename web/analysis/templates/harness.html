@@ -34,7 +34,12 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
         crossorigin="anonymous"></script>
-
+<style>
+    #editor {
+        width: 100%;
+        height: 400px;
+    }
+</style>
 
 <body onload="go_harness()">
 
@@ -42,10 +47,12 @@
 <div id="main" style="width:100%; height:100%;padding:40px;position: absolute">
 
     {#    <h1 style="text-align: center;color: gray;padding-bottom: 40px">在线分析系统</h1>#}
-    <h1 style="text-align: left;color: gray;padding-bottom: 40px">在线分析系统 <span
-            class="badge badge-secondary">JavaScript</span></h1>
+
 
     <div id="left" style="float:left ; width:45%; height:100%;">
+
+        <h1 style="text-align: left;color: gray;padding-bottom: 40px">在线分析系统 <span
+                class="badge badge-secondary">JavaScript</span></h1>
 
         {#id搜索框#}
         <div>
@@ -80,221 +87,220 @@
 
             {% endif %}
 
-            <script>
-                $(document).ready(function () {
-                    $("#b4").on("click", function () {
-                        $.ajax({
-                            url: "/analysis/remark_ajax/",
-                            type: "POST",
-                            data: {
-                                "remark_ajax": $("#remark_content_ajax_id").val(),
-                            },
-                            success: function (data) {
-                                console.log(data)
-                                window.alert("保存好惹👌🏻");
-                                {#    弹出框#}
-                            }
-                        })
-                    })
-                })
-
-
-            </script>
         </div>
 
         <br>
 
 
         {#代码提交框#}
-        <style>
-            #editor {
-                width: 100%;
-                height: 700px;
-            }
-        </style>
+
         <div>
             <div id="editor"></div>
-            <form>
-                <textarea name="testcase_content_ajax" id="testcase_content_ajax_id"
-                          placeholder='请输入用例'>{{ harness_result.testcase_context }}</textarea>
-                <input type="button" value="开始测试！" id="b3">
+
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                <textarea name="testcase_content_ajax" id="testcase_content_ajax_id">{{ harness_result.testcase_context|safe }}</textarea>
+                </div>
+                <button type="button" class="btn btn-default" id="b3">开始测试</button>
             </form>
-            <script>
 
-                {#    代码编辑框#}
-                var editor_ajax = ace.edit('editor');
-                editor_ajax.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
-
-                var content_ajax_textarea = document.getElementById('testcase_content_ajax_id')
-
-                content_ajax_textarea.hidden = true
-
-                editor_ajax.getSession().on('change', function (e) {
-                    content_ajax_textarea.value = editor_ajax.getSession().getValue()
-                });
-                {#代码提示#}
-                editor_ajax.setOptions({
-                    enableBasicAutocompletion: true,
-                    enableSnippets: true,
-                    enableLiveAutocompletion: true
-                });
-
-                {#editor_ajax.setTheme("ace/theme/monokai");#}
-
-                editor_ajax.getSession().setMode("ace/mode/javascript")
-                editor_ajax.setFontSize(13)
-
-                const go_harness = function () {
-                    $.ajax({
-                        url: "/analysis/herness_ajax/",
-                        type: "POST",
-                        data: {
-                            "herness_ajax": $("#testcase_content_ajax_id").val(),
-                        },
-                        success: function (data) {
-                            const obj = JSON.parse(data);
-                            {#console.log(obj)#}
-                            {#console.log(obj.harness_result)#}
-                            const obj_harness_result = JSON.parse(obj.harness_result);
-                            const obj_different_result_list = JSON.parse(obj.different_result_list);
-                            {#console.log(obj_different_result_list)#}
-                            createTable_harness_result(obj_harness_result.Harness_Result);
-                            createTable_different_result_list(obj_different_result_list);
-                        }
-                    })
-                };
-
-
-                $(document).ready(function () {
-                    $("#b3").on("click", go_harness)
-                })
-
-                var testbed_info = {
-                    1: 'v8',
-                    2: 'spiderMonkey',
-                    3: 'chakra',
-                    4: 'jsc',
-                    5: 'quickjs',
-                    6: 'jerryscript',
-                    7: 'graaljs',
-                    8: 'hermes',
-                    9: 'chakra-beta'
-                }
-                {#更新差分结果表#}
-
-                function createTable_harness_result(obj) {
-                    var data = obj.outputs
-                    var tableStr = "<table class='table table-hover'>";
-                    tableStr = tableStr
-                        + "<tr>"
-                        + "<th >Testcase Id</th>"
-                        + "<th >Engine Id</th>"
-                        + "<th >Engine</th>"
-                        + "<th>Stdout</th>"
-                        + "<th>Stderr</th>"
-                        + "<th>Returncode</th>"
-                        + "</tr>";
-
-                    var len = data.length;
-
-                    for (var i = 0; i < len; i++) {
-                        tableStr = tableStr + "<tr>"
-                            + "<td>" + obj.testcase_id + "</td>"
-                            + "<td>" + data[i].testbed_id + "</td>"
-                            + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
-                            + "<td>" + data[i].stdout + "</td>"
-                            + "<td>" + data[i].stderr + "</td>"
-                            + "<td>" + data[i].returncode + "</td>"
-                            + "</tr>";
-                    }
-
-                    tableStr = tableStr + "</table>";
-                    //添加到div中
-                    console.log(tableStr)
-                    $("#tableHarnessResultAjax").html(tableStr);
-                }
-
-                {#更新可疑结果表#}
-
-                function createTable_different_result_list(obj) {
-                    var tableStr = '<h1 style="font-size:20px;font-family:times;color:green">没有触发问题</h1>'
-
-                    var len = obj.length;
-                    if (len != 0) {
-                        tableStr = "<table class='table table-hover'>";
-                        tableStr = tableStr
-                            + "<tr>"
-                            + "<th >Testcase Id</th>"
-                            + "<th >Error Type</th>"
-                            + "<th >Engine Id</th>"
-                            + "<th >Engine</th>"
-                            + "</tr>";
-
-                    }
-                    for (var i = 0; i < len; i++) {
-
-                        {#console.log(obj[i].testcase_id)#}
-                        {#console.log(obj[i].error_type)#}
-                        {#console.log(obj[i].testbed_id)#}
-
-                        tableStr = tableStr + "<tr>"
-                            + "<td>" + obj[i].testcase_id + "</td>"
-                            + "<td>" + obj[i].error_type + "</td>"
-                            + "<td>" + obj[i].testbed_id + "</td>"
-                            + "<td>" + testbed_info[obj[i].testbed_id] + "</td>"
-                            + "</tr>";
-                    }
-
-                    tableStr = tableStr + "</table>";
-                    //添加到div中
-                    console.log(tableStr)
-                    $("#tableDifferentResultAjax").html(tableStr);
-                }
-
-            </script>
 
         </div>
 
 
-        <script>
-            {#如果搜索id是空则返回当前id#}
-
-            function check() {
-                var testcase_id = document.getElementById('testcase_id')
-                {#console.log(testcase_id.value)#}
-                {#console.log(testcase_id.value==='')#}
-                if (testcase_id.value === '') {
-
-                    {#alert("不能为空");#}
-                    testcase_id.value =
-                    {{ Testcase_id }}
-                    {#console.log(testcase_id.value)#}
-                    {#return false#}
-
-                }
-                return true
-            }
-        </script>
-
-
-        {#比对不同#}
-
-
     </div>
-
 
     <div id="right" style="float:right ; width:45%; height:100%;">
         <div id="tableDifferentResultAjax"></div>
-
         <br>
-
         <div id="tableHarnessResultAjax"></div>
         <br>
         {{ returncode }}
     </div>
 
+</div>
 
 </body>
 
+<script>
+    {#如果搜索id是空则返回当前id#}
+    const go_harness = function () {
+        $.ajax({
+            url: "/analysis/herness_ajax/",
+            type: "POST",
+            data: {
+                "herness_ajax": $("#testcase_content_ajax_id").val(),
+            },
+            success: function (data) {
+                const obj = JSON.parse(data);
+                {#console.log(obj)#}
+                {#console.log(obj.harness_result)#}
+                const obj_harness_result = JSON.parse(obj.harness_result);
+                const obj_different_result_list = JSON.parse(obj.different_result_list);
+                {#console.log(obj_different_result_list)#}
+                createTable_different_result_list(obj_different_result_list);
+                createTable_harness_result(obj_harness_result.Harness_Result);
+            }
+        })
+    };
+
+    function check() {
+        var testcase_id = document.getElementById('testcase_id')
+        {#console.log(testcase_id.value)#}
+        {#console.log(testcase_id.value==='')#}
+        if (testcase_id.value === '') {
+
+            {#alert("不能为空");#}
+            testcase_id.value =
+            {{ Testcase_id }}
+            {#console.log(testcase_id.value)#}
+            {#return false#}
+
+        }
+        return true
+    }
+
+
+    {#    代码编辑框#}
+    var editor_ajax = ace.edit('editor');
+    editor_ajax.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
+
+    var content_ajax_textarea = document.getElementById('testcase_content_ajax_id')
+    content_ajax_textarea.hidden = true
+
+    editor_ajax.getSession().on('change', function (e) {
+        content_ajax_textarea.value = editor_ajax.getSession().getValue()
+    });
+
+
+    {#代码提示#}
+    editor_ajax.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+
+    {#editor_ajax.setTheme("ace/theme/monokai");#}
+
+    editor_ajax.getSession().setMode("ace/mode/javascript")
+    editor_ajax.setFontSize(13)
+
+    var wrongId = new Array();
+
+
+
+    $(document).ready(function () {
+        $("#b3").on("click", go_harness)
+    })
+
+    $(document).ready(function () {
+        $("#b4").on("click", function () {
+            $.ajax({
+                url: "/analysis/remark_ajax/",
+                type: "POST",
+                data: {
+                    "remark_ajax": $("#remark_content_ajax_id").val(),
+                },
+                success: function (data) {
+                    console.log(data)
+                    window.alert("保存好惹👌🏻");
+                    {#    弹出框#}
+                }
+            })
+        })
+    })
+
+
+    const testbed_info = {
+        1: 'v8',
+        2: 'spiderMonkey',
+        3: 'chakra',
+        4: 'jsc',
+        5: 'quickjs',
+        6: 'jerryscript',
+        7: 'graaljs',
+        8: 'hermes',
+        9: 'chakra-beta'
+    };
+    {#更新差分结果表#}
+
+    function createTable_harness_result(obj) {
+        var data = obj.outputs
+        var tableStr = "<table class='table table-hover' style='table-layout:fixed;width: 100%'>";
+        tableStr = tableStr
+            + "<tr>"
+            + "<th >Testcase Id</th>"
+            + "<th >Engine Id</th>"
+            + "<th >Engine</th>"
+            + "<th>Stdout</th>"
+            + "<th>Stderr</th>"
+            + "<th>Returncode</th>"
+            + "</tr>";
+
+        const len = data.length;
+
+        for (var i = 0; i < len; i++) {
+            var trHeadStr = wrongId.includes(data[i].testbed_id) ? "<tr class='danger'>" : "<tr>"
+
+            console.log(data[i].stdout + 'ffff')
+
+            tableStr = tableStr + trHeadStr
+                + "<td>" + obj.testcase_id + "</td>"
+                + "<td>" + data[i].testbed_id + "</td>"
+                + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
+                + "<td><p style='white-space:pre'>" + data[i].stdout + "</p></td>"
+                + "<td>" + data[i].stderr + "</td>"
+                + "<td>" + data[i].returncode + "</td>"
+                + "</tr>";
+        }
+
+        tableStr = tableStr + "</table>";
+        //添加到div中
+        console.log(tableStr)
+        $("#tableHarnessResultAjax").html(tableStr);
+    }
+
+    {#更新可疑结果表#}
+
+    function createTable_different_result_list(obj) {
+        var tableStr = '<h1 style="font-size:20px;font-family:times;color:green">没有触发问题</h1>'
+
+        var len = obj.length;
+        if (len !== 0) {
+            tableStr = "<table class='table table-hover'>";
+            tableStr = tableStr
+                + "<tr>"
+                + "<th >Testcase Id</th>"
+                + "<th >Error Type</th>"
+                + "<th >Engine Id</th>"
+                + "<th >Engine</th>"
+                + "</tr>";
+
+        }
+        for (var i = 0; i < len; i++) {
+
+            wrongId.push(obj[i].testbed_id)
+
+            {#console.log(obj[i].testcase_id)#}
+            {#console.log(obj[i].error_type)#}
+            {#console.log(obj[i].testbed_id)#}
+
+            tableStr = tableStr + "<tr>"
+                + "<td>" + obj[i].testcase_id + "</td>"
+                + "<td>" + obj[i].error_type + "</td>"
+                + "<td>" + obj[i].testbed_id + "</td>"
+                + "<td>" + testbed_info[obj[i].testbed_id] + "</td>"
+                + "</tr>";
+        }
+
+        tableStr = tableStr + "</table>";
+        //添加到div中
+        console.log(tableStr)
+        $("#tableDifferentResultAjax").html(tableStr);
+
+
+    }
+
+</script>
 
 </html>
