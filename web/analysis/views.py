@@ -91,7 +91,7 @@ def harness(request):
         now_remark: str = all_suspicious_result.first().Remark
     except:
         now_remark = None
-
+    # print(now_remark)
     # print(f'now_remark:{now_remark}')
     # print(all_suspicious_result.first.Testcase_id)
 
@@ -109,14 +109,13 @@ def harness(request):
     # print(f'now_remark_post:{now_remark}')
     # print(testcase_content)
 
-    harness_result, different_result_list = harness_testcase(testcase)
+    # harness_result, different_result_list = harness_testcase(testcase)
 
-    returncode = ''
-
-    for output in harness_result.outputs:
-        returncode += str(output.testbed_id)
-        returncode += f'({output.returncode})'
-
+    returncode = 'returncode'
+    # for output in harness_result.outputs:
+    #     returncode += str(output.testbed_id)
+    #     returncode += f'({output.returncode})'
+    Testcase_context = testcase[1]
     return render(request, 'harness.html', locals())
 
     # if request.method == 'POST':
@@ -132,7 +131,7 @@ def harness(request):
 def herness_ajax(request):
     # herness_ajax = request.GET.get("herness_ajax")
     herness_ajax = request.POST.get("herness_ajax")
-    print(herness_ajax)
+    # print(herness_ajax)
     global testcase
     testcase[1] = herness_ajax
     # print(testcase)
@@ -153,7 +152,6 @@ def herness_ajax(request):
     dic = {'harness_result': str(harness_result), 'different_result_list': different_result_list}
     dic = json.dumps(dic)
     # print(dic)
-    # name_dict = {'harness_result': harness_result, 'twz': 'Love python and Django'}
 
     # return HttpResponse(harness_result, different_result_list)
 

@@ -56,21 +56,25 @@
     }
 
     #left {
-        height: 100vh;
+        padding-bottom: 60px;
+        height: 100%;
         overflow: auto;
     }
 
     #right {
-        margin-top: 30px;
+        padding-top: 60px;
         padding-bottom: 60px;
         height: 100%;
-        overflow: scroll;
+        padding-left: 60px;
+        overflow: auto;
     }
 
-    td, tr, th {
-        white-space: nowrap;
+    {#    td, tr, th {
+            white-space: nowrap;
+        }#}
+    .table {
+    {#overflow: auto;#} display: block;
     }
-
 
 </style>
 
@@ -87,6 +91,7 @@
 
         {#    左半侧#}
         <div class="col-md-6 col-sm-6 col-lg-5 col-xs-6" id="left">
+
             <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
                 <h1 style="text-align: left;color: #337ab7  ;padding-bottom: 40px;">用例分析系统 <span
                         class="badge" style="background-color: #337ab7">JavaScript</span></h1>
@@ -111,7 +116,7 @@
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                    {% if different_result_list|length != 0 %}
+                    {% if now_remark|length != 0 %}
 
                         <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
                             <div class="form-group">
@@ -120,7 +125,7 @@
                                         class="form-control "
                                         id="remark_content_ajax_id"
                                         placeholder="快分析，等啥呢"
-                                        rows="7"
+                                        rows="3"
                                         autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}
                                 </textarea>
 
@@ -163,8 +168,7 @@
 
                     <div class="form-group">
                                             <textarea name="testcase_content_ajax"
-                                                      id="testcase_content_ajax_id">{{ harness_result.testcase_context|safe }}
-                                            </textarea>
+                                                      id="testcase_content_ajax_id">{{Testcase_context}}</textarea>
                     </div>
 
                     <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
@@ -239,10 +243,16 @@
 
     {#    代码编辑框#}
     var editor_ajax = ace.edit('editor');
-    editor_ajax.getSession().setValue(`{{ harness_result.testcase_context|safe }}`)
-
+    {#var textContent = ''+{{ harness_result.testcase_context|safe }}#}
+    {#console.log(textContent)#}
     var content_ajax_textarea = document.getElementById('testcase_content_ajax_id')
     content_ajax_textarea.hidden = true
+
+    var textContent = content_ajax_textarea.value;
+
+
+    console.log(textContent)
+    editor_ajax.getSession().setValue(textContent)
 
     editor_ajax.getSession().on('change', function (e) {
         content_ajax_textarea.value = editor_ajax.getSession().getValue()
@@ -261,7 +271,7 @@
     editor_ajax.getSession().setMode("ace/mode/javascript")
     editor_ajax.setFontSize(13)
 
-    var wrongId = new Array();
+    var wrongId;
 
 
     $(document).ready(function () {
@@ -301,7 +311,7 @@
 
     function createTable_harness_result(obj) {
         var data = obj.outputs
-        var tableStr = "<table class='table table-hover table-condensed' style='table-layout:fixed;width: 100%'>";
+        var tableStr = "<table class='table table-condensed' style='table-layout:fixed;width: 100%' id='harness_table_id'>";
         tableStr = tableStr
             + "<tr>"
             + "<th>Testcase Id</th>"
@@ -321,14 +331,14 @@
 
             var firstTd = i === 0 ? '<td rowspan="0">' + obj.testcase_id + "</td>" : ''
 
-                tableStr = tableStr + trHeadStr
-                    + firstTd
-                    + "<td>" + data[i].testbed_id + "</td>"
-                    + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
-                    + "<td><code><p style='white-space:pre'>" + data[i].stdout + "</p></code></td>"
-                    + "<td>" + data[i].stderr + "</td>"
-                    + "<td>" + data[i].returncode + "</td>"
-                    + "</tr>";
+            tableStr = tableStr + trHeadStr
+                + firstTd
+                + "<td>" + data[i].testbed_id + "</td>"
+                + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
+                + "<td><code><p style='white-space:pre'>" + data[i].stdout + "</p></code></td>"
+                + "<td>" + data[i].stderr + "</td>"
+                + "<td>" + data[i].returncode + "</td>"
+                + "</tr>";
         }
 
         tableStr = tableStr + "</table>";
@@ -341,10 +351,15 @@
     {#更新可疑结果表#}
 
     function createTable_different_result_list(obj) {
+        wrongId = new Array();
         var len = obj.length;
 
+        if (len === 0) {
+            var tableStr = "<table class='table table-condensed table-responsive'>";
+        }
+
         if (len !== 0) {
-            var tableStr = "<table class='table table-hover table-condensed table-responsive'>";
+            var tableStr = "<table class='table table-condensed table-responsive'>";
             tableStr = tableStr
                 + "<tr>"
                 + "<th >Testcase Id</th>"
@@ -373,8 +388,8 @@
             tableStr = tableStr + "</table><br>";
             //添加到div中
             console.log(tableStr)
-            $("#tableDifferentResultAjax").html(tableStr);
         }
+        $("#tableDifferentResultAjax").html(tableStr);
 
 
     }
