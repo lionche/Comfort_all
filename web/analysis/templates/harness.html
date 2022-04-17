@@ -13,112 +13,188 @@
 {#<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js" type="text/javascript"></script>#}
 {#<script src="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" type="text/javascript"></script>#}
 
+{#ace代码编辑器#}
 <script src="{% static "js/ace/src/ace.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/ext-beautify.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/ext-language_tools.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/theme-monokai.js" %}" type="text/javascript" charset="utf-8"></script>
+
+{#jquery#}
 <script src="{% static "js/jquery-3.6.0.js" %}" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
 
-
-<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-
-<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css"
-      integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
-
-<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
-        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+{#bootstrap#}
+<link rel="stylesheet" href="{% static "js/bootstrap-3.4.1-dist/css/bootstrap.css" %}">
+<script src="{% static "js/bootstrap-3.4.1-dist/js/bootstrap.js" %}" type="text/javascript" charset="utf-8"></script>
 <style>
     #editor {
         width: 100%;
         height: 400px;
     }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    html, body {
+        width: 100%;
+        height: 100%;
+    }
+
+    #container-fluid-id {
+        padding: 30px 30px;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+    }
+
+    #box {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #left {
+        height: 100vh;
+        overflow: auto;
+    }
+
+    #right {
+        margin-top: 30px;
+        padding-bottom: 60px;
+        height: 100%;
+        overflow: scroll;
+    }
+
+    td, tr, th {
+        white-space: nowrap;
+    }
+
+
 </style>
 
 <body onload="go_harness()">
 
 
-<div id="main" style="width:100%; height:100%;padding:40px;position: absolute">
+<div class="container-fluid" id="container-fluid-id">
+    <div class="row">
 
-    {#    <h1 style="text-align: center;color: gray;padding-bottom: 40px">在线分析系统</h1>#}
+    </div>
+
+    <div class="row" id="box">
 
 
-    <div id="left" style="float:left ; width:45%; height:100%;">
+        {#    左半侧#}
+        <div class="col-md-6 col-sm-6 col-lg-5 col-xs-6" id="left">
+            <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                <h1 style="text-align: left;color: #337ab7  ;padding-bottom: 40px;">用例分析系统 <span
+                        class="badge" style="background-color: #337ab7">JavaScript</span></h1>
+            </div>
+            <div class="row">
 
-        <h1 style="text-align: left;color: gray;padding-bottom: 40px">在线分析系统 <span
-                class="badge badge-secondary">JavaScript</span></h1>
-
-        {#id搜索框#}
-        <div>
-            <form class="bs-example bs-example-form" role="form" method="get" onsubmit="check()">
-                <div class="col-lg-6">
-                    <div class="input-group">
-                        <input type="number" class="form-control" name="id" id="testcase_id"
-                               placeholder="{{ Testcase_id }}" autocomplete="off">
-                        <span class="input-group-btn">
-						<button class="btn btn-default" type="submit">
-							搜索🆔
+                {#            id搜索框#}
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                    <form class="bs-example bs-example-form" role="form" method="get" onsubmit="check()">
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="id" id="testcase_id"
+                                       placeholder="当前用例 : {{ Testcase_id }}" autocomplete="off">
+                                <span class="input-group-btn">
+						<button class="btn btn-primary" type="submit">
+							搜索
 						</button>
 					</span>
-                    </div><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
-            </form>
-        </div>
-        <br>
-
-        {#输入分析框#}
-        <div>
-            {% if different_result_list|length != 0 %}
-
-                <form class="navbar-form navbar-left">
-                    <div class="form-group">
-                        <textarea id="remark_content_ajax_id" placeholder="Search"
-                                  class="form-control" rows="3"
-                                  autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}</textarea>
-                    </div>
-                    <button type="button" class="btn btn-default" id="b4">保存分析</button>
-                </form>
-
-            {% endif %}
-
-        </div>
-
-        <br>
-
-
-        {#代码提交框#}
-
-        <div>
-            <div id="editor"></div>
-
-            <form class="navbar-form navbar-left">
-                <div class="form-group">
-                <textarea name="testcase_content_ajax" id="testcase_content_ajax_id">{{ harness_result.testcase_context|safe }}</textarea>
+                            </div><!-- /input-group -->
+                        </div><!-- /.col-lg-6 -->
+                    </form>
                 </div>
-                <button type="button" class="btn btn-default" id="b3">开始测试</button>
-            </form>
 
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                    {% if different_result_list|length != 0 %}
+
+                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                            <div class="form-group">
+                                <label for="remark_content_ajax_id"></label>
+                                <textarea
+                                        class="form-control "
+                                        id="remark_content_ajax_id"
+                                        placeholder="快分析，等啥呢"
+                                        rows="7"
+                                        autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}
+                                </textarea>
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                            <button type="button" class="btn btn-primary" id="b4" style="width: 100%">保存分析</button>
+                            <div id="save_analysis_id"></div>
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Modal 提示已经保存好-->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">保存好惹👌</h4>
+                            </div>
+                            <div class="modal-body">
+                                你知道你自己很棒么
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">当然知道!</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {#                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">#}
+                {##}
+                {#        代码提交框#}
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="editor" style="margin: 30px;width: 85%"></div>
+
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+
+                    <div class="form-group">
+                                            <textarea name="testcase_content_ajax"
+                                                      id="testcase_content_ajax_id">{{ harness_result.testcase_context|safe }}
+                                            </textarea>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                        <button type="button" class="btn btn-primary" id="b3" style="width: 100%">测试</button>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            {#row#}
 
         </div>
 
+        <div class="col-md-6 col-sm-6 col-lg-7 col-xs-6" id="right">
 
+            <div class="row">
+
+                <div id="tableDifferentResultAjax"></div>
+                <div id="tableHarnessResultAjax"></div>
+                <div id="returnCode">
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div id="right" style="float:right ; width:45%; height:100%;">
-        <div id="tableDifferentResultAjax"></div>
-        <br>
-        <div id="tableHarnessResultAjax"></div>
-        <br>
-        {{ returncode }}
-    </div>
-
 </div>
+
 
 </body>
 
@@ -188,7 +264,6 @@
     var wrongId = new Array();
 
 
-
     $(document).ready(function () {
         $("#b3").on("click", go_harness)
     })
@@ -203,8 +278,8 @@
                 },
                 success: function (data) {
                     console.log(data)
-                    window.alert("保存好惹👌🏻");
-                    {#    弹出框#}
+                    {#window.alert("保存好惹👌🏻");#}
+                    $('#myModal').modal({backdrop: false})
                 }
             })
         })
@@ -226,12 +301,12 @@
 
     function createTable_harness_result(obj) {
         var data = obj.outputs
-        var tableStr = "<table class='table table-hover' style='table-layout:fixed;width: 100%'>";
+        var tableStr = "<table class='table table-hover table-condensed' style='table-layout:fixed;width: 100%'>";
         tableStr = tableStr
             + "<tr>"
-            + "<th >Testcase Id</th>"
-            + "<th >Engine Id</th>"
-            + "<th >Engine</th>"
+            + "<th>Testcase Id</th>"
+            + "<th>Engine Id</th>"
+            + "<th>Engine</th>"
             + "<th>Stdout</th>"
             + "<th>Stderr</th>"
             + "<th>Returncode</th>"
@@ -242,32 +317,34 @@
         for (var i = 0; i < len; i++) {
             var trHeadStr = wrongId.includes(data[i].testbed_id) ? "<tr class='danger'>" : "<tr>"
 
-            console.log(data[i].stdout + 'ffff')
+            {#console.log(data[i].stdout + 'ffff')#}
 
-            tableStr = tableStr + trHeadStr
-                + "<td>" + obj.testcase_id + "</td>"
-                + "<td>" + data[i].testbed_id + "</td>"
-                + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
-                + "<td><p style='white-space:pre'>" + data[i].stdout + "</p></td>"
-                + "<td>" + data[i].stderr + "</td>"
-                + "<td>" + data[i].returncode + "</td>"
-                + "</tr>";
+            var firstTd = i === 0 ? '<td rowspan="0">' + obj.testcase_id + "</td>" : ''
+
+                tableStr = tableStr + trHeadStr
+                    + firstTd
+                    + "<td>" + data[i].testbed_id + "</td>"
+                    + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
+                    + "<td><code><p style='white-space:pre'>" + data[i].stdout + "</p></code></td>"
+                    + "<td>" + data[i].stderr + "</td>"
+                    + "<td>" + data[i].returncode + "</td>"
+                    + "</tr>";
         }
 
         tableStr = tableStr + "</table>";
         //添加到div中
         console.log(tableStr)
         $("#tableHarnessResultAjax").html(tableStr);
+        $("#returnCode").html("<kbd>返回码</kbd><code>{{ returncode }}</code>");
     }
 
     {#更新可疑结果表#}
 
     function createTable_different_result_list(obj) {
-        var tableStr = '<h1 style="font-size:20px;font-family:times;color:green">没有触发问题</h1>'
-
         var len = obj.length;
+
         if (len !== 0) {
-            tableStr = "<table class='table table-hover'>";
+            var tableStr = "<table class='table table-hover table-condensed table-responsive'>";
             tableStr = tableStr
                 + "<tr>"
                 + "<th >Testcase Id</th>"
@@ -276,27 +353,28 @@
                 + "<th >Engine</th>"
                 + "</tr>";
 
+            for (var i = 0; i < len; i++) {
+
+                wrongId.push(obj[i].testbed_id)
+
+                {#console.log(obj[i].testcase_id)#}
+                {#console.log(obj[i].error_type)#}
+                {#console.log(obj[i].testbed_id)#}
+                var firstTd = i === 0 ? '<td rowspan="0">' + obj[i].testcase_id + "</td>" : ''
+
+                tableStr = tableStr + "<tr>"
+                    + firstTd
+                    + "<td>" + obj[i].error_type + "</td>"
+                    + "<td>" + obj[i].testbed_id + "</td>"
+                    + "<td>" + testbed_info[obj[i].testbed_id] + "</td>"
+                    + "</tr>";
+            }
+
+            tableStr = tableStr + "</table><br>";
+            //添加到div中
+            console.log(tableStr)
+            $("#tableDifferentResultAjax").html(tableStr);
         }
-        for (var i = 0; i < len; i++) {
-
-            wrongId.push(obj[i].testbed_id)
-
-            {#console.log(obj[i].testcase_id)#}
-            {#console.log(obj[i].error_type)#}
-            {#console.log(obj[i].testbed_id)#}
-
-            tableStr = tableStr + "<tr>"
-                + "<td>" + obj[i].testcase_id + "</td>"
-                + "<td>" + obj[i].error_type + "</td>"
-                + "<td>" + obj[i].testbed_id + "</td>"
-                + "<td>" + testbed_info[obj[i].testbed_id] + "</td>"
-                + "</tr>";
-        }
-
-        tableStr = tableStr + "</table>";
-        //添加到div中
-        console.log(tableStr)
-        $("#tableDifferentResultAjax").html(tableStr);
 
 
     }
