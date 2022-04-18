@@ -18,7 +18,7 @@
 <script src="{% static "js/ace/src/ace.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/ext-beautify.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "js/ace/src/ext-language_tools.js" %}" type="text/javascript" charset="utf-8"></script>
-<script src="{% static "js/ace/src/theme-monokai.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/ace/src/theme-iplastic.js" %}" type="text/javascript" charset="utf-8"></script>
 
 {#jquery#}
 <script src="{% static "js/jquery-3.6.0.js" %}" type="text/javascript" charset="utf-8"></script>
@@ -177,7 +177,7 @@
         <div class="col-md-6 col-sm-6 col-lg-5 col-xs-6" id="left">
 
             <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                <h1 style="text-align: left;color: #FDCFAD  ;padding-bottom: 30px;">用例分析系统 <span
+                <h1 class="display-3" style="text-align: left;color: #FDCFAD  ;padding-bottom: 30px;">用例分析系统 <span
                         class="badge badge-pill badge-primary" style="background-color: #F2E1D6"
                         type="button"
                         data-toggle="collapse"
@@ -294,7 +294,7 @@
                                             你知道你自己很棒么
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-dismiss="modal">当然知道！
+                                            <button type="button" style="background: #FDCFAD"  class="btn btn-light" data-dismiss="modal">当然知道！
                                             </button>
                                         </div>
                                     </div>
@@ -421,6 +421,7 @@
     });
 
     {#editor_ajax.setTheme("ace/theme/monokai");#}
+    editor_ajax.setTheme("ace/theme/katzenmilch");
 
     editor_ajax.getSession().setMode("ace/mode/javascript")
     editor_ajax.setFontSize(13)

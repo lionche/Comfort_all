@@ -11,7 +11,7 @@ width: 1px;\
 background: #bbbbbb\
 }\
 .ace-iplastic {\
-background-color: #eeeeee;\
+background-color: #E9ECEF;\
 color: #333333\
 }\
 .ace-iplastic .ace_cursor {\
@@ -35,7 +35,7 @@ background: #FFF799\
 background: #e5e5e5\
 }\
 .ace-iplastic .ace_gutter-active-line {\
-background-color: #eeeeee\
+background-color: #E9ECEF\
 }\
 .ace-iplastic .ace_marker-layer .ace_selected-word {\
 border: 1px solid #555555;\
