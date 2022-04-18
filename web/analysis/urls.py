@@ -20,9 +20,9 @@ from . import views
 urlpatterns = [
     path('testcase', views.show_testcase),
     path('harness', views.harness),
-    path('harness1', views.harness),
     path('herness_ajax/', views.herness_ajax),
     path('remark_ajax/', views.remark_ajax),
+    path('get_remark_ajax/', views.get_remark_ajax),
     path('testbed', views.testbed.as_view()),
 
 ]

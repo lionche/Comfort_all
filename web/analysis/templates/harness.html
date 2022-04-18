@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>测试用例</title>
+    <link rel="shortcut icon" href="{% static "img/bug.ico" %}">
 </head>
 {#<script src="https://cdn.bootcss.com/ace/1.4.6/ace.js"></script>#}
 {#<script src="https://cdn.bootcss.com/ace/1.4.6/ext-beautify.js"></script>#}
@@ -21,14 +22,18 @@
 
 {#jquery#}
 <script src="{% static "js/jquery-3.6.0.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "css/spinkit.css" %}" type="text/javascript" charset="utf-8"></script>
+
 
 {#bootstrap#}
-<link rel="stylesheet" href="{% static "js/bootstrap-3.4.1-dist/css/bootstrap.css" %}">
-<script src="{% static "js/bootstrap-3.4.1-dist/js/bootstrap.js" %}" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="{% static "js/bootstrap-4.5.3-dist/css/bootstrap.css" %}">
+<script src="{% static "js/bootstrap-4.5.3-dist/js/bootstrap.js" %}" type="text/javascript" charset="utf-8"></script>
+
 <style>
     #editor {
-        width: 100%;
+
         height: 400px;
+        width: 100%;
     }
 
     * {
@@ -56,29 +61,108 @@
     }
 
     #left {
-        padding-bottom: 60px;
+        padding-bottom: 0px;
         height: 100%;
         overflow: auto;
     }
 
     #right {
-        padding-top: 60px;
-        padding-bottom: 60px;
+        padding-top: 30px;
+        padding-bottom: 30px;
         height: 100%;
         padding-left: 60px;
         overflow: auto;
     }
 
-    {#    td, tr, th {
-            white-space: nowrap;
-        }#}
-    .table {
-    {#overflow: auto;#} display: block;
+    #stdout_td_id, #stderr_td_id {
+        text-align: left;
+
+    }
+
+    td, tr, th {
+
+    {#white-space: nowrap;#}{#        表格内容居中#} text-align: center;
+        vertical-align: middle !important
+    }
+
+    #harness_table_id, different_table_id {
+    {#display: block#}
+    }
+
+
+    {#测试按钮#}
+    #b3 {
+        width: 70px;
+        height: 70px;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto;
+        background-color: #FDCFAD;
+    }
+
+    #b4 {
+        width: 70px;
+        height: 70px;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto;
+        background-color: #FDCFAD;
+    }
+
+    .spinner {
+        width: 70px;
+        height: 70px;
+        position: relative;
+        margin: 0px auto;
+    }
+
+    .double-bounce1, .double-bounce2 {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: #FDCFAD;
+        opacity: 0.6;
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+        animation: sk-bounce 2.0s infinite ease-in-out;
+    }
+
+    .double-bounce2 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+    }
+
+    @-webkit-keyframes sk-bounce {
+        0%, 100% {
+            -webkit-transform: scale(0.0)
+        }
+        50% {
+            -webkit-transform: scale(1.0)
+        }
+    }
+
+    @keyframes sk-bounce {
+        0%, 100% {
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        }
+        50% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
     }
 
 </style>
 
-<body onload="go_harness()">
+<body onload="go_harness();go_remark()">
+{#<body >#}
 
 
 <div class="container-fluid" id="container-fluid-id">
@@ -93,8 +177,19 @@
         <div class="col-md-6 col-sm-6 col-lg-5 col-xs-6" id="left">
 
             <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                <h1 style="text-align: left;color: #337ab7  ;padding-bottom: 40px;">用例分析系统 <span
-                        class="badge" style="background-color: #337ab7">JavaScript</span></h1>
+                <h1 style="text-align: left;color: #FDCFAD  ;padding-bottom: 30px;">用例分析系统 <span
+                        class="badge badge-pill badge-primary" style="background-color: #F2E1D6"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#collapseExample" aria-expanded="false"
+                        aria-controls="collapseExample">JS</span></h1>
+
+                <div class="collapse" id="collapseExample">
+                    <div class="card card-body">
+                        爱你呦😘
+                    </div>
+                    <br>
+                </div>
             </div>
             <div class="row">
 
@@ -106,7 +201,7 @@
                                 <input type="number" class="form-control" name="id" id="testcase_id"
                                        placeholder="当前用例 : {{ Testcase_id }}" autocomplete="off">
                                 <span class="input-group-btn">
-						<button class="btn btn-primary" type="submit">
+						<button class="btn btn-light" type="submit">
 							搜索
 						</button>
 					</span>
@@ -115,68 +210,100 @@
                     </form>
                 </div>
 
-                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                    {% if now_remark|length != 0 %}
 
+                {#        代码提交框#}
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" style="margin-top: 30px">
+                    <div class="jumbotron">
+                        <h1 class="display-4">分析用例!</h1>
+                        {#                    <p class="lead">如果有所发现的话，请在下方输入框提交内容</p>#}
+                        <hr class="my-4">
+                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" style="padding-bottom: 30px">
+                            <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="editor"></div>
+                        </div>
                         <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                            <button type="button" class="btn btn-light" id="b3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                          d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                </svg>
+                            </button>
+
+                            {#动画按钮#}
+                            <div id="spinkit_button_id" style="display: none">
+                                <div class="spinner">
+                                    <div class="double-bounce1"></div>
+                                    <div class="double-bounce2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                    <div class="form-group">
+                                            <textarea name="testcase_content_ajax"
+                                                      id="testcase_content_ajax_id">{{ Testcase_context }}</textarea>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+
+
+                    </div>
+
+
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="remark_ajax_id" style="display: none">
+
+                    <div class="jumbotron">
+                        <h1 class="display-4">提交分析!</h1>
+                        <p class="lead">如果有所发现的话，请在下方输入框提交内容</p>
+                        <hr class="my-4">
+                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" style="padding-bottom: 30px">
                             <div class="form-group">
                                 <label for="remark_content_ajax_id"></label>
                                 <textarea
                                         class="form-control "
                                         id="remark_content_ajax_id"
-                                        placeholder="快分析，等啥呢"
-                                        rows="3"
-                                        autocomplete="off">{% if now_remark %}{{ now_remark }}{% endif %}
-                                </textarea>
-
-
+                                        placeholder="还不快来分析我，等啥呢"
+                                        rows="5"
+                                        autocomplete="off"></textarea>
                             </div>
                         </div>
                         <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                            <button type="button" class="btn btn-primary" id="b4" style="width: 100%">保存分析</button>
-                            <div id="save_analysis_id"></div>
+                            <button type="button" class="btn btn-light" id="b4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-send" viewBox="0 0 16 16">
+                                    <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                                </svg>
+                            </button>
+                            <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">保存好惹👌</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            你知道你自己很棒么
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-dismiss="modal">当然知道！
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Modal 提示已经保存好-->
-                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                        aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">保存好惹👌</h4>
-                            </div>
-                            <div class="modal-body">
-                                你知道你自己很棒么
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">当然知道!</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {#                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">#}
-                {##}
-                {#        代码提交框#}
-                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="editor" style="margin: 30px;width: 85%"></div>
-
-                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-
-                    <div class="form-group">
-                                            <textarea name="testcase_content_ajax"
-                                                      id="testcase_content_ajax_id">{{Testcase_context}}</textarea>
-                    </div>
-
-                    <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                        <button type="button" class="btn btn-primary" id="b3" style="width: 100%">测试</button>
                     </div>
 
                 </div>
-
 
             </div>
 
@@ -184,14 +311,13 @@
             {#row#}
 
         </div>
-
+        {#    右半侧#}
         <div class="col-md-6 col-sm-6 col-lg-7 col-xs-6" id="right">
 
             <div class="row">
-
-                <div id="tableDifferentResultAjax"></div>
-                <div id="tableHarnessResultAjax"></div>
-                <div id="returnCode">
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="tableHarnessResultAjax" ></div>
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="tableDifferentResultAjax" style="padding-top: 30px"></div>
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="returnCode" style="padding-top: 30px">
                 </div>
             </div>
 
@@ -204,12 +330,36 @@
 
 <script>
     {#如果搜索id是空则返回当前id#}
+
+    const go_remark = function () {
+        $.ajax({
+            url: "/analysis/get_remark_ajax/",
+            type: "POST",
+            data: {
+                "Testcase_id": {{ Testcase_id }},
+            },
+            success: function (data) {
+                const obj = JSON.parse(data);
+                console.log(obj)
+
+                if (obj.hasRemark) {
+                    document.getElementById("remark_ajax_id").style.display = "";
+                    document.getElementById("remark_content_ajax_id").value = obj.remarkContent
+                }
+            }
+        })
+    };
+
+    {#测试代码框中的用例#}
     const go_harness = function () {
+        button_move()
         $.ajax({
             url: "/analysis/herness_ajax/",
             type: "POST",
             data: {
                 "herness_ajax": $("#testcase_content_ajax_id").val(),
+                "Testcase_id": {{ Testcase_id }},
+
             },
             success: function (data) {
                 const obj = JSON.parse(data);
@@ -220,9 +370,12 @@
                 {#console.log(obj_different_result_list)#}
                 createTable_different_result_list(obj_different_result_list);
                 createTable_harness_result(obj_harness_result.Harness_Result);
+                document.getElementById("spinkit_button_id").style.display = "none";
+                document.getElementById("b3").style.display = "";
             }
         })
     };
+
 
     function check() {
         var testcase_id = document.getElementById('testcase_id')
@@ -251,13 +404,14 @@
     var textContent = content_ajax_textarea.value;
 
 
-    console.log(textContent)
-    editor_ajax.getSession().setValue(textContent)
+    {#console.log(textContent)#}
+
 
     editor_ajax.getSession().on('change', function (e) {
         content_ajax_textarea.value = editor_ajax.getSession().getValue()
+        console.log('编辑器内容改变')
     });
-
+    editor_ajax.getSession().setValue(textContent)
 
     {#代码提示#}
     editor_ajax.setOptions({
@@ -272,10 +426,15 @@
     editor_ajax.setFontSize(13)
 
     var wrongId;
-
+    const button_move = function () {
+        document.getElementById("spinkit_button_id").style.display = "";
+        document.getElementById("b3").style.display = "none";
+        {#console.log('点击测试按键')#}
+    }
 
     $(document).ready(function () {
         $("#b3").on("click", go_harness)
+        {#$("#b3").on("click", button_move)#}
     })
 
     $(document).ready(function () {
@@ -285,9 +444,11 @@
                 type: "POST",
                 data: {
                     "remark_ajax": $("#remark_content_ajax_id").val(),
+                    "Testcase_id": {{ Testcase_id }},
+
                 },
                 success: function (data) {
-                    console.log(data)
+                    {#console.log(data)#}
                     {#window.alert("保存好惹👌🏻");#}
                     $('#myModal').modal({backdrop: false})
                 }
@@ -311,41 +472,54 @@
 
     function createTable_harness_result(obj) {
         var data = obj.outputs
-        var tableStr = "<table class='table table-condensed' style='table-layout:fixed;width: 100%' id='harness_table_id'>";
+        var tableStr = "<table class='table table-condensed table-sm'  id='harness_table_id'>";
         tableStr = tableStr
+            + "<thead class='thead-light'>"
             + "<tr>"
-            + "<th>Testcase Id</th>"
+            + "<th>Id</th>"
             + "<th>Engine Id</th>"
             + "<th>Engine</th>"
             + "<th>Stdout</th>"
             + "<th>Stderr</th>"
             + "<th>Returncode</th>"
-            + "</tr>";
+            + "</tr>"
+            + "</thead>";
 
         const len = data.length;
 
+        var returnCode = ""
+
+
         for (var i = 0; i < len; i++) {
-            var trHeadStr = wrongId.includes(data[i].testbed_id) ? "<tr class='danger'>" : "<tr>"
+
+            returnCode += data[i].testbed_id
+            returnCode += '(' + data[i].returncode + ')'
+
+
+            var trHeadStr = wrongId.includes(data[i].testbed_id) ? "<tr class='table-danger'>" : "<tr>"
 
             {#console.log(data[i].stdout + 'ffff')#}
 
-            var firstTd = i === 0 ? '<td rowspan="0">' + obj.testcase_id + "</td>" : ''
+            var firstTd = i === 0 ? '<td rowspan="0">' + {{Testcase_id}} +"</td>" : ''
+            console.log(data[i].stdout)
+            var stdout_content = data[i].stdout
 
             tableStr = tableStr + trHeadStr
                 + firstTd
                 + "<td>" + data[i].testbed_id + "</td>"
                 + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
-                + "<td><code><p style='white-space:pre'>" + data[i].stdout + "</p></code></td>"
-                + "<td>" + data[i].stderr + "</td>"
+                + "<td id='stdout_td_id'><code><p style='white-space:pre'>" + stdout_content + "</p></code></td>"
+                + "<td id='stderr_td_id'><code><p style='white-space:pre'>" + data[i].stderr + "</p></code></td>"
                 + "<td>" + data[i].returncode + "</td>"
                 + "</tr>";
         }
 
         tableStr = tableStr + "</table>";
         //添加到div中
-        console.log(tableStr)
+        {#console.log(tableStr)#}
         $("#tableHarnessResultAjax").html(tableStr);
-        $("#returnCode").html("<kbd>返回码</kbd><code>{{ returncode }}</code>");
+
+        $("#returnCode").html("<kbd>返回码</kbd><code>" + returnCode + "</code>");
     }
 
     {#更新可疑结果表#}
@@ -355,18 +529,20 @@
         var len = obj.length;
 
         if (len === 0) {
-            var tableStr = "<table class='table table-condensed table-responsive'>";
+            var tableStr = "";
         }
 
         if (len !== 0) {
-            var tableStr = "<table class='table table-condensed table-responsive'>";
+            var tableStr = "<table class='table' id='different_table_id'>";
             tableStr = tableStr
+                + "<thead class='thead-light'>"
                 + "<tr>"
-                + "<th >Testcase Id</th>"
+                + "<th >Id</th>"
                 + "<th >Error Type</th>"
                 + "<th >Engine Id</th>"
                 + "<th >Engine</th>"
-                + "</tr>";
+                + "</tr>"
+                + "</thead>";
 
             for (var i = 0; i < len; i++) {
 
@@ -375,7 +551,7 @@
                 {#console.log(obj[i].testcase_id)#}
                 {#console.log(obj[i].error_type)#}
                 {#console.log(obj[i].testbed_id)#}
-                var firstTd = i === 0 ? '<td rowspan="0">' + obj[i].testcase_id + "</td>" : ''
+                var firstTd = i === 0 ? '<td rowspan="0">' + {{ Testcase_id }} +"</td>" : ''
 
                 tableStr = tableStr + "<tr>"
                     + firstTd
@@ -385,7 +561,7 @@
                     + "</tr>";
             }
 
-            tableStr = tableStr + "</table><br>";
+            tableStr = tableStr + "</table>";
             //添加到div中
             console.log(tableStr)
         }
