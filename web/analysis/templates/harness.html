@@ -294,7 +294,8 @@
                                             你知道你自己很棒么
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" style="background: #FDCFAD"  class="btn btn-light" data-dismiss="modal">当然知道！
+                                            <button type="button" style="background: #FDCFAD" class="btn btn-light"
+                                                    data-dismiss="modal">当然知道！
                                             </button>
                                         </div>
                                     </div>
@@ -315,8 +316,9 @@
         <div class="col-md-6 col-sm-6 col-lg-7 col-xs-6" id="right">
 
             <div class="row">
-                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="tableHarnessResultAjax" ></div>
-                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="tableDifferentResultAjax" style="padding-top: 30px"></div>
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="tableHarnessResultAjax"></div>
+                <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="tableDifferentResultAjax"
+                     style="padding-top: 30px"></div>
                 <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12" id="returnCode" style="padding-top: 30px">
                 </div>
             </div>
@@ -497,7 +499,7 @@
             returnCode += '(' + data[i].returncode + ')'
 
 
-            var trHeadStr = wrongId.includes(data[i].testbed_id) ? "<tr class='table-danger'>" : "<tr>"
+            var tdHeadStr = wrongId.includes(data[i].testbed_id) ? "<td class='table-danger'" : "<td"
 
             {#console.log(data[i].stdout + 'ffff')#}
 
@@ -505,13 +507,14 @@
             console.log(data[i].stdout)
             var stdout_content = data[i].stdout
 
-            tableStr = tableStr + trHeadStr
+            tableStr = tableStr
+                + "<tr>"
                 + firstTd
-                + "<td>" + data[i].testbed_id + "</td>"
-                + "<td>" + testbed_info[data[i].testbed_id] + "</td>"
-                + "<td id='stdout_td_id'><code><p style='white-space:pre'>" + stdout_content + "</p></code></td>"
-                + "<td id='stderr_td_id'><code><p style='white-space:pre'>" + data[i].stderr + "</p></code></td>"
-                + "<td>" + data[i].returncode + "</td>"
+                + tdHeadStr + ">" + data[i].testbed_id + "</td>"
+                + tdHeadStr + ">" + testbed_info[data[i].testbed_id] + "</td>"
+                + tdHeadStr + " id='stdout_td_id'><code><p style='white-space:pre'>" + stdout_content + "</p></code></td>"
+                + tdHeadStr + " id='stderr_td_id'><code><p style='white-space:pre'>" + data[i].stderr + "</p></code></td>"
+                + tdHeadStr + ">" + data[i].returncode + "</td>"
                 + "</tr>";
         }
 
