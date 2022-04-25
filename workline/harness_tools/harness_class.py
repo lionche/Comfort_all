@@ -94,17 +94,18 @@ class HarnessResult:
             return []
         ratio = 2 / 3
         majority = self.get_majority_output()
-        # print(majority)
+        # print("majority_outputs: ",majority)
+
         testbed_num = len(self.outputs)
-        # print(testbed_num)
 
         bugs_info = []
         for output in self.outputs:
             if output.output_class == "crash":
+                # print(f"{output.testbed_id}crash")
                 bugs_info.append(
                     DifferentialTestResult(self.function_id, self.testcase_id, "crash", output.testbed_id,
                                            output.testbed_location))
-                pass
+                # pass
             elif majority.majority_outcome != output.output_class and majority.outcome_majority_size >= math.ceil(
                     ratio * testbed_num):
                 if majority.majority_outcome == "pass":
@@ -171,7 +172,8 @@ class Output:
         The order in which branches are judged cannot be reversed，
         because Whether the test case has a syntax error or not, chakraCore's returnCode is equal to 0
         """
-        if self.returncode == -9 and self.duration_ms > 30 * 1000:
+        # if self.returncode == -9 and self.duration_ms > 30 * 1000:
+        if self.returncode == -9:
             return "timeout"
         elif self.returncode < 0:
             return "crash"
