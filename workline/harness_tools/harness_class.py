@@ -175,7 +175,7 @@ class Output:
         # if self.returncode == -9 and self.duration_ms > 30 * 1000:
         if self.returncode == -9:
             return "timeout"
-        elif self.returncode < 0:
+        elif self.returncode < 0 and self.returncode != -9:
             return "crash"
         elif self.returncode > 0 or not self.stderr == "":
             return "script_error"
