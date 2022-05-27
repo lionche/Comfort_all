@@ -5,11 +5,8 @@ import subprocess
 import sys
 import tempfile
 import time
-
 from workline.mysql_tools.Table_Operation import Table_Testcase, Table_Function
-from src.utils.config import generate_model_dir, generate_model_name
 from workline.assemble_tools.callable_processor import CallableProcessor
-import gpt_2_simple as gpt2
 
 
 class Function_Object(object):
@@ -23,6 +20,7 @@ class Function_Object(object):
         self.Remark = function_object[5]
         self.js_line_count = self.getJSfileSize(self.Function_Content, 10)
         self.var_line_count = self.count_var_lines(self.Function_Content)
+        self.prefix_list = self.prefixList()
 
     # def __str__(self):
     #     return str(self.Function_Content)
@@ -49,184 +47,54 @@ class Function_Object(object):
         lines_list = code.splitlines()
         return min(len(lines_list), cut_max_line)
 
-    def makeFunctionListToWrite(self, all_functions, SourceFun_id, mutation_type, mutation_times, Remark) -> list:
-        # 将生成的代码写入数据库
-
-        lis = []
-
-        for function in all_functions:
-            Function_content = function
-            item = [Function_content, SourceFun_id, mutation_type, mutation_times, Remark]
-            lis.append(item)
-        return lis
+    def prefixList(self):
+        prefix_list = []
+        for prefix_line in range(self.var_line_count, self.js_line_count):
+            # 获取到了前缀
+            function_prefix = self.getPrefix(self.Function_Content, prefix_line)
+            prefix_list.append(function_prefix)
+        return prefix_list
 
         # Function_content, SourceFun_id, Mutation_method, Remark
 
-    def gpt_mutation_1_2(self, sess, if_save_function):
-        """
-        gpt续写,gpt续写替换
-        :return:
-        """
-        # gpt续写替换
+    def gpt_replace_block(self, prefix_line, function):
 
-        all_start_time = time.time()
-        IfReplaceBlock = True
+        orginal_block_list = self.analysis_js_block(self.Function_Content)
+        # print(orginal_block_list)
+        gpt_block_list = self.analysis_js_block(function)
+        # print(gpt_block_list)
 
-        # 从保留变量定义的第一行到结尾，依次获取前缀
+        block_num = self.fineBlockIdx(gpt_block_list, prefix_line + 1)
 
-        print("1.正在使用gpt续写变异和gpt续写替换变异")
+        # 当前块不是最后一个块的话
+        # if block_num != len(gpt_block_list):
+        # 使用当前代码块替换掉对应的代码块
+        try:
+            # print('原用例')
+            # for block in orginal_block_list:
+            #     print(block)
+            #     print("-"*50)
+            #
+            # print('GPT用例')
+            # for block in gpt_block_list:
+            #     print(block)
+            #     print("-"*50)
 
-        all_functions_generated = set()
-        all_functions_replaced_generated = set()
+            orginal_block_list_copy = orginal_block_list.copy()
 
-        for prefix_line in range(self.var_line_count, self.js_line_count):
+            orginal_block_list_copy[block_num - 1] = gpt_block_list[block_num - 1]
 
-            all_functions_replace_block = set()
+            # print('替换后')
+            # for block in orginal_block_list_copy:
+            #     print(block)
+            #     print("-"*50)
 
-            start_time = time.time()
-            # 获取到了前缀
-            function_prefix = self.getPrefix(self.Function_Content, prefix_line)
-
-            try:
-                all_functions = self.function_generate(function_prefix, sess)
-
-            except:
-                # 前缀过长，出错，跳到下一个用例
-                print('前缀过长，跳过')
-                continue
-                # pass
-            # end_time = time.time()
-            # print(
-            #     f"A total of {len(all_functions)} testcases were generated, taking {int(end_time - start_time)} seconds.")
-
-            # 将生成的代码写入数据库
-            # self.write_to_database(all_functions, self.Id, mutation_type, None)
-
-            all_functions_pass = self.jshint_check_function(all_functions)
-
-            # 变异方法二：代码块替换
-            if IfReplaceBlock:
-
-                # gpt前缀的行数，为1~gpt_line_num
-                gpt_line_num = prefix_line
-                orginal_block_list = self.analysis_js_block(self.Function_Content)
-
-                for function in all_functions_pass:
-                    gpt_block_list = self.analysis_js_block(function)
-
-                    block_num = self.fineBlockIdx(gpt_block_list, gpt_line_num + 1)
-
-                    # 当前块不是最后一个块的话
-                    if block_num != len(gpt_block_list):
-                        # 使用当前代码块替换掉对应的代码块
-                        try:
-                            # print('原用例')
-                            # for block in orginal_block_list:
-                            #     print(block)
-                            #     print("-"*50)
-                            #
-                            # print('GPT用例')
-                            # for block in gpt_block_list:
-                            #     print(block)
-                            #     print("-"*50)
-
-                            orginal_block_list_copy = orginal_block_list.copy()
-
-                            orginal_block_list_copy[block_num - 1] = gpt_block_list[block_num - 1]
-
-                            # print('替换后')
-                            # for block in orginal_block_list_copy:
-                            #     print(block)
-                            #     print("-"*50)
-
-                            code_string = ''
-                            for block in orginal_block_list_copy:
-                                code_string = code_string + block
-                            all_functions_replace_block.add(code_string)
-
-                        except:
-                            pass
-            end_time = time.time()
-
-            if if_save_function:
-                print(
-                    f"生成了{len(all_functions_pass)}个GPT续写function，生成了{len(all_functions_replace_block)}个GPT续写替换function，总耗时{int(end_time - start_time)}秒.")
-                function_list_to_write1 = self.makeFunctionListToWrite(all_functions=all_functions_pass,
-                                                                       SourceFun_id=self.Id,
-                                                                       mutation_type=1,
-                                                                       mutation_times=0,
-                                                                       Remark=None)
-                function_list_to_write2 = self.makeFunctionListToWrite(all_functions=all_functions_replace_block,
-                                                                       SourceFun_id=self.Id,
-                                                                       mutation_type=2,
-                                                                       mutation_times=0,
-                                                                       Remark=None)
-                self.write_to_Table_function(function_list_to_write1, function_list_to_write2)
-            else:
-                all_functions_generated = all_functions_generated.union(all_functions_pass)
-                all_functions_replaced_generated = all_functions_replaced_generated.union(all_functions_replace_block)
-
-        print(
-            f"生成了{len(all_functions_generated)}GPT续写用例，生成了{len(all_functions_replaced_generated)}个GPT续写替换function，总耗时{int(time.time() - all_start_time)}秒.")
-        return all_functions_generated, all_functions_replaced_generated
-
-    def write_to_Table_function(self, *lis):
-        list_to_write = []
-
-        for item in lis:
-            list_to_write += item
-        # print(list_to_write)
-
-        table_Function = Table_Function()
-        table_Function.insertManyDataToTableFunction(list_to_write)
-
-    def function_generate(self, function_prefix, sess):
-
-        generate_prefix_top2000 = "//JavascriptTop2000Functions\n"
-
-        generate_prefix = generate_prefix_top2000 + function_prefix
-
-        # generate_prefix = hparams.generate_prefix
-        print("-" * 50 + f"\n选择前缀为:{function_prefix.strip()}")
-        # print(self.prefix_line)
-
-        nsamples = 16
-        batch_size = 16
-        batches = int(math.ceil(nsamples / batch_size))
-
-        all_functions = set()
-
-        for idx in range(batches):
-            try:
-                texts = gpt2.generate(sess,
-                                      model_dir=generate_model_dir,
-                                      model_name=generate_model_name,
-                                      nsamples=batch_size,
-                                      batch_size=batch_size,
-                                      prefix=generate_prefix,
-                                      top_p=0,
-                                      top_k=0,
-                                      temperature=0.5,
-                                      include_prefix=True,
-                                      return_as_list=True,
-                                      length=512
-                                      )
-                for text in texts:
-
-                    # 用前缀分割用例，[1:]去除第一个分割的空白
-                    functions = text.split(generate_prefix_top2000)[1:]
-
-                    # 如果生成多个方法，只取第一个符合前缀的方法
-                    # print(len(functions))
-
-                    if len(functions) > 1:
-                        # print(functions[0])
-                        # print("-" * 10)
-                        all_functions.add(functions[0])
-            except:
-                continue
-
-        return all_functions
+            code_string = ''
+            for block in orginal_block_list_copy:
+                code_string += block
+            return code_string
+        except:
+            pass
 
     def getPrefix(self, code: str, cut_line: int):
         lines_list = code.splitlines(True)
@@ -312,14 +180,14 @@ class Function_Object(object):
 
                     all_functions_replace_block_pass = self.jshint_check_function(code_list)
 
-                    function_list_to_write = self.makeFunctionListToWrite(
+                    function_list_to_write = makeFunctionListToWrite(
                         all_functions=all_functions_replace_block_pass,
                         SourceFun_id=self.Id,
                         mutation_type=3,
                         mutation_times=0,
                         Remark=None)
 
-                    self.write_to_Table_function(function_list_to_write)
+                    write_to_Table_function(function_list_to_write)
 
             end_time = time.time()
 
@@ -428,37 +296,19 @@ class Function_Object(object):
             test_str_line_list_copy[old_value_statement_idx] = new_value_statement
         return test_str_line_list_copy
 
-    def jshint_check_function(self, all_functions):
-        """
-        使用jshint对生成的function进行检查\n
-        过滤掉语法错误的用例\n
-        保留正确的，再用于替换代码块变异
-        :param all_functions: 所有方法的list
-        :return:
-        """
-        start_time = time.time()
-        # print("正在对生成的function使用jshint进行语法检查")
-        all_functions_pass = set()
-        for function in all_functions:
-            # 通过with语句创建临时文件，with会自动关闭临时文件
-            with tempfile.NamedTemporaryFile(delete=True) as tmpfile:
-                temp_file_path = tmpfile.name
-                # print(temp_file_name)  # /tmp/tmp73zl8gmn
-                fine_code = 'var NISLFuzzingFunc = ' + function + ';'
-                tmpfile.write(fine_code.encode())
-                tmpfile.seek(0)
-                tmpTxt = tmpfile.read().decode()
-                # print(tmpTxt)
-                result = self.cmd_jshint(temp_file_path)
-                if result:
-                    all_functions_pass.add(function)
 
-        end_time = time.time()
+    def makeTestcasesListToWrite(self, all_testcases, SourceFun_id, SourceTestcase_id, Fuzzing_times,
+                                 Mutation_method, Mutation_times, Interesting_times, Probability, Remark) -> list:
+        # 将生成的代码写入数据库
 
-        print(
-            f"共生成了{len(all_functions)}个function，其中语法正确的function共{len(all_functions_pass)}个，检测总耗时{int(end_time - start_time)}秒.")
-        return all_functions_pass
+        lis = []
 
+        for testcase in all_testcases:
+            Testcases_content = testcase
+            item = [Testcases_content, SourceFun_id, SourceTestcase_id, Fuzzing_times, Mutation_method,
+                    Mutation_times, Interesting_times, Probability, Remark]
+            lis.append(item)
+        return lis
     def jshint_check_testcases(self, all_testcases):
         """
         使用jshint对生成的用例进行检查\n
@@ -520,19 +370,6 @@ class Function_Object(object):
             # print(f"{file_path}right!")
         return jshint_flag
 
-    def makeTestcasesListToWrite(self, all_testcases, SourceFun_id, SourceTestcase_id, Fuzzing_times,
-                                 Mutation_method, Mutation_times, Interesting_times, Probability, Remark) -> list:
-        # 将生成的代码写入数据库
-
-        lis = []
-
-        for testcase in all_testcases:
-            Testcases_content = testcase
-            item = [Testcases_content, SourceFun_id, SourceTestcase_id, Fuzzing_times, Mutation_method,
-                    Mutation_times, Interesting_times, Probability, Remark]
-            lis.append(item)
-        return lis
-
     def assemble_to_testcase(self):
         """
         将function组装成用例
@@ -559,3 +396,26 @@ class Function_Object(object):
             # print(function_assemle)
         except:
             pass
+
+
+def makeFunctionListToWrite(all_functions, SourceFun_id, mutation_type, mutation_times, Remark) -> list:
+    # 将生成的代码写入数据库
+
+    lis = []
+
+    for function in all_functions:
+        Function_content = function
+        item = [Function_content, SourceFun_id, mutation_type, mutation_times, Remark]
+        lis.append(item)
+    return lis
+
+
+def write_to_Table_function(*lis):
+    list_to_write = []
+
+    for item in lis:
+        list_to_write += item
+    # print(list_to_write)
+
+    table_Function = Table_Function()
+    table_Function.insertManyDataToTableFunction(list_to_write)
