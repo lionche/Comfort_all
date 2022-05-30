@@ -47,9 +47,12 @@ class Function_Object(object):
         lines_list = code.splitlines()
         return min(len(lines_list), cut_max_line)
 
+
+
     def prefixList(self):
         prefix_list = []
         for prefix_line in range(self.var_line_count, self.js_line_count):
+
             # 获取到了前缀
             function_prefix = self.getPrefix(self.Function_Content, prefix_line)
             prefix_list.append(function_prefix)

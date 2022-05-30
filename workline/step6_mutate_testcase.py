@@ -77,7 +77,6 @@ def enrich_one_function(function_item, num_return_sequences=1):
                 len(function_item.prefix_list[generationIdx].splitlines()), item['generated_text'])
             # print(function_replace_block)
             functions_set.add(item['generated_text'])
-            # 当function_replace_block不为None时保存到数据库
             if function_replace_block:
                 functions_replace_block_set.add(function_replace_block)
 
@@ -142,12 +141,12 @@ if __name__ == '__main__':
             print('*' * 25 + f'变异testcase{item.Id}' + '*' * 25)
 
             # 规则变异
-            # print("正在进行人工规则替换")
-            # random_block_remove_pass, while_if_swap_pass, condition_code_add_pass, replaceOperator_pass, replace_similar_API_pass, replace_return_API_pass, proto_pollution_pass, property_modification_pass, hotspot_optimization_pass = item.mutation_method4()
-            # num = len(random_block_remove_pass) + len(while_if_swap_pass) + len(condition_code_add_pass) + len(
-            #     replaceOperator_pass) + len(replace_similar_API_pass) + len(replace_return_API_pass) + len(
-            #     proto_pollution_pass) + len(property_modification_pass) + len(hotspot_optimization_pass)
-            # print(f'规则变异出{num}个用例')
+            print("正在进行人工规则替换")
+            random_block_remove_pass, while_if_swap_pass, condition_code_add_pass, replaceOperator_pass, replace_similar_API_pass, replace_return_API_pass, proto_pollution_pass, property_modification_pass, hotspot_optimization_pass = item.mutation_method4()
+            num = len(random_block_remove_pass) + len(while_if_swap_pass) + len(condition_code_add_pass) + len(
+                replaceOperator_pass) + len(replace_similar_API_pass) + len(replace_return_API_pass) + len(
+                proto_pollution_pass) + len(property_modification_pass) + len(hotspot_optimization_pass)
+            print(f'规则变异出{num}个用例')
 
             # 生成变异
             if useGptMutate:

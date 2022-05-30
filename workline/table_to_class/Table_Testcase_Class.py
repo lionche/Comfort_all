@@ -190,7 +190,7 @@ class Testcase_Object(object):
         pro1 = subprocess.Popen(cmd1, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, universal_newlines=True)
         stdout1, stderr1 = pro1.communicate()
-        print(stderr1)
+        # print(stderr1)
 
         result1 = stdout1.split("------------------------------")
         for i in result1:

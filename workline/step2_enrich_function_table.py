@@ -16,9 +16,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers import pipeline
 
 
-
-
-
 def testJshintPassRate(function):
     def cmd_jshint(temp_file_path):
         """
@@ -46,6 +43,7 @@ def testJshintPassRate(function):
             jshint_flag = True
             # print(f"{temp_file_path}right!")
         return jshint_flag
+
     with tempfile.NamedTemporaryFile(delete=True) as tmpfile:
         temp_file_path = tmpfile.name
         # print(temp_file_name)  # /tmp/tmp73zl8gmn
@@ -124,12 +122,12 @@ if __name__ == '__main__':
     if Function_Object_List:
         start = time.time()
         print(f'正在加载模型,大约需要5秒,请稍等')
-        model_name_or_path = "/root/Comfort_all/data/train_model/distilgpt2_finetune"
+        model_name_or_path = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
         tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
 
         generator = pipeline(task="text-generation", model=model, tokenizer=tokenizer, device=0)
-        print("模型加载完成：", time.time() - start)
+        print("模型加载完成耗时：", int(time.time() - start), '秒')
         num_return_sequences = 50
         for item in Function_Object_List:
             print('*' * 30 + f'正对Function{item.Id}进行扩充' + '*' * 30)
@@ -137,40 +135,44 @@ if __name__ == '__main__':
             # 传入一个用例，返回直接续写和续写替换的用例
             FunctionsSet, FunctionsReplaceBlockSet = enrich_one_function(item, num_return_sequences)
             AllFunctionsSet = FunctionsSet.union(FunctionsReplaceBlockSet)
-
-            print("生成不重复用例的数量为{},不重复率为{:.2%},生成速度{}个/秒".format(len(AllFunctionsSet),
-                                                               len(AllFunctionsSet) / (
-                                                                       len(item.prefix_list) * num_return_sequences) / 2,
-                                                               int(len(AllFunctionsSet) / (time.time() - start_gen))))
-            start_jshint = time.time()
-
-            FunctionsJshintPassSet = set()
-            FunctionsReplaceBlockSetJshintPassSet = set()
-
-            pool = ThreadPool()
-            pool.map(functionJshintPassMutil, FunctionsSet)
-            pool.map(functionReplaceBlockJshintPassMutil, FunctionsReplaceBlockSet)
-            pool.close()
-            pool.join()
-
-            print("直接续写语法通过率为{:.2%},续写替换语法通过率为{:.2%}，检查速度{}个/秒".format(len(FunctionsJshintPassSet) / len(FunctionsSet),
-                                                                       len(FunctionsReplaceBlockSetJshintPassSet) / len(
-                                                                           FunctionsReplaceBlockSet),
-                                                                       int(len(AllFunctionsSet) / (
+            if len(item.prefix_list) != 0:
+                print("生成不重复用例的数量为{},不重复率为{:.2%},生成速度{}个/秒".format(len(AllFunctionsSet),
+                                                                   len(AllFunctionsSet) / (
+                                                                           len(item.prefix_list) * num_return_sequences) / 2,
+                                                                   int(len(item.prefix_list) * num_return_sequences / (
                                                                                time.time() - start_gen))))
 
-            function_list_to_write1 = makeFunctionListToWrite(all_functions=FunctionsJshintPassSet,
-                                                              SourceFun_id=item.Id,
-                                                              mutation_type=1,
-                                                              mutation_times=0,
-                                                              Remark=None)
+                start_jshint = time.time()
 
-            function_list_to_write2 = makeFunctionListToWrite(all_functions=FunctionsReplaceBlockSetJshintPassSet,
-                                                              SourceFun_id=item.Id,
-                                                              mutation_type=2,
-                                                              mutation_times=0,
-                                                              Remark=None)
+                FunctionsJshintPassSet = set()
+                FunctionsReplaceBlockSetJshintPassSet = set()
 
-            write_to_Table_function(function_list_to_write1, function_list_to_write2)
-            # item.Mutation_Times += 1
+                pool = ThreadPool()
+                pool.map(functionJshintPassMutil, FunctionsSet)
+                pool.map(functionReplaceBlockJshintPassMutil, FunctionsReplaceBlockSet)
+                pool.close()
+                pool.join()
+
+                print("直接续写语法通过率为{:.2%},续写替换语法通过率为{:.2%}，检查速度{}个/秒".format(len(FunctionsJshintPassSet) / len(FunctionsSet),
+                                                                           len(FunctionsReplaceBlockSetJshintPassSet) / len(
+                                                                               FunctionsReplaceBlockSet),
+                                                                           int(len(AllFunctionsSet) / (
+                                                                                   time.time() - start_gen))))
+                print('扩充方法用时:',int(time.time() - start_gen),'秒')
+
+                function_list_to_write1 = makeFunctionListToWrite(all_functions=FunctionsJshintPassSet,
+                                                                  SourceFun_id=item.Id,
+                                                                  mutation_type=1,
+                                                                  mutation_times=0,
+                                                                  Remark=None)
+
+                function_list_to_write2 = makeFunctionListToWrite(all_functions=FunctionsReplaceBlockSetJshintPassSet,
+                                                                  SourceFun_id=item.Id,
+                                                                  mutation_type=2,
+                                                                  mutation_times=0,
+                                                                  Remark=None)
+
+                # write_to_Table_function(function_list_to_write1, function_list_to_write2)
+            else:
+                print('前缀列表为空，无法扩充')
             table_Function.updateMutationTimes(item.Mutation_Times + 1, item.Id)
