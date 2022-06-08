@@ -14,8 +14,9 @@ from workline.mysql_tools.Table_Operation import Table_Suspicious_Result
 table_suspicious_Result = Table_Suspicious_Result()
 # 分析未分析的可以用例
 # unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result()
-unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result_with_error_type("'Pass value *** run error'")
-# unfiltered_list = table_suspicious_Result.selectIdFromTable_Suspicious_Result(67394)
+# unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result_with_error_type("'Pass value *** run error'")
+# unfiltered_list = table_suspicious_Result.selectUnFilteredFromTable_Suspicious_Result_with_error_type("'crash'")
+unfiltered_list = table_suspicious_Result.selectIdFromTable_Suspicious_Result(2705125)
 pbar = tqdm(total=len(unfiltered_list))
 #
 # for item in unfiltered_list:

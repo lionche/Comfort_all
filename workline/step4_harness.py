@@ -16,7 +16,15 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+# list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(20)
+
+list_unharness = []
+
+with open('/root/Comfort_all/workline/dealid.txt') as f:
+    lines = f.readlines()
+    for item in lines:
+        # print(item.strip())
+        list_unharness.append(table_Testcases.selectOneFromTableTestcase(item.strip()))
 
 pbar = tqdm(total=len(list_unharness))
 
@@ -32,10 +40,10 @@ def muti_harness(testcase):
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
     # 把结果插入到result数据库中
-    try:
-        harness_result.save_to_table_result()
-    except:
-        pass
+    # try:
+    #     harness_result.save_to_table_result()
+    # except:
+    #     pass
     # 投票
     different_result_list = harness_result.differential_test()
 
@@ -44,6 +52,11 @@ def muti_harness(testcase):
         pass
         # print("该用例差分没有触发问题")
     else:
+        # 触发问题之后再保存可疑结果
+        try:
+            harness_result.save_to_table_result()
+        except:
+            pass
 
         # print("共触发了{}个引擎错误".format(len(different_result_list)))
 
@@ -57,11 +70,14 @@ def muti_harness(testcase):
         for interesting_test_result in different_result_list:
             # print(interesting_test_result)
             interesting_test_result.save_to_table_suspicious_Result()
+            # print(interesting_test_result)
 
-            unfiltered_list = Table_Suspicious_Result().selectTestcseIdFromTable_Suspicious_Result(testcase_object.Id)
-            for suspicious_testcase in unfiltered_list:
-                suspicious_result = Suspicious_Result_Object(suspicious_testcase)
-                suspicious_result.analysis()
+
+        unfiltered_list = Table_Suspicious_Result().selectTestcseIdFromTable_Suspicious_Result(testcase_object.Id)
+        for suspicious_testcase in unfiltered_list:
+            # print(suspicious_testcase)
+            suspicious_result = Suspicious_Result_Object(suspicious_testcase)
+            suspicious_result.analysis()
 
         # print(f"JS engines running results:")
 

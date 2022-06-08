@@ -86,11 +86,11 @@ class DataBaseHandle(object):
         return recount
 
     # 删除数据
-    def delete(self, sql, prames):
+    def delete(self, sql):
         conn = pymysql.connect(**self.conn)
 
         cur = conn.cursor()
-        recount = cur.execute(sql, prames)
+        recount = cur.execute(sql)
         conn.commit()
         cur.close()
         conn.close()

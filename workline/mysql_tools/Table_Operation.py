@@ -1,6 +1,7 @@
 # 对表Table_Function进行操作
 from workline.mysql_tools.db_operation_base import DataBaseHandle
 
+
 class Table_Function(object):
     def __init__(self):
         # 实例化 DataBaseHandle()
@@ -124,7 +125,7 @@ class Table_Testcase(object):
     # 单行查询
     def selectOneFromTableTestcase(self, id):
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        sql = 'select * from Table_Testcase where id=%s'
+        sql = 'select * from Table_Testcase where id=%s and Fuzzing_times = 1'
         prames = (id)
         return self.__table.selectOne(sql, prames)
 
@@ -295,6 +296,16 @@ class Table_Result(object):
     lis = [[id,catid,typeid,title],[id2,catid2,typeid2,title2]]
     '''
 
+    def selectTestcaseIdFromTableResult(self, testcase_id):
+        """
+        条件查询全部符合的数据\n
+        :param testcase_id: 用例id
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Result where Testcase_id={testcase_id}'
+        return self.__table.selectall(sql)
+
     def insertManyDataToTableResult(self, lis):
         sql = 'INSERT INTO Table_Result(Testcase_Id, Testbed_Id, Returncode, Stdout,Stderr ,duration_ms,seed_coverage,engine_coverage,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         return self.__table.insertMany(sql, lis)
@@ -305,16 +316,21 @@ class Table_Result(object):
         prames = (id,)
         return self.__table.delete(sql, prames)
 
+    # 根据testcases id删除数据
+    def deleteByTestcaseIdFromTableResult(self, testcase_id):
+        sql = f'delete from Table_Result where testcase_id={testcase_id}'
+        return self.__table.delete(sql)
+
     # 删除全部
     def deleteAllFromTableResult(self):
         sql = 'delete from Table_Result'
         return self.__table.deleteAll(sql)
 
-    # 更改数据
-    def updateDataBaseHandle(self, id, Function_content):
-        sql = 'update Table_Result set Testcase_context= %s where id = %s'
-        prames = (Function_content, id)
-        return self.__table.update(sql, prames)
+    # # 更改数据
+    # def updateDataBaseHandle(self, id, Function_content):
+    #     sql = 'update Table_Result set Testcase_context= %s where id = %s'
+    #     prames = (Function_content, id)
+    #     return self.__table.update(sql, prames)
 
 
 class Table_Testbed(object):
@@ -399,7 +415,8 @@ class Table_Suspicious_Result(object):
         :return:所有符合条件的数据的List
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        sql = f"select * from Table_Suspicious_Result where Is_filtered='0' AND error_type = {error_type}"
+        # sql = f"# select * from Table_Suspicious_Result where Is_filtered='0' AND error_type = {error_type}"
+        sql = f"# select * from Table_Suspicious_Result where error_type = {error_type}"
         return self.__table.selectall(sql)
 
     def selectUnFilteredFromTable_Suspicious_Result(self):
@@ -418,6 +435,11 @@ class Table_Suspicious_Result(object):
         sql = 'update Table_Suspicious_Result set Is_filtered= %s where id = %s'
         prames = (Is_filtered, id)
         return self.__table.update(sql, prames)
+    # 根据 id删除数据
+    def deleteByTestcaseIdFromTable_Suspicious_Result(self, id):
+        sql = f'delete from Table_Suspicious_Result where id={id}'
+        return self.__table.delete(sql)
+
 # if __name__ == '__main__':
 # table_testbed = Table_Testbed()
 # print(table_testbed.selectAllIdAndLocateFromTableTestbed())

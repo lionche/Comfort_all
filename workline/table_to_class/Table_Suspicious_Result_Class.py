@@ -34,6 +34,7 @@ class Suspicious_Result_Object(object):
         """
         table_Result = Table_Result()
         Result_list = table_Result.selectTestcasesFromTableResult(self.Testcase_id)
+        # print(Result_list)
         result_object_dict = {}
         returncode = ''
         for item in Result_list:
@@ -100,7 +101,7 @@ class Suspicious_Result_Object(object):
             # todo 进行人工分析
             pass
         else:
-            print('匹配到return code', self.Returncode)
+            # print('匹配到return code', self.Returncode)
             error_info_list = self.extractYaml2(Returncode_block['error_info'])
             if len(error_info_list) == 0:
                 pass
