@@ -415,8 +415,8 @@ class Table_Suspicious_Result(object):
         :return:所有符合条件的数据的List
         """
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        # sql = f"# select * from Table_Suspicious_Result where Is_filtered='0' AND error_type = {error_type}"
-        sql = f"# select * from Table_Suspicious_Result where error_type = {error_type}"
+        sql = f"select * from Table_Suspicious_Result where Is_filtered='0' AND error_type = {error_type}"
+        # sql = f"# select * from Table_Suspicious_Result where error_type = {error_type}"
         return self.__table.selectall(sql)
 
     def selectUnFilteredFromTable_Suspicious_Result(self):

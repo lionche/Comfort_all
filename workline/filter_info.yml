@@ -717,95 +717,8 @@ returncode_type:
         remark-id: '14.2'
 
 
-  - returncode: 1(-9)2(-9)3(-9)4(-9)5(-9)6(-9)7(-9)8(-9)9(-9)
-    id: 15
-    error_info:
-      - Stdout:
-        Stderr:
-        Code:
-        remark: 'crash误报：引擎表现都为超时'
-        remark-id: '15.1'
-
-  - returncode: 1(133)2(-9)3(-6)4(-9)5(-9)6(-9)7(-9)8(-9)9(-6)
-    id: 16
-    error_info:
-      - Stdout:
-          - engine: 1
-            info: 'Fatal JavaScript invalid size error'
-        Stderr:
-        Code:
-        remark: 'crash误报：数组元素过多，v8报错'
-        remark-id: '16.1'
-
-  - returncode: 1(-9)2(3)3(-9)4(-9)5(-9)6(-9)7(-9)8(-9)9(-9)
-    id: 17
-    error_info:
-      - Stdout:
-        Stderr:
-          - engine: 2
-            info: 'uncaught exception: out of memory'
-        Code:
-        remark: 'crash误报：数组元素过多，sm报错'
-        remark-id: '17.1'
-
-  - returncode: 1(-9)2(-9)3(-9)4(-9)5(-9)6(10)7(-9)8(-9)9(-9)
-    id: 18
-    error_info:
-      - Stdout:
-        Stderr:
-          - engine: 6
-            info: 'Error: ERR_OUT_OF_MEMORY'
-        Code:
-        remark: 'crash误报：数组元素过多，jerry报错'
-        remark-id: '18.1'
-
-  - returncode: 1(-9)2(139)3(-9)4(-9)5(-9)6(10)7(-9)8(-9)9(-9)
-    id: 19
-    error_info:
-      - Stdout:
-        Stderr:
-          - engine: 2
-            info: '\[unhandlable oom\]'
-          - engine: 6
-            info: 'Error: ERR_OUT_OF_MEMORY'
-        Code:
-        remark: 'crash误报：数组元素过多，sm、jerry报错'
-        remark-id: '19.1'
-
-  - returncode: 1(-9)2(139)3(-9)4(-9)5(137)6(10)7(-9)8(-9)9(-9)
-    id: 20
-    error_info:
-      - Stdout:
-        Stderr:
-          - engine: 2
-            info: '\[unhandlable oom\]'
-          - engine: 5
-            info: 'Killed'
-          - engine: 6
-            info: 'Error: ERR_OUT_OF_MEMORY'
-        Code:
-        remark: 'crash误报：数组元素过多，sm、qjs、jerry报错'
-        remark-id: '20.1'
-
-  - returncode: 1(1)2(3)3(-9)4(-9)5(-9)6(10)7(-9)8(1)9(-9)
-    id: 21
-    error_info:
-      - Stdout:
-          - engine: 1
-            info: 'RangeError: Invalid string length'
-        Stderr:
-          - engine: 2
-            info: 'InternalError: allocation size overflow'
-          - engine: 6
-            info: 'Error: ERR_OUT_OF_MEMORY'
-          - engine: 8
-            info: 'Uncaught RangeError: String length exceeds limit'
-        Code:
-        remark: 'crash误报：字符串过长'
-        remark-id: '21.1'
-
   - returncode: 1(1)2(3)3(0)4(3)5(1)6(-11)7(7)8(1)9(0)
-    id: 22
+    id: 15
     error_info:
       - Stdout:
           - engine: 1
@@ -819,6 +732,8 @@ returncode_type:
             info: 'Error: Out of stack space'
           - engine: 5
             info: 'InternalError: stack overflow'
+          - engine: 6
+            info: 'timeout: the monitored command dumped core'
           - engine: 7
             info: 'RangeError: Maximum call stack size exceeded'
           - engine: 8
@@ -827,16 +742,18 @@ returncode_type:
             info: 'Error: Out of stack space'
         Code:
         remark: 'crash误报：函数循环相互调用/自调用'
-        remark-id: '22.1'
+        remark-id: '15.1'
 
   - returncode: 1(1)2(3)3(0)4(3)5(1)6(-11)7(7)8(-9)9(0)
-    id: 23
+    id: 16
     error_info:
       - Stdout:
           - engine: 1
             info: 'not a function'
           - engine: 4
             info: 'not a function'
+          - engine: 8
+            info: ''
         Stderr:
           - engine: 2
             info: 'not a function'
@@ -844,6 +761,8 @@ returncode_type:
             info: 'Function expected'
           - engine: 5
             info: 'not a function'
+          - engine: 6
+            info: 'timeout: the monitored command dumped core'
           - engine: 7
             info: 'not a function'
           - engine: 9
@@ -851,3 +770,114 @@ returncode_type:
         Code:
         remark: 'crash误报：函数循环自调用导致的异常表现'
         remark-id: '23.1'
+
+  - returncode: 1(0)2(0)3(-11)4(0)5(0)6(0)7(0)8(2)9(0)
+    id: 17
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 8
+            info: 'Invalid expression encountered'
+        Code:
+          - content: 'Reflect.construct'
+        remark: 'chakra - Reflect.construct(v1, [], RegExp)'
+        remark-id: '17.1'
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(-6)9(0)
+    id: 18
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: 'StoreNewOwnPropertyInst::Property must be a string literal in function eval'
+        Code:
+          - content: 'eval'
+        remark: 'hermes - eval函数不支持使用非字面量字符串作为属性名'
+        remark-id: '18.1'
+
+  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(-6)9(0)
+    id: 19
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: 'num >= std::numeric_limits::lowest\(\)'
+        Code:
+          - content: 'clearTimeout'
+        remark: 'hermes - clearTimeout函数不支持非unit32'
+        remark-id: '19.1'
+
+  - returncode: 1(133)2(-9)3(-6)4(-9)5(-9)6(-9)7(-9)8(-9)9(-6)
+    id: 20
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '20.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(10)7(7)8(1)9(0)
+    id: 21
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '21.1'
+
+  - returncode: 1(-9)2(-9)3(-11)4(-9)5(-9)6(-9)7(-9)8(-9)9(-9)
+    id: 22
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：死循环'
+        remark-id: '22.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(1)7(7)8(-6)9(-6)
+    id: 23
+    error_info:
+      - Stdout:
+          - engine: 4
+            info: 'Exception: RangeError: Maximum call stack size exceeded'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 8
+            info: 'timeout: the monitored command dumped core'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组过长'
+        remark-id: '23.1'
+
+  - returncode: 1(0)2(0)3(-6)4(0)5(0)6(-9)7(0)8(-9)9(-9)
+    id: 24
+    error_info:
+      - Stdout:
+          - engine: 4
+            info: 'Exception: RangeError: Maximum call stack size exceeded'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 8
+            info: 'timeout: the monitored command dumped core'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：循环过多'
+        remark-id: '24.1'
