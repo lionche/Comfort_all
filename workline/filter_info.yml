@@ -723,23 +723,11 @@ returncode_type:
       - Stdout:
           - engine: 1
             info: 'RangeError: Maximum call stack size exceeded'
-          - engine: 4
-            info: 'RangeError: Maximum call stack size exceeded'
         Stderr:
           - engine: 2
             info: 'InternalError: too much recursion'
-          - engine: 3
-            info: 'Error: Out of stack space'
-          - engine: 5
-            info: 'InternalError: stack overflow'
           - engine: 6
             info: 'timeout: the monitored command dumped core'
-          - engine: 7
-            info: 'RangeError: Maximum call stack size exceeded'
-          - engine: 8
-            info: 'Uncaught RangeError: Maximum call stack size exceeded'
-          - engine: 9
-            info: 'Error: Out of stack space'
         Code:
         remark: 'crash误报：函数循环相互调用/自调用'
         remark-id: '15.1'
@@ -752,8 +740,6 @@ returncode_type:
             info: 'not a function'
           - engine: 4
             info: 'not a function'
-          - engine: 8
-            info: ''
         Stderr:
           - engine: 2
             info: 'not a function'
@@ -769,7 +755,7 @@ returncode_type:
             info: 'Function expected'
         Code:
         remark: 'crash误报：函数循环自调用导致的异常表现'
-        remark-id: '23.1'
+        remark-id: '16.1'
 
   - returncode: 1(0)2(0)3(-11)4(0)5(0)6(0)7(0)8(2)9(0)
     id: 17
@@ -797,13 +783,13 @@ returncode_type:
         remark: 'hermes - eval函数不支持使用非字面量字符串作为属性名'
         remark-id: '18.1'
 
-  - returncode: 1(0)2(0)3(0)4(0)5(0)6(0)7(0)8(-6)9(0)
+  - returncode: 1(1)2(3)3(0)4(3)5(1)6(1)7(7)8(-6)9(0)
     id: 19
     error_info:
       - Stdout:
         Stderr:
           - engine: 8
-            info: 'num >= std::numeric_limits::lowest\(\)'
+            info: 'timeout: the monitored command dumped core'
         Code:
           - content: 'clearTimeout'
         remark: 'hermes - clearTimeout函数不支持非unit32'
@@ -881,3 +867,400 @@ returncode_type:
         Code:
         remark: 'crash误报：循环过多'
         remark-id: '24.1'
+
+  - returncode: 1(1)2(3)3(0)4(3)5(1)6(1)7(7)8(-6)9(0)
+    id: 25
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 8
+            info: 'eval'
+        Code:
+          - content: 'eval'
+        remark: 'hermes - eval函数不支持使用非字面量字符串作为属性名-另一种表现'
+        remark-id: '25.1'
+
+  - returncode: 1(1)2(3)3(0)4(3)5(1)6(-11)7(-9)8(-9)9(0)
+    id: 26
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'not a function'
+        Stderr:
+          - engine: 6
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：函数循环自调用导致的异常表现'
+        remark-id: '26.1'
+
+  - returncode: 1(1)2(3)3(0)4(0)5(0)6(-11)7(0)8(0)9(0)
+    id: 27
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Maximum call stack size exceeded'
+        Stderr:
+          - engine: 2
+            info: 'InternalError'
+          - engine: 6
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：函数循环相互调用/自调用-另一表现'
+        remark-id: '27.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(1)7(7)8(-9)9(-6)
+    id: 28
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 2
+            info: 'SyntaxError: too many function arguments'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：循环过大导致函数参数过多'
+        remark-id: '28.1'
+
+  - returncode: 1(-9)2(-9)3(-6)4(-9)5(-9)6(-9)7(-9)8(-9)9(-9)
+    id: 29
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：循环过大导致超时'
+        remark-id: '29.1'
+
+  - returncode: 1(133)2(-9)3(-6)4(-9)5(-9)6(-9)7(-9)8(-9)9(-9)
+    id: 30
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '30.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(-11)7(7)8(1)9(0)
+    id: 31
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '31.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(-9)7(7)8(-9)9(-9)
+    id: 32
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '32.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(-9)7(7)8(1)9(0)
+    id: 33
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '33.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(10)7(-9)8(1)9(0)
+    id: 34
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '34.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(1)6(-9)7(-9)8(1)9(0)
+    id: 35
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+          - engine: 7
+            info: ''
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '35.1'
+
+  - returncode: 1(1)2(3)3(-6)4(-9)5(1)6(-9)7(7)8(1)9(0)
+    id: 36
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '36.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(10)7(7)8(1)9(0)
+    id: 37
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '37.1'
+
+  - returncode: 1(0)2(0)3(-11)4(0)5(0)6(0)7(0)8(0)9(0)
+    id: 38
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+          - content: '!p'
+        remark: 'for循环优化'
+        remark-id: '38.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(-9)7(7)8(1)9(0)
+    id: 39
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '39.1'
+
+  - returncode: 1(-9)2(-9)3(-6)4(-9)5(-9)6(-9)7(-9)8(-9)9(-6)
+    id: 40
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：循环过大导致超时'
+        remark-id: '40.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(-9)7(7)8(-9)9(0)
+    id: 41
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '41.1'
+
+  - returncode: 1(133)2(-9)3(-6)4(-9)5(-9)6(-9)7(7)8(-9)9(-9)
+    id: 42
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 7
+            info: 'Could not allocate an unaligned heap chunk'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '42.1'
+
+  - returncode: 1(133)2(-9)3(-6)4(-9)5(-9)6(-9)7(7)8(-9)9(-6)
+    id: 43
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 7
+            info: 'Could not allocate an unaligned heap chunk'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '43.1'
+
+  - returncode: 1(133)2(-9)3(-9)4(-9)5(-9)6(-9)7(-9)8(-9)9(-6)
+    id: 44
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '44.1'
+
+  - returncode: 1(0)2(0)3(-11)4(0)5(0)6(-11)7(-9)8(2)9(0)
+    id: 45
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+          - engine: 8
+            info: 'Invalid expression encountered'
+        Code:
+          - content: 'Reflect.construct'
+        remark: 'chakra - Reflect.construct(v1, [], RegExp)'
+        remark-id: '45.1'
+
+  - returncode: 1(133)2(-9)3(-6)4(-9)5(1)6(-9)7(-9)8(-9)9(-9)
+    id: 46
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 5
+            info: 'InternalError: out of memory'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '46.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(-9)7(-9)8(-9)9(-9)
+    id: 47
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '47.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(-9)7(-9)8(1)9(0)
+    id: 48
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '48.1'
+
+  - returncode: 1(1)2(3)3(-6)4(3)5(-9)6(-9)7(-9)8(-9)9(0)
+    id: 49
+    error_info:
+      - Stdout:
+          - engine: 1
+            info: 'RangeError: Invalid string length'
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：字符串过长'
+        remark-id: '49.1'
+
+  - returncode: 1(133)2(-9)3(-6)4(-9)5(-9)6(-11)7(-9)8(-9)9(-6)
+    id: 50
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '50.1'
+
+  - returncode: 1(133)2(3)3(-6)4(-9)5(-9)6(-9)7(7)8(-9)9(-6)
+    id: 51
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 1
+            info: 'Fatal JavaScript invalid size error'
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 7
+            info: 'Could not allocate an unaligned heap chunk'
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：数组元素过多，v8报错'
+        remark-id: '51.1'
+
+  - returncode: 1(-9)2(-9)3(-6)4(-9)5(-9)6(-11)7(-9)8(-9)9(-6)
+    id: 52
+    error_info:
+      - Stdout:
+        Stderr:
+          - engine: 3
+            info: 'timeout: the monitored command dumped core'
+          - engine: 6
+            info: ''
+          - engine: 9
+            info: 'timeout: the monitored command dumped core'
+        Code:
+        remark: 'crash误报：循环过大导致超时'
+        remark-id: '52.1'

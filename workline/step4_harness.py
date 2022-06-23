@@ -16,15 +16,8 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-# list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(20)
+list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
 
-list_unharness = []
-
-with open('/root/Comfort_all/workline/dealid.txt') as f:
-    lines = f.readlines()
-    for item in lines:
-        # print(item.strip())
-        list_unharness.append(table_Testcases.selectOneFromTableTestcase(item.strip()))
 
 pbar = tqdm(total=len(list_unharness))
 
