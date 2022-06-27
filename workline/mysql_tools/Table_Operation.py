@@ -125,7 +125,7 @@ class Table_Testcase(object):
     # 单行查询
     def selectOneFromTableTestcase(self, id):
         # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
-        sql = 'select * from Table_Testcase where id=%s and Fuzzing_times = 1'
+        sql = 'select * from Table_Testcase where id=%s'
         prames = (id)
         return self.__table.selectOne(sql, prames)
 
