@@ -16,7 +16,8 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+# list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+list_unharness = table_Testcases.selectIdFromTableTestcase(8)
 
 
 pbar = tqdm(total=len(list_unharness))

@@ -65,7 +65,7 @@ class Result(models.Model):
     Stderr = models.TextField(null=True)
     Duration_ms = models.IntegerField(null=True)
     Seed_coverage = models.DecimalField(max_digits=5, decimal_places=3, null=True)
-    Engine_coverage = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    Engine_coverage = models.TextField(null=True)
     Remark = models.TextField(null=True)
 
     class Meta:

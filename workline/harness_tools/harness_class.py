@@ -30,7 +30,6 @@ class DifferentialTestResult:
         self.remark = None
         self.Is_filtered = 0
 
-
     def serialize(self):
         return {"Differential Test Result": {"testcase_id": self.testcase_id,
                                              "error_type": self.error_type,
@@ -66,6 +65,8 @@ class HarnessResult:
         self.testcase_id = testcase_id
         self.testcase_context = testcase_context
         self.outputs: list[Output] = []
+        self.seed_coverage = 0
+        self.engine_coverage = None
 
     def __str__(self):
         return json.dumps({"Harness_Result": {"testcase_id": self.testcase_id,
@@ -73,8 +74,6 @@ class HarnessResult:
                                               "outputs": [e.serialize() for e in self.outputs]
                                               }
                            }, indent=4)
-
-
 
     def get_majority_output(self) -> Majority:
         """Majority vote on testcase outcomes and outputs."""
@@ -142,10 +141,12 @@ class HarnessResult:
         Save the result to the database.
         :return:
         """
+
+        # print(self.engine_coverage)
         table_result = Table_Result()
         for output in self.outputs:
             table_result.insertDataToTableResult(self.testcase_id, output.testbed_id, output.returncode, output.stdout,
-                                                 output.stderr, output.duration_ms, 0, 0,
+                                                 output.stderr, output.duration_ms, self.seed_coverage, self.engine_coverage,
                                                  None)
 
 
@@ -224,16 +225,19 @@ class ThreadLock(Thread):
         for ob in testbed_location.split():
             cmd.append(ob)
         cmd.append(str(testcase_path))
-
         start_time = labdate.GetUtcMillisecondsNow()
+
         pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, universal_newlines=True)
-        # print(cmd)
         stdout, stderr = pro.communicate()
         end_time = labdate.GetUtcMillisecondsNow()
         duration_ms = int(round(
             (end_time - start_time).total_seconds() * 1000))
         event_start_epoch_ms = labdate.MillisecondsTimestamp(start_time)
+
+
+
+
         output = Output(testbed_id=testbed_id, testbed_location=testbed_location, returncode=pro.returncode,
                         stdout=stdout,
                         stderr=stderr,
@@ -266,7 +270,7 @@ class Harness:
         :return: test results
         """
         result = HarnessResult(function_id=function_id, testcase_id=testcase_id, testcase_context=testcase_context)
-        with tempfile.NamedTemporaryFile(prefix="javascriptTestcase_", suffix=".js", delete=True) as f:
+        with tempfile.NamedTemporaryFile(prefix="javascriptTestcase_", suffix=".js", delete=False) as f:
             testcase_path = pathlib.Path(f.name)
 
             try:
@@ -276,7 +280,7 @@ class Harness:
                 logging.exception("\nWrite to file failure: ", e)
                 return result
 
-            result.outputs = self.multi_thread(testcase_path, timeout)
+            result.outputs,result.engine_coverage = self.multi_thread(testcase_path, timeout)
 
         return result
 
@@ -302,4 +306,19 @@ class Harness:
                 gc.collect()
             elif thread.output is not None:
                 outputs.append(thread.output)
-        return outputs
+
+        cmd_coverage = ['llvm-profdata-10', 'merge', '-o', 'cov.profdata', 'default.profraw']
+        pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = pro.communicate()
+        # print(stdout)
+        # llvm-cov-10 report /root/.jsvu/engines/chakra-1.13-cov/ch -instr-profile=cov.profdata
+
+        cmd_coverage = ['llvm-cov-10', 'export', '/root/.jsvu/engines/chakra-1.13-cov/ch',
+                        '-instr-profile=cov.profdata']
+        pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+        coverage_stdout, stderr = pro.communicate()
+        # print(coverage_stdout)
+
+        return outputs,coverage_stdout
