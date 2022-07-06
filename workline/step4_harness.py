@@ -16,15 +16,16 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-# list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
-list_unharness = table_Testcases.selectIdFromTableTestcase(8)
-
-
+list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(7)
+# list_unharness = table_Testcases.selectIdFromTableTestcase(1)
+# list_unharness = table_Testcases.selectIdFromTableTestcase(2891635)
+#1 5826 32.35477826358526
+# 3 32.35477826358526
+# 2891635 32.97938788257339
 pbar = tqdm(total=len(list_unharness))
 
 print("一共有%d条未差分的测试用例" % len(list_unharness))
 
-# 存入数据库
 def muti_harness(testcase):
     testcase_object = Testcase_Object(testcase)
 
@@ -34,10 +35,10 @@ def muti_harness(testcase):
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
     # 把结果插入到result数据库中
-    # try:
-    #     harness_result.save_to_table_result()
-    # except:
-    #     pass
+    try:
+        harness_result.save_to_table_result()
+    except:
+        pass
     # 投票
     different_result_list = harness_result.differential_test()
 
@@ -47,10 +48,11 @@ def muti_harness(testcase):
         # print("该用例差分没有触发问题")
     else:
         # 触发问题之后再保存可疑结果
-        try:
-            harness_result.save_to_table_result()
-        except:
-            pass
+        # try:
+        #     # print('触发问题，存入数据库')
+        #     harness_result.save_to_table_result()
+        # except:
+        #     pass
 
         # print("共触发了{}个引擎错误".format(len(different_result_list)))
 
