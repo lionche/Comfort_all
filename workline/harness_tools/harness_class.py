@@ -219,7 +219,8 @@ class ThreadLock(Thread):
 
     def run(self):
         try:
-            self.output,self.coverage = self.run_test_case(self.testbed_location, self.testcase_path, self.testbed_id, self.timeout)
+            self.output, self.coverage = self.run_test_case(self.testbed_location, self.testcase_path, self.testbed_id,
+                                                            self.timeout)
         except BaseException as e:
             self.returnInfo = 1
 
@@ -276,8 +277,8 @@ class ThreadLock(Thread):
 
         # print(json_dict['data'][0]['totals']['functions'])
 
-        small_json_info = json.dumps((json_dict))
-
+        # small_json_info = json.dumps((json_dict))
+        #
         # print(small_json_info)
 
         # cov_item = json_item['data'][0]
@@ -312,11 +313,10 @@ class ThreadLock(Thread):
 
         start_time = labdate.GetUtcMillisecondsNow()
 
-        pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,shell=False,env=my_env,
+        pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False, env=my_env,
                                stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = pro.communicate()
-
-
+        # print(stdout)
 
         end_time = labdate.GetUtcMillisecondsNow()
         duration_ms = int(round(
@@ -327,16 +327,16 @@ class ThreadLock(Thread):
                         stdout=stdout,
                         stderr=stderr,
                         duration_ms=duration_ms, event_start_epoch_ms=event_start_epoch_ms)
-
+        coverage_stdout_finally = ''
         if 'cov' in testbed_location:
             cmd_coverage = f'llvm-profdata-10 merge -o {uniTag}.profdata {uniTag}.profraw && llvm-cov-10 export /root/.jsvu/engines/chakra-1.13-cov/ch -instr-profile={uniTag}.profdata && rm /root/Comfort_all/workline/{uniTag}.profdata /root/Comfort_all/workline/{uniTag}.profraw'
-            pro1 = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE,shell=True,
-                                   stderr=subprocess.PIPE, universal_newlines=True)
+            pro1 = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
+                                    stderr=subprocess.PIPE, universal_newlines=True)
             stdout1, stderr1 = pro1.communicate()
             # print(stderr1)
             coverage_stdout_finally = self.del_useless_json_info(stdout1)
 
-        return output,coverage_stdout_finally
+        return output, coverage_stdout_finally
 
 
 class Harness:
@@ -346,7 +346,6 @@ class Harness:
         table_testbed = Table_Testbed()
         testbed_list = table_testbed.selectAllIdAndLocateFromTableTestbed()
         return testbed_list
-
 
     def __init__(self):
         """
@@ -380,7 +379,6 @@ class Harness:
 
         return result
 
-
     def multi_thread(self, testcase_path: pathlib.Path, timeout: str):
         """
         Multithreading test execution test cases
@@ -408,15 +406,6 @@ class Harness:
                 outputs.append(thread.output)
             if thread.coverage is not None:
                 coverage = thread.coverage
+            # print(thread.output)
 
-
-        # cmd_coverage = f'llvm-profdata-10 merge -o {uniTag}.profdata {uniTag}.profraw && llvm-cov-10 export /root/.jsvu/engines/chakra-1.13-cov/ch -instr-profile={uniTag}.profdata && rm /root/Comfort_all/workline/{uniTag}.profdata /root/Comfort_all/workline/{uniTag}.profraw'
-        # pro1 = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE,shell=True,
-        #                        stderr=subprocess.PIPE, universal_newlines=True)
-        # stdout1, stderr1 = pro1.communicate()
-        # print(stderr1)
-
-        # coverage_stdout_finally = self.del_useless_json_info(stdout1)
-
-        # return outputs, "coverage_stdout_finally"
         return outputs, coverage

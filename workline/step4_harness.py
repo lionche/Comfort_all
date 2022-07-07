@@ -34,6 +34,7 @@ def muti_harness(testcase):
     start_time = time.time()
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
+    # print(harness_result)
     # 把结果插入到result数据库中
     try:
         harness_result.save_to_table_result()
