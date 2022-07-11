@@ -9,12 +9,22 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
 from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# from src.utils.sql_config import *
+from utils.config import *
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# print(str(BASE_DIR.parent))
+#
+# sys.path.append(str(BASE_DIR.parent))
+
+# from utils.sql_config import DATABASE_NAME
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -81,15 +91,30 @@ WSGI_APPLICATION = 'web.wsgi.application'
 # }
 
 
+# DATABASES = {
+#     'default': {
+#         # 这里可以指定使用的数据库类型，例如mysql
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'comfort_django',
+#         'USER': 'root',
+#         'PASSWORD': 'mysql123',
+#         'HOST': '127.0.0.1',
+#         'PORT': '8888',
+#         'OPTIONS': {
+#             'charset': 'utf8mb4'
+#         }
+#     }
+# }
+
 DATABASES = {
     'default': {
         # 这里可以指定使用的数据库类型，例如mysql
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'comfort_django',
-        'USER': 'root',
-        'PASSWORD': 'mysql123',
-        'HOST': '127.0.0.1',
-        'PORT': '8888',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_ADDRESS,
+        'PORT': DATABASE_PORT,
         'OPTIONS': {
             'charset': 'utf8mb4'
         }

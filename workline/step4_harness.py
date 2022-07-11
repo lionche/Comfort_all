@@ -16,7 +16,7 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 
 table_Testcases = Table_Testcase()
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(7)
+list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(2)
 # list_unharness = table_Testcases.selectIdFromTableTestcase(1)
 # list_unharness = table_Testcases.selectIdFromTableTestcase(2891635)
 #1 5826 32.35477826358526
@@ -39,7 +39,8 @@ def muti_harness(testcase):
     try:
         harness_result.save_to_table_result()
     except:
-        pass
+        print(f'用例{testcase_object.Id}存入数据库出错')
+        # pass
     # 投票
     different_result_list = harness_result.differential_test()
 
@@ -70,11 +71,11 @@ def muti_harness(testcase):
             # print(interesting_test_result)
 
 
-        unfiltered_list = Table_Suspicious_Result().selectTestcseIdFromTable_Suspicious_Result(testcase_object.Id)
-        for suspicious_testcase in unfiltered_list:
-            # print(suspicious_testcase)
-            suspicious_result = Suspicious_Result_Object(suspicious_testcase)
-            suspicious_result.analysis()
+        # unfiltered_list = Table_Suspicious_Result().selectTestcseIdFromTable_Suspicious_Result(testcase_object.Id)
+        # for suspicious_testcase in unfiltered_list:
+        #     # print(suspicious_testcase)
+        #     suspicious_result = Suspicious_Result_Object(suspicious_testcase)
+            # suspicious_result.analysis()
 
         # print(f"JS engines running results:")
 

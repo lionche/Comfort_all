@@ -6,6 +6,10 @@ import time
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 
+import transformers
+
+from utils.config import MODEL_PATH
+
 BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 import os
@@ -14,6 +18,8 @@ from workline.table_to_class.Table_Function_Class import Function_Object, write_
 from workline.mysql_tools.Table_Operation import Table_Function
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers import pipeline
+
+# transformers.logging.set_verbosity_error()
 
 
 def testJshintPassRate(function):
@@ -122,11 +128,11 @@ if __name__ == '__main__':
     if Function_Object_List:
         start = time.time()
         print(f'正在加载模型,大约需要5秒,请稍等')
-        model_name_or_path = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
-        tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-        model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+        # model_name_or_path = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH)
 
-        generator = pipeline(task="text-generation", model=model, tokenizer=tokenizer, device=0)
+        generator = pipeline(task="text-generation", model=model, tokenizer=tokenizer, device=0, warnings=False)
         print("模型加载完成耗时：", int(time.time() - start), '秒')
         num_return_sequences = 50
         for item in Function_Object_List:
@@ -140,7 +146,7 @@ if __name__ == '__main__':
                                                                    len(AllFunctionsSet) / (
                                                                            len(item.prefix_list) * num_return_sequences) / 2,
                                                                    int(len(item.prefix_list) * num_return_sequences / (
-                                                                               time.time() - start_gen))))
+                                                                           time.time() - start_gen))))
 
                 start_jshint = time.time()
 
@@ -153,12 +159,13 @@ if __name__ == '__main__':
                 pool.close()
                 pool.join()
 
-                print("直接续写语法通过率为{:.2%},续写替换语法通过率为{:.2%}，检查速度{}个/秒".format(len(FunctionsJshintPassSet) / len(FunctionsSet),
-                                                                           len(FunctionsReplaceBlockSetJshintPassSet) / len(
-                                                                               FunctionsReplaceBlockSet),
-                                                                           int(len(AllFunctionsSet) / (
-                                                                                   time.time() - start_gen))))
-                print('扩充方法用时:',int(time.time() - start_gen),'秒')
+                print("直接续写语法通过率为{:.2%},续写替换语法通过率为{:.2%}，检查速度{}个/秒".format(
+                    len(FunctionsJshintPassSet) / len(FunctionsSet),
+                    len(FunctionsReplaceBlockSetJshintPassSet) / len(
+                        FunctionsReplaceBlockSet),
+                    int(len(AllFunctionsSet) / (
+                            time.time() - start_gen))))
+                print('扩充方法用时:', int(time.time() - start_gen), '秒')
 
                 function_list_to_write1 = makeFunctionListToWrite(all_functions=FunctionsJshintPassSet,
                                                                   SourceFun_id=item.Id,

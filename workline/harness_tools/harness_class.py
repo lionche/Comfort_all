@@ -10,8 +10,8 @@ import gc
 from threading import Thread
 from typing import List
 
+from utils import labdate
 from workline.mysql_tools.Table_Operation import Table_Testbed, Table_Result, Table_Suspicious_Result
-from src.utils import labdate
 
 Majority = collections.namedtuple('Majority', [
     'majority_outcome', 'outcome_majority_size',
@@ -64,14 +64,15 @@ class HarnessResult:
     def __init__(self, function_id: int, testcase_id: int, testcase_context: str):
         self.function_id = function_id
         self.testcase_id = testcase_id
-        self.testcase_context = testcase_context
+        self.testcase_context: str = testcase_context
         self.outputs: list[Output] = []
         self.seed_coverage = 0
-        self.engine_coverage = None
+        self.engine_coverage: str = ''
 
     def __str__(self):
         return json.dumps({"Harness_Result": {"testcase_id": self.testcase_id,
                                               "testcase_context": self.testcase_context,
+                                              "engine_coverage": self.engine_coverage,
                                               "outputs": [e.serialize() for e in self.outputs]
                                               }
                            }, indent=4)
@@ -143,6 +144,7 @@ class HarnessResult:
         :return:
         """
 
+        # print(f'存入数据库内容：{type(self.engine_coverage)}')
         # print(f'存入数据库内容：{self.engine_coverage}')
         table_result = Table_Result()
         for output in self.outputs:
@@ -215,12 +217,14 @@ class ThreadLock(Thread):
         self.testcase_path = testcase_path
         self.returnInfo = None
         self.timeout = timeout
-        self.coverage = None
+        self.coverage: str = ''
 
     def run(self):
         try:
             self.output, self.coverage = self.run_test_case(self.testbed_location, self.testcase_path, self.testbed_id,
                                                             self.timeout)
+            # print(type(self.coverage))
+
         except BaseException as e:
             self.returnInfo = 1
 
@@ -267,37 +271,13 @@ class ThreadLock(Thread):
 
         for item in ['type', 'version']:
             del json_dict[item]
-        # del json_dict['type','version']
 
         # del json_dict['data'][0]['files'][0]['expansions']
         for item in json_dict['data'][0]['files']:
             for del_item in ['expansions', 'segments']:
                 del item[del_item]
         del json_dict['data'][0]['functions']
-
-        # print(json_dict['data'][0]['totals']['functions'])
-
-        # small_json_info = json.dumps((json_dict))
-        #
-        # print(small_json_info)
-
-        # cov_item = json_item['data'][0]
-        # files_list = cov_item['files']
-        #
-        # for file in files_list:
-        #     # print(file['filename'])
-        #     res += file['filename']
-        #     # print(file['summary'])
-        #     for summary_detail in file['summary']:
-        #         # print(summary_detail,file['summary'][summary_detail])
-        #         res += file['summary'][summary_detail]
-        # print('-'*100)
-
-        # print('functions', cov_item['totals']['functions'])
-        # print('instantiations', cov_item['totals']['instantiations'])
-        # print('lines', cov_item['totals']['lines'])
-        # print('regions', cov_item['totals']['regions'])
-
+        small_json_info = json.dumps(json_dict)
         return small_json_info
 
     def run_test_case(self, testbed_location: str, testcase_path: pathlib.Path, testbed_id, timeout):
@@ -327,7 +307,7 @@ class ThreadLock(Thread):
                         stdout=stdout,
                         stderr=stderr,
                         duration_ms=duration_ms, event_start_epoch_ms=event_start_epoch_ms)
-        coverage_stdout_finally = ''
+        coverage_stdout_finally: str = ''
         if 'cov' in testbed_location:
             cmd_coverage = f'llvm-profdata-10 merge -o {uniTag}.profdata {uniTag}.profraw && llvm-cov-10 export /root/.jsvu/engines/chakra-1.13-cov/ch -instr-profile={uniTag}.profdata && rm /root/Comfort_all/workline/{uniTag}.profdata /root/Comfort_all/workline/{uniTag}.profraw'
             pro1 = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
@@ -404,8 +384,16 @@ class Harness:
                 gc.collect()
             elif thread.output is not None:
                 outputs.append(thread.output)
-            if thread.coverage is not None:
+            # print(type(thread.coverage))
+            # print(thread.coverage)
+
+            if thread.coverage:
+                # print(type(thread.coverage))
+                # coverage.append((thread.coverage))
                 coverage = thread.coverage
-            # print(thread.output)
+                # print(type(coverage))
+        # print(type(coverage[0]))
+
+        # print(coverage)
 
         return outputs, coverage
