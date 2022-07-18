@@ -162,7 +162,13 @@ class Table_Testcase(object):
         sql = f'select * from Table_Testcase where Fuzzing_times={Fuzzing_times}'
         return self.__table.selectall(sql)
 
-        # return self.__table.selectOne(sql, prames)
+    def selectMutationMethodFromTableTestcase(self, Mutation_method):
+        sql = f'select * from Table_Testcase where Mutation_method!={Mutation_method}'
+        return self.__table.selectall(sql)
+
+    def selectSourceTestcaseIdFromTableTestcase(self, SourceTestcase_id):
+        sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id}'
+        return self.__table.selectall(sql)
 
     # ???从指定id开始查询Number条数据
     def selectFromTableTestcaseForNumber(self, id, number):
@@ -435,6 +441,7 @@ class Table_Suspicious_Result(object):
         sql = 'update Table_Suspicious_Result set Is_filtered= %s where id = %s'
         prames = (Is_filtered, id)
         return self.__table.update(sql, prames)
+
     # 根据 id删除数据
     def deleteByTestcaseIdFromTable_Suspicious_Result(self, id):
         sql = f'delete from Table_Suspicious_Result where id={id}'

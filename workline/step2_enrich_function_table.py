@@ -128,7 +128,6 @@ if __name__ == '__main__':
     if Function_Object_List:
         start = time.time()
         print(f'正在加载模型,大约需要5秒,请稍等')
-        # model_name_or_path = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
         tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH)
 
@@ -179,7 +178,7 @@ if __name__ == '__main__':
                                                                   mutation_times=0,
                                                                   Remark=None)
 
-                write_to_Table_function(function_list_to_write1, function_list_to_write2)
+                # write_to_Table_function(function_list_to_write1, function_list_to_write2)
             else:
                 print('前缀列表为空，无法扩充')
-            table_Function.updateMutationTimes(item.Mutation_Times + 1, item.Id)
+            # table_Function.updateMutationTimes(item.Mutation_Times + 1, item.Id)

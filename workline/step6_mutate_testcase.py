@@ -13,6 +13,7 @@ BASE_DIR = str(Path(__file__).resolve().parent.parent)
 sys.path.append(BASE_DIR)
 from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 from workline.mysql_tools.Table_Operation import Table_Testcase
+from utils.config import MODEL_PATH
 
 # 添加环境变量
 os.environ['NODE_PATH'] = '/usr/lib/node_modules/'
@@ -111,7 +112,7 @@ if __name__ == '__main__':
 
     table_testcase = Table_Testcase()
 
-    list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(10)
+    list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(1)
 
     # pbar = tqdm(total=len(list_unMutate))
     testcase_object_list = []
@@ -127,13 +128,10 @@ if __name__ == '__main__':
         if useGptMutate:
             start = time.time()
             print(f'正在加载模型,大约需要5秒,请稍等')
-            model_name_or_path = "/root/Comfort_all/data/train_model/distilgpt2_finetune"
-            tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-            model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+            model = AutoModelForCausalLM.from_pretrained(MODEL_PATH)
             generator = pipeline(task="text-generation", model=model, tokenizer=tokenizer, device=0)
             print("模型加载完成：", time.time() - start)
-
-            num_return_sequences = 50
 
         for item in testcase_object_list:
             # pbar.update(1)
@@ -150,6 +148,8 @@ if __name__ == '__main__':
 
             # 生成变异
             if useGptMutate:
+                num_return_sequences = 20
+
                 start_gen = time.time()
                 # 传入一个用例，返回直接续写和续写替换的用例
                 FunctionsSet, FunctionsReplaceBlockSet = enrich_one_function(item.source_function_object,
@@ -179,10 +179,10 @@ if __name__ == '__main__':
                     int(len(AllFunctionsSet) / (
                             time.time() - start_gen))))
                 all_functions_generated_testcases_pass, all_functions_replaced_generated_testcases_pass = item.mutation_method1_2(
-                    FunctionsSet, FunctionsReplaceBlockSet)
+                    FunctionsJshintPassSet, FunctionsReplaceBlockSetJshintPassSet)
 
                 print(
-                    f'一共生成{len(all_functions_generated_testcases_pass)}个GPT续写用例，{len(all_functions_replaced_generated_testcases_pass)}个GPT续写替换用例已存入数据库')
+                    f'将{len(all_functions_generated_testcases_pass)}个GPT续写用例，{len(all_functions_replaced_generated_testcases_pass)}个GPT续写替换用例存入数据库')
 
             table_testcase.updateMutationTimes(item.Mutation_times + 1, item.Id)
 

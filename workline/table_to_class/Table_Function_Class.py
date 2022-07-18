@@ -47,12 +47,9 @@ class Function_Object(object):
         lines_list = code.splitlines()
         return min(len(lines_list), cut_max_line)
 
-
-
     def prefixList(self):
         prefix_list = []
         for prefix_line in range(self.var_line_count, self.js_line_count):
-
             # 获取到了前缀
             function_prefix = self.getPrefix(self.Function_Content, prefix_line)
             prefix_list.append(function_prefix)
@@ -95,7 +92,7 @@ class Function_Object(object):
             code_string = ''
             for block in orginal_block_list_copy:
                 code_string += block
-            return code_string
+            return code_string + '\n'
         except:
             pass
 
@@ -299,7 +296,6 @@ class Function_Object(object):
             test_str_line_list_copy[old_value_statement_idx] = new_value_statement
         return test_str_line_list_copy
 
-
     def makeTestcasesListToWrite(self, all_testcases, SourceFun_id, SourceTestcase_id, Fuzzing_times,
                                  Mutation_method, Mutation_times, Interesting_times, Probability, Remark) -> list:
         # 将生成的代码写入数据库
@@ -312,6 +308,7 @@ class Function_Object(object):
                     Mutation_times, Interesting_times, Probability, Remark]
             lis.append(item)
         return lis
+
     def jshint_check_testcases(self, all_testcases):
         """
         使用jshint对生成的用例进行检查\n
@@ -373,7 +370,7 @@ class Function_Object(object):
             # print(f"{file_path}right!")
         return jshint_flag
 
-    def assemble_to_testcase(self):
+    def assemble_to_testcase(self,times):
         """
         将function组装成用例
         :return:
@@ -383,7 +380,7 @@ class Function_Object(object):
             function_assemle_list = set()
 
             # 连续组装10次
-            for i in range(3):
+            for i in range(times):
                 function_assemle = callable_processor.get_self_calling(self.Function_Content)
                 function_assemle_list.add(function_assemle)
 

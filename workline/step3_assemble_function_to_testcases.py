@@ -18,7 +18,7 @@ pbar = tqdm(total=len(lis))
 def muti_assemble(func):
     function_object = Function_Object(func)
     # print('*' * 25 + f'组装function{function_object.Id}' + '*' * 25)
-    function_object.assemble_to_testcase()
+    function_object.assemble_to_testcase(1)
     pbar.update(1)
 
 pool = ThreadPool()

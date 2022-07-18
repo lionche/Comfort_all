@@ -32,7 +32,7 @@ class Testcase_Object(object):
         harness_result = harness.run_testcase(self.SourceFun_id, self.Id, self.Testcase_context, timeout)
         # 增加一次fuzzing次数
 
-        # self.Fuzzing_times += 1
+        self.Fuzzing_times += 1
         return harness_result
         # pass
 
@@ -228,7 +228,6 @@ class Testcase_Object(object):
         # 返回 随机代码块删除， While与If代码块互换， 条件代码块包裹， 操作符替换， 语义相近的API替换， 返回值相同的API替换， 原型链污染， 属性篡改， 热点函数优化
         return random_block_remove, while_if_swap, condition_code_add, replaceOperator, replace_similar_API, replace_return_API, proto_pollution, property_modification, hotspot_optimization
 
-
     def make_all_mutation_testcases_passListToWrite(self, all_mutation_testcases_pass, SourceFun_id, SourceTestcase_id,
                                                     Fuzzing_times,
                                                     Mutation_method, Mutation_times, Interesting_times, Probability,
@@ -261,22 +260,40 @@ class Testcase_Object(object):
         :return:
         """
 
-        regex = r"function(.+\n)+}"
+        # regex = r"function(.+\n)+}"
+        global parameter
+        regex = r"(?<=};\n)(.+\n)+print\(NISLCallingResult\);"
+        matches = re.finditer(regex, self.Testcase_context, re.MULTILINE)
+        for matchNum, match in enumerate(matches, start=1):
+            parameter = match.group()
+
         # print(self.Testcase_context)
         all_functions_generated_testcases = set()
         all_functions_replaced_generated_testcases = set()
 
         for function in FunctionsSet:
-            result = re.sub(regex, function, self.Testcase_context, 0, re.MULTILINE)
+            result = 'var NISLFuzzingFunc = ' + function + parameter
+            # print('直接替换')
+            # print(result)
             all_functions_generated_testcases.add(result)
 
         for function in FunctionsReplaceBlockSet:
-            result = re.sub(regex, function, self.Testcase_context, 0, re.MULTILINE)
+            result = 'var NISLFuzzingFunc = ' + function + parameter
+            # print('续写替换')
+
+            # print(result)
+
+            # print(self.Testcase_context)
+            # print('*'*100)
+            # print(function)
+            # print('*'*100)
+            # print(result)
+            # print('*'*100)
+
             all_functions_replaced_generated_testcases.add(result)
 
         all_functions_generated_testcases_pass = self.jshint_check_testcases(all_functions_generated_testcases)
-        all_functions_replaced_generated_testcases_pass = self.jshint_check_testcases(
-            all_functions_replaced_generated_testcases)
+        all_functions_replaced_generated_testcases_pass = self.jshint_check_testcases(all_functions_replaced_generated_testcases)
         table_testcase = Table_Testcase()
 
         # 把通过语法检查的用例存入数据库
