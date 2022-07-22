@@ -112,7 +112,8 @@ if __name__ == '__main__':
 
     table_testcase = Table_Testcase()
 
-    list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(1)
+    # list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(1)
+    list_unMutate = table_testcase.selectIdFromTableTestcase(1)
 
     # pbar = tqdm(total=len(list_unMutate))
     testcase_object_list = []

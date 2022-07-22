@@ -170,11 +170,6 @@ class Table_Testcase(object):
         sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id}'
         return self.__table.selectall(sql)
 
-    # ???从指定id开始查询Number条数据
-    def selectFromTableTestcaseForNumber(self, id, number):
-        sql = 'select * from Table_Testcase where id=%s limit %s'
-        prames = (id, number)
-        return self.__table.selectmany(sql, prames)
 
     # 全部查询
     def selectAllFromTableTestcase(self):
@@ -183,19 +178,25 @@ class Table_Testcase(object):
 
     # 插入单行数据
     def insertDataToTableTestcase(self, Testcase_context, SourceFun_id, SourceTestcase_id, Fuzzing_times,
-                                  Mutation_method, Mutation_times, Interesting_times, Probability, Remark):
+                                  Mutation_method, Mutation_times, Interesting_times, engine_coverage,
+                                  Engine_coverage_integration_source, Engine_coverage_integration_all, Probability,
+                                  Remark):
         """插入单行数据
         :param Id: 自增的主键id
         :param Testcase_context: 用例内容
         :param SourceFun_Id: 源方法id
         :param SourceTestcase_id: 原用例id
         :param Mutation_Method: 变异用例的序号，没有变异是0
+        :param engine_coverage 用例单独的覆盖率
+        :param Engine_coverage_integration_source 用例和父用例的整合覆盖率
+        :param Engine_coverage_integration_all 用例和所有子用例的整合覆盖率
         :param Remark:
         :return:
         """
-        sql = 'INSERT INTO Table_Testcase(Testcase_context, SourceFun_id, SourceTestcase_id, Fuzzing_times,Mutation_method ,Mutation_times,Interesting_times,Probability,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        sql = 'INSERT INTO Table_Testcase(Testcase_context, SourceFun_id, SourceTestcase_id, Fuzzing_times,Mutation_method ,Mutation_times,Interesting_times,engine_coverage,Engine_coverage_integration_source,Engine_coverage_integration_all,Probability,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         prames = (Testcase_context, SourceFun_id, SourceTestcase_id, Fuzzing_times, Mutation_method, Mutation_times,
-                  Interesting_times, Probability, Remark)
+                  Interesting_times, engine_coverage, Engine_coverage_integration_source,
+                  Engine_coverage_integration_all, Probability, Remark)
         return self.__table.insert(sql, prames)
 
     # 插入多条数据,可避免数据库多次打开关闭。
@@ -205,7 +206,8 @@ class Table_Testcase(object):
     '''
 
     def insertManyDataToTableTestcase(self, lis):
-        sql = 'INSERT INTO Table_Testcase(Testcase_context, SourceFun_id, SourceTestcase_id, Fuzzing_times,Mutation_method ,Mutation_times,Interesting_times,Probability,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        sql = 'INSERT INTO Table_Testcase(Testcase_context, SourceFun_id, SourceTestcase_id, Fuzzing_times,Mutation_method ,Mutation_times,Interesting_times,engine_coverage,Engine_coverage_integration_source,Engine_coverage_integration_all,Probability,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
         return self.__table.insertMany(sql, lis)
 
     # 删除数据
@@ -281,7 +283,7 @@ class Table_Result(object):
     # 插入单行数据
 
     def insertDataToTableResult(self, Testcase_Id, Testbed_Id, Returncode, Stdout, Stderr, duration_ms, seed_coverage,
-                                engine_coverage, Remark):
+                                Remark):
         """插入单行数据
         :param Id: 自增的主键id
         :param Testcase_context: 用例内容
@@ -291,9 +293,9 @@ class Table_Result(object):
         :param Remark:
         :return:
         """
-        sql = 'INSERT INTO Table_Result(Testcase_Id, Testbed_Id, Returncode, Stdout,Stderr ,duration_ms,seed_coverage,engine_coverage,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        sql = 'INSERT INTO Table_Result(Testcase_Id, Testbed_Id, Returncode, Stdout,Stderr ,duration_ms,seed_coverage,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s)'
         prames = (
-            Testcase_Id, Testbed_Id, Returncode, Stdout, Stderr, duration_ms, seed_coverage, engine_coverage, Remark)
+            Testcase_Id, Testbed_Id, Returncode, Stdout, Stderr, duration_ms, seed_coverage, Remark)
         return self.__table.insert(sql, prames)
 
     # 插入多条数据,可避免数据库多次打开关闭。
@@ -313,7 +315,7 @@ class Table_Result(object):
         return self.__table.selectall(sql)
 
     def insertManyDataToTableResult(self, lis):
-        sql = 'INSERT INTO Table_Result(Testcase_Id, Testbed_Id, Returncode, Stdout,Stderr ,duration_ms,seed_coverage,engine_coverage,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        sql = 'INSERT INTO Table_Result(Testcase_Id, Testbed_Id, Returncode, Stdout,Stderr ,duration_ms,seed_coverage,Remark) values(%s,%s,%s,%s,%s,%s,%s,%s)'
         return self.__table.insertMany(sql, lis)
 
     # 删除数据

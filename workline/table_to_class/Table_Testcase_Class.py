@@ -22,14 +22,21 @@ class Testcase_Object(object):
         self.Mutation_method = Testcase_item[5]
         self.Mutation_times = Testcase_item[6]
         self.Interesting_times = Testcase_item[7]
-        self.Probability = Testcase_item[8]
-        self.Remark = Testcase_item[9]
+        self.Engine_coverage: str = Testcase_item[8]
+        self.Engine_coverage_integration_source: str = Testcase_item[9]
+        self.Engine_coverage_integration_all: str = Testcase_item[10]
+        self.Probability = Testcase_item[11]
+        self.Remark = Testcase_item[12]
         self.source_function_object = self.get_function_content()
 
     def engine_run_testcase(self, timeout="30"):
+        # 1.记录自身覆盖率信息在Engine_coverage
+        # 2.查看有无父用例，有的话整合自己和父用例，记录在Engine_coverage_integration_source
+        # 3.查看有无子用例，有的话整合自己和所有的子用例，记录下Engine_coverage_integration_all
         harness = Harness()
         # print(f'正在使用{len(harness.get_engines())}个引擎进行测试')
-        harness_result = harness.run_testcase(self.SourceFun_id, self.Id, self.Testcase_context, timeout)
+        harness_result = harness.run_testcase(self.SourceFun_id, self.Id, self.Testcase_context,
+                                              timeout)
         # 增加一次fuzzing次数
 
         self.Fuzzing_times += 1
@@ -131,39 +138,40 @@ class Testcase_Object(object):
         random_block_remove_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             random_block_remove_pass,
             self.SourceFun_id,
-            self.Id, 0, 4, 0, 0, 0, None)
+            self.Id, 0, 4, 0, 0, None, None, None, 0, None)
         while_if_swap_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(while_if_swap_pass,
                                                                                             self.SourceFun_id,
-                                                                                            self.Id, 0, 5, 0, 0, 0,
-                                                                                            None)
+                                                                                            self.Id, 0, 5, 0, 0, None,
+                                                                                            None, None, 0, None)
         condition_code_add_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             condition_code_add_pass,
             self.SourceFun_id,
-            self.Id, 0, 6, 0, 0, 0, None)
+            self.Id, 0, 6, 0, 0, None, None, None, 0, None)
         replaceOperator_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(replaceOperator_pass,
                                                                                               self.SourceFun_id,
-                                                                                              self.Id, 0, 7, 0, 0, 0,
-                                                                                              None)
+                                                                                              self.Id, 0, 8, 0, 0, None,
+                                                                                              None, None, 0, None)
         replace_similar_API_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             replace_similar_API_pass,
             self.SourceFun_id,
-            self.Id, 0, 8, 0, 0, 0, None)
+            self.Id, 0, 8, 0, 0, None, None, None, 0, None)
         replace_return_API_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             replace_return_API_pass,
             self.SourceFun_id,
-            self.Id, 0, 9, 0, 0, 0, None)
+            self.Id, 0, 9, 0, 0, None, None, None, 0, None)
         proto_pollution_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(proto_pollution_pass,
                                                                                               self.SourceFun_id,
-                                                                                              self.Id, 0, 10, 0, 0, 0,
+                                                                                              self.Id, 0, 10, 0, 0,
+                                                                                              None, None, None, 0,
                                                                                               None)
         property_modification_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             property_modification_pass,
             self.SourceFun_id,
-            self.Id, 0, 11, 0, 0, 0, None)
+            self.Id, 0, 11, 0, 0, None, None, None, 0, None)
         hotspot_optimization_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             hotspot_optimization_pass,
             self.SourceFun_id,
-            self.Id, 0, 12, 0, 0, 0, None)
+            self.Id, 0, 12, 0, 0, None, None, None, 0, None)
 
         table_testcase.insertManyDataToTableTestcase(random_block_remove_pass_list_to_write)
         table_testcase.insertManyDataToTableTestcase(while_if_swap_pass_list_to_write)
@@ -230,7 +238,9 @@ class Testcase_Object(object):
 
     def make_all_mutation_testcases_passListToWrite(self, all_mutation_testcases_pass, SourceFun_id, SourceTestcase_id,
                                                     Fuzzing_times,
-                                                    Mutation_method, Mutation_times, Interesting_times, Probability,
+                                                    Mutation_method, Mutation_times, Interesting_times, engine_coverage,
+                                                    Engine_coverage_integration_source, Engine_coverage_integration_all,
+                                                    Probability,
                                                     Remark) -> list:
         # 将生成的代码写入数据库
 
@@ -239,7 +249,8 @@ class Testcase_Object(object):
         for testcase in all_mutation_testcases_pass:
             Testcases_content = testcase
             item = [Testcases_content, SourceFun_id, SourceTestcase_id, Fuzzing_times, Mutation_method,
-                    Mutation_times, Interesting_times, Probability, Remark]
+                    Mutation_times, Interesting_times, engine_coverage,
+                    Engine_coverage_integration_source, Engine_coverage_integration_all, Probability, Remark]
             lis.append(item)
         return lis
 
@@ -259,14 +270,13 @@ class Testcase_Object(object):
         gpt直接续写
         :return:
         """
-
         # regex = r"function(.+\n)+}"
         global parameter
         regex = r"(?<=};\n)(.+\n)+print\(NISLCallingResult\);"
         matches = re.finditer(regex, self.Testcase_context, re.MULTILINE)
         for matchNum, match in enumerate(matches, start=1):
             parameter = match.group()
-
+        # print(self.Testcase_context)
         # print(self.Testcase_context)
         all_functions_generated_testcases = set()
         all_functions_replaced_generated_testcases = set()
@@ -293,18 +303,19 @@ class Testcase_Object(object):
             all_functions_replaced_generated_testcases.add(result)
 
         all_functions_generated_testcases_pass = self.jshint_check_testcases(all_functions_generated_testcases)
-        all_functions_replaced_generated_testcases_pass = self.jshint_check_testcases(all_functions_replaced_generated_testcases)
+        all_functions_replaced_generated_testcases_pass = self.jshint_check_testcases(
+            all_functions_replaced_generated_testcases)
         table_testcase = Table_Testcase()
 
         # 把通过语法检查的用例存入数据库
         all_functions_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             all_functions_generated_testcases_pass,
             self.SourceFun_id,
-            self.Id, 0, 1, 0, 0, 0, None)
+            self.Id, 0, 1, 0, 0, None, None, None, 0, None)
         all_functions_replaced_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
             all_functions_replaced_generated_testcases_pass,
             self.SourceFun_id,
-            self.Id, 0, 2, 0, 0, 0, None)
+            self.Id, 0, 2, 0, 0, None, None, None, 0, None)
 
         table_testcase.insertManyDataToTableTestcase(all_functions_generated_testcases_pass_list_to_write)
         table_testcase.insertManyDataToTableTestcase(all_functions_replaced_generated_testcases_pass_list_to_write)
@@ -315,3 +326,135 @@ class Testcase_Object(object):
         table_Testcases = Table_Testcase()
         table_Testcases.updateFuzzingTimesInterestintTimes(self.Fuzzing_times,
                                                            self.Interesting_times, self.Id)
+
+    def getCov(self):
+        '''
+        # 1.记录自身覆盖率信息在Engine_coverage
+        # 2.查看有无父用例，有的话整合自己和父用例，记录在Engine_coverage_integration_source
+        # 3.如果存在父用例，并且父用例的Engine_coverage_integration_all没有内容时，整合自己父用例和所有的父用例下所有子用例，记录在Engine_coverage_integration_all
+        @return:
+        '''
+        # 1.记录自身覆盖率信息在Engine_coverage
+        OwnCov = self.getOwnCov()
+        # OwnCov = ''
+        SourceCov = ''
+        AllCov = ''
+        table_Testcase = Table_Testcase()
+
+        # print(testcase_object.Engine_coverage_integration_all)
+        if (self.SourceTestcase_id != 0):
+            # 2.查看有无父用例，有的话整合自己和父用例，记录在Engine_coverage_integration_source
+            SourceCov = self.getSourceCov()
+
+            SourceTestcase = table_Testcase.selectOneFromTableTestcase(self.SourceTestcase_id)
+
+            testcase_object = Testcase_Object(SourceTestcase)
+
+
+            # 如果存在父用例，并且父用例的Engine_coverage_integration_all没有内容时，整合自己父用例和所有的父用例下所有子用例，记录在Engine_coverage_integration_all
+            if (len(testcase_object.Engine_coverage_integration_all) == 0):
+                testcase_list = table_Testcase.selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id)
+                # print(testcase_list)
+                AllCov = self.getAllCov(testcase_list)
+        return OwnCov, SourceCov, AllCov
+
+    def processCov(self, *profraws):
+        # print(profraws)
+        profraws_len = len(profraws)
+        COV_PATH = "/root/Comfort_all/data/cov_files"
+        PROFDATA_PATH = f"{COV_PATH}/profdatas/{profraws[0]}_{profraws_len}.prodata"
+        PROFRAWS_PATH = COV_PATH + "/profraws"
+        COV_ENGHINES_PATH = '/root/.jsvu/engines/chakra-1.13-cov/ch'
+
+        profraws_cmd = ''
+        for fraws in profraws:
+            profraws_cmd += f'{PROFRAWS_PATH}/{fraws}.profraw '
+
+        cmd_coverage = f'llvm-profdata-10 merge -o {PROFDATA_PATH} {profraws_cmd} && llvm-cov-10 export {COV_ENGHINES_PATH} -instr-profile={PROFDATA_PATH} && rm {PROFDATA_PATH}'
+        # print(cmd_coverage)
+        pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = pro.communicate()
+        # print(stderr)
+        coverage_stdout_finally = self.del_useless_json_info(stdout)
+        return coverage_stdout_finally
+
+    def getOwnCov(self):
+        """
+        获取自身的覆盖率信息，记录在Engine_coverage
+        @return:
+        """
+        return self.processCov(self.Id)
+
+    def getSourceCov(self):
+        """
+        如果存在父用例，获取自身和父用例的覆盖率，记录在记录在Engine_coverage_integration_source
+        @return:
+        """
+        return self.processCov(self.Id, self.SourceTestcase_id)
+
+    def getAllCov(self, testcase_list):
+        """
+        如果存在父用例，并且父用例的Engine_coverage_integration_all没有内容时，整合自己父用例和所有的父用例下所有子用例，记录在Engine_coverage_integration_all
+        @return:
+        """
+        # print(testcase_list)
+        otherTestcaseFromSameSourceTestcase = []
+        otherTestcaseFromSameSourceTestcase.append(self.SourceTestcase_id)
+        for item in testcase_list:
+            # print(item[0])
+            otherTestcaseFromSameSourceTestcase.append(item[0])
+
+        return self.processCov(*otherTestcaseFromSameSourceTestcase)
+
+    def del_useless_json_info(self, json_info):
+        res = """"""
+        import json
+        # print(json_info)
+        json_dict = json.loads(json_info)
+
+        # -data
+        #     -files:print(json_str['data'][0]['files']) （list）
+        #         -expansions：没用
+        #         -filename：
+        #         -segments：没用
+        #         -summary：
+        #             -function：
+        #                 -count
+        #                 covered
+        #                 percent;
+        #             instantiations:
+        #                 -count
+        #                 covered
+        #                 percent;
+        #             lines:
+        #                 -count
+        #                 covered
+        #                 percent;
+        #             regions:
+        #                 -count
+        #                 covered
+        #                 notcovered
+        #                 percent;
+        #     functions:print(json_str['data'][0]['functions'])
+        #     totals:print(json_str['data'][0]['totals'])
+        #             : functions: print(json_str['data'][0]['totals']['functions'])
+        #             : instantiations :print(json_str['data'][0]['totals']['instantiations'])
+        #             : lines:print(json_str['data'][0]['totals']['lines'])
+        #             : regions:print(json_str['data'][0]['totals']['regions'])
+
+        # -type
+        # -version
+
+        # print(json_dict)
+
+        for item in ['type', 'version']:
+            del json_dict[item]
+
+        # del json_dict['data'][0]['files'][0]['expansions']
+        for item in json_dict['data'][0]['files']:
+            for del_item in ['expansions', 'segments']:
+                del item[del_item]
+        del json_dict['data'][0]['functions']
+        small_json_info = json.dumps(json_dict)
+        return small_json_info

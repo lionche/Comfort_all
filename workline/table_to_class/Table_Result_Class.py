@@ -12,6 +12,4 @@ class Result_Object(object):
         self.Stdout = result_object[4]
         self.Stderr = result_object[5]
         self.duration_ms = result_object[6]
-        self.seed_coverage = result_object[7]
-        self.engine_coverage = result_object[8]
-        self.Remark = result_object[9]
+        self.Remark = result_object[7]

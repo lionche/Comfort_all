@@ -50,6 +50,9 @@ class Testcase(models.Model):
     Mutation_method = models.IntegerField(null=True)
     Mutation_times = models.IntegerField(null=True)
     Interesting_times = models.IntegerField(null=True)
+    Engine_coverage = models.TextField(null=True)
+    Engine_coverage_integration_source = models.TextField(null=True)
+    Engine_coverage_integration_all = models.TextField(null=True)
     Probability = models.IntegerField(null=True)
     Remark = models.TextField(null=True)
 
@@ -65,7 +68,7 @@ class Result(models.Model):
     Stderr = models.TextField(null=True)
     Duration_ms = models.IntegerField(null=True)
     Seed_coverage = models.DecimalField(max_digits=5, decimal_places=3, null=True)
-    Engine_coverage = models.TextField(null=True)
+    # Engine_coverage = models.TextField(null=True)
     Remark = models.TextField(null=True)
 
     class Meta:

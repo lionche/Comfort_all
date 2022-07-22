@@ -65,7 +65,7 @@ class HarnessResult:
         self.function_id = function_id
         self.testcase_id = testcase_id
         self.testcase_context: str = testcase_context
-        self.outputs: list[Output] = []
+        self.outputs: List[Output] = []
         self.seed_coverage = 0
         self.engine_coverage: str = ''
 
@@ -149,9 +149,7 @@ class HarnessResult:
         table_result = Table_Result()
         for output in self.outputs:
             table_result.insertDataToTableResult(self.testcase_id, output.testbed_id, output.returncode, output.stdout,
-                                                 output.stderr, output.duration_ms, self.seed_coverage,
-                                                 self.engine_coverage,
-                                                 None)
+                                                 output.stderr, output.duration_ms, None)
 
 
 class Output:
@@ -209,8 +207,9 @@ class Output:
 
 
 class ThreadLock(Thread):
-    def __init__(self, testbed_location, testcase_path, testbed_id, timeout):
+    def __init__(self, testcase_id, testbed_location, testcase_path, testbed_id, timeout):
         super().__init__()
+        self.testcase_id = testcase_id
         self.testbed_id = testbed_id
         self.output = None
         self.testbed_location = testbed_location
@@ -221,69 +220,22 @@ class ThreadLock(Thread):
 
     def run(self):
         try:
-            self.output, self.coverage = self.run_test_case(self.testbed_location, self.testcase_path, self.testbed_id,
-                                                            self.timeout)
+            self.output = self.run_test_case(self.testcase_id, self.testbed_location, self.testcase_path,
+                                             self.testbed_id,
+                                             self.timeout)
             # print(type(self.coverage))
 
         except BaseException as e:
             self.returnInfo = 1
 
-    def del_useless_json_info(self, json_info):
-        res = """"""
-        import json
-        # print(json_info)
-        json_dict = json.loads(json_info)
 
-        # -data
-        #     -files:print(json_str['data'][0]['files']) （list）
-        #         -expansions：没用
-        #         -filename：
-        #         -segments：没用
-        #         -summary：
-        #             -function：
-        #                 -count
-        #                 covered
-        #                 percent;
-        #             instantiations:
-        #                 -count
-        #                 covered
-        #                 percent;
-        #             lines:
-        #                 -count
-        #                 covered
-        #                 percent;
-        #             regions:
-        #                 -count
-        #                 covered
-        #                 notcovered
-        #                 percent;
-        #     functions:print(json_str['data'][0]['functions'])
-        #     totals:print(json_str['data'][0]['totals'])
-        #             : functions: print(json_str['data'][0]['totals']['functions'])
-        #             : instantiations :print(json_str['data'][0]['totals']['instantiations'])
-        #             : lines:print(json_str['data'][0]['totals']['lines'])
-        #             : regions:print(json_str['data'][0]['totals']['regions'])
-
-        # -type
-        # -version
-
-        # print(json_dict)
-
-        for item in ['type', 'version']:
-            del json_dict[item]
-
-        # del json_dict['data'][0]['files'][0]['expansions']
-        for item in json_dict['data'][0]['files']:
-            for del_item in ['expansions', 'segments']:
-                del item[del_item]
-        del json_dict['data'][0]['functions']
-        small_json_info = json.dumps(json_dict)
-        return small_json_info
-
-    def run_test_case(self, testbed_location: str, testcase_path: pathlib.Path, testbed_id, timeout):
+    def run_test_case(self, testcase_id: int, testbed_location: str, testcase_path: pathlib.Path, testbed_id,
+                      timeout, ):
         uniTag = testcase_path.name.split('javascriptTestcase_')[1].split('.')[0]
         cmd = ["timeout", "-s9", timeout]
-        LLVM_PROFILE_FILE = f"{uniTag}.profraw"
+        # LLVM_PROFILE_FILE = f"{uniTag}.profraw"
+        # 保存覆盖率文件的文件夹
+        LLVM_PROFILE_FILE = f"/root/Comfort_all/data/cov_files/profraws/{testcase_id}.profraw"
         my_env = os.environ.copy()
         my_env['LLVM_PROFILE_FILE'] = LLVM_PROFILE_FILE
 
@@ -296,7 +248,6 @@ class ThreadLock(Thread):
         pro = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False, env=my_env,
                                stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = pro.communicate()
-        # print(stdout)
 
         end_time = labdate.GetUtcMillisecondsNow()
         duration_ms = int(round(
@@ -307,16 +258,17 @@ class ThreadLock(Thread):
                         stdout=stdout,
                         stderr=stderr,
                         duration_ms=duration_ms, event_start_epoch_ms=event_start_epoch_ms)
-        coverage_stdout_finally: str = ''
-        if 'cov' in testbed_location:
-            cmd_coverage = f'llvm-profdata-10 merge -o {uniTag}.profdata {uniTag}.profraw && llvm-cov-10 export /root/.jsvu/engines/chakra-1.13-cov/ch -instr-profile={uniTag}.profdata && rm /root/Comfort_all/workline/{uniTag}.profdata /root/Comfort_all/workline/{uniTag}.profraw'
-            pro1 = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
-                                    stderr=subprocess.PIPE, universal_newlines=True)
-            stdout1, stderr1 = pro1.communicate()
-            # print(stderr1)
-            coverage_stdout_finally = self.del_useless_json_info(stdout1)
+        # coverage_stdout_finally: str = ''
+        # if 'cov' in testbed_location:
+        # cmd_coverage = f'llvm-profdata-10 merge -o {uniTag}.profdata {uniTag}.profraw && llvm-cov-10 export /root/.jsvu/engines/chakra-1.13-cov/ch -instr-profile={uniTag}.profdata && rm /root/Comfort_all/workline/{uniTag}.profdata /root/Comfort_all/workline/{uniTag}.profraw'
+        # pro1 = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
+        #                         stderr=subprocess.PIPE, universal_newlines=True)
+        # stdout1, stderr1 = pro1.communicate()
+        # print(stderr1)
+        # coverage_stdout_finally = self.del_useless_json_info(stdout1)
 
-        return output, coverage_stdout_finally
+        # return output, coverage_stdout_finally
+        return output
 
 
 class Harness:
@@ -334,7 +286,8 @@ class Harness:
         """
         self.engines = self.get_engines()
 
-    def run_testcase(self, function_id: int, testcase_id: int, testcase_context: str, timeout: str) -> HarnessResult:
+    def run_testcase(self, function_id: int, testcase_id: int, testcase_context: str,
+                     timeout: str) -> HarnessResult:
         """
         Execute test cases with multiple engines and return test results after execution of all engines.
         :param timeout: timeout kill process
@@ -343,6 +296,19 @@ class Harness:
         :param testcase_context: Testcases to be executed
         :return: test results
         """
+
+        result = self.multi_thread(function_id, testcase_id, testcase_context, timeout)
+        return result
+
+    def multi_thread(self, function_id: int, testcase_id: int, testcase_context: str,
+                     timeout: str):
+        """
+        Multithreading test execution test cases
+        :param timeout: time to kill process
+        :param testcase_path: path of the test case
+        :return: execution results of all engines
+        """
+
         result = HarnessResult(function_id=function_id, testcase_id=testcase_id, testcase_context=testcase_context)
         with tempfile.NamedTemporaryFile(prefix="javascriptTestcase_", suffix=".js", delete=True) as f:
             testcase_path = pathlib.Path(f.name)
@@ -350,50 +316,47 @@ class Harness:
             try:
                 # 此处手动转换为bytes类型再存储是为了防止代码中有乱码而无法存储的情况
                 testcase_path.write_bytes(bytes(testcase_context, encoding="utf-8"))
+
+                outputs = []
+                threads_pool = []
+                coverage = ''
+                uniTag = testcase_path.name.split('_')[1].split('.')[0]
+                # print(uniTag)
+                for engine in self.engines:
+                    testbed_id = engine[0]
+                    testbed_location = engine[1]
+                    tmp = ThreadLock(testcase_id=testcase_id, testbed_location=testbed_location,
+                                     testcase_path=testcase_path,
+                                     testbed_id=testbed_id,
+                                     timeout=timeout)
+                    threads_pool.append(tmp)
+                    tmp.start()
+                for thread in threads_pool:
+                    thread.join()
+                    if thread.returnInfo:
+                        gc.collect()
+                    elif thread.output is not None:
+                        outputs.append(thread.output)
+                    # print(type(thread.coverage))
+                    # print(thread.coverage)
+
+                    # if thread.coverage:
+                    # print(type(thread.coverage))
+                    # coverage.append((thread.coverage))
+                    # coverage = thread.coverage
+                    # print(type(coverage))
+                # print(type(coverage[0]))
+
+                # print(coverage)
+
+                # return outputs, coverage
+
+
+
+                result.outputs = outputs
             except Exception as e:
                 logging.exception("\nWrite to file failure: ", e)
-                return result
-
-            result.outputs, result.engine_coverage = self.multi_thread(testcase_path, timeout)
-            # print(result.engine_coverage)
-
+                # return result
         return result
 
-    def multi_thread(self, testcase_path: pathlib.Path, timeout: str):
-        """
-        Multithreading test execution test cases
-        :param timeout: time to kill process
-        :param testcase_path: path of the test case
-        :return: execution results of all engines
-        """
-        outputs = []
-        threads_pool = []
-        coverage = ''
-        uniTag = testcase_path.name.split('_')[1].split('.')[0]
-        # print(uniTag)
-        for engine in self.engines:
-            testbed_id = engine[0]
-            testbed_location = engine[1]
-            tmp = ThreadLock(testbed_location=testbed_location, testcase_path=testcase_path, testbed_id=testbed_id,
-                             timeout=timeout)
-            threads_pool.append(tmp)
-            tmp.start()
-        for thread in threads_pool:
-            thread.join()
-            if thread.returnInfo:
-                gc.collect()
-            elif thread.output is not None:
-                outputs.append(thread.output)
-            # print(type(thread.coverage))
-            # print(thread.coverage)
 
-            if thread.coverage:
-                # print(type(thread.coverage))
-                # coverage.append((thread.coverage))
-                coverage = thread.coverage
-                # print(type(coverage))
-        # print(type(coverage[0]))
-
-        # print(coverage)
-
-        return outputs, coverage

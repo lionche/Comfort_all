@@ -297,7 +297,9 @@ class Function_Object(object):
         return test_str_line_list_copy
 
     def makeTestcasesListToWrite(self, all_testcases, SourceFun_id, SourceTestcase_id, Fuzzing_times,
-                                 Mutation_method, Mutation_times, Interesting_times, Probability, Remark) -> list:
+                                 Mutation_method, Mutation_times, Interesting_times, engine_coverage,
+                                 Engine_coverage_integration_source, Engine_coverage_integration_all, Probability,
+                                 Remark) -> list:
         # 将生成的代码写入数据库
 
         lis = []
@@ -305,7 +307,8 @@ class Function_Object(object):
         for testcase in all_testcases:
             Testcases_content = testcase
             item = [Testcases_content, SourceFun_id, SourceTestcase_id, Fuzzing_times, Mutation_method,
-                    Mutation_times, Interesting_times, Probability, Remark]
+                    Mutation_times, Interesting_times, engine_coverage,
+                                  Engine_coverage_integration_source, Engine_coverage_integration_all, Probability, Remark]
             lis.append(item)
         return lis
 
@@ -370,7 +373,7 @@ class Function_Object(object):
             # print(f"{file_path}right!")
         return jshint_flag
 
-    def assemble_to_testcase(self,times):
+    def assemble_to_testcase(self, times):
         """
         将function组装成用例
         :return:
@@ -387,7 +390,7 @@ class Function_Object(object):
             # 用jshint检查用例语法
             all_testcases_pass = self.jshint_check_testcases(function_assemle_list)
 
-            testcases_list_to_write = self.makeTestcasesListToWrite(all_testcases_pass, self.Id, 0, 0, 0, 0, 0, 0, None)
+            testcases_list_to_write = self.makeTestcasesListToWrite(all_testcases_pass, self.Id, 0, 0, 0, 0, 0, None, None, None, 0, None)
 
             table_Testcase = Table_Testcase()
 
