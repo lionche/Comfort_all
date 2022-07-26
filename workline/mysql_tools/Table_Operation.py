@@ -170,7 +170,6 @@ class Table_Testcase(object):
         sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id}'
         return self.__table.selectall(sql)
 
-
     # 全部查询
     def selectAllFromTableTestcase(self):
         sql = 'select * from Table_Testcase'
@@ -227,14 +226,22 @@ class Table_Testcase(object):
         prames = (Function_content, id)
         return self.__table.update(sql, prames)
 
-    def updateFuzzingTimesInterestintTimes(self, Fuzzing_times, Interesting_times, id):
-        sql = 'update Table_Testcase set Fuzzing_times= %s ,Interesting_times = %s where id = %s'
-        prames = (Fuzzing_times, Interesting_times, id)
+    def updateFuzzingTimesInterestintTimesCovInfo(self, Fuzzing_times, Interesting_times, engine_coverage,
+                                                  Engine_coverage_integration_source,
+                                                  id):
+        sql = 'update Table_Testcase set Fuzzing_times= %s ,Interesting_times = %s, engine_coverage= %s, Engine_coverage_integration_source = %s where id = %s'
+        prames = (Fuzzing_times, Interesting_times, engine_coverage,
+                  Engine_coverage_integration_source, id)
         return self.__table.update(sql, prames)
 
     def updateMutationTimes(self, MutationTimes, id):
         sql = 'update Table_Testcase set Mutation_times= %s where id = %s'
         prames = (MutationTimes, id)
+        return self.__table.update(sql, prames)
+
+    def updateSourceEngine_coverage_integration_all(self, Engine_coverage_integration_all, id):
+        sql = 'update Table_Testcase set Engine_coverage_integration_all= %s where id = %s'
+        prames = (Engine_coverage_integration_all, id)
         return self.__table.update(sql, prames)
 
 

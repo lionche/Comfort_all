@@ -322,10 +322,18 @@ class Testcase_Object(object):
 
         return all_functions_generated_testcases_pass, all_functions_replaced_generated_testcases_pass
 
-    def updateFuzzingTimesInterestintTimes(self):
+    def updateFuzzingTimesInterestintTimesCovInfo(self):
         table_Testcases = Table_Testcase()
-        table_Testcases.updateFuzzingTimesInterestintTimes(self.Fuzzing_times,
-                                                           self.Interesting_times, self.Id)
+        table_Testcases.updateFuzzingTimesInterestintTimesCovInfo(self.Fuzzing_times,
+                                                                  self.Interesting_times,
+                                                                  self.Engine_coverage,
+                                                                  self.Engine_coverage_integration_source,
+                                                                  self.Id)
+
+    def updateSourceEngine_coverage_integration_all(self):
+        table_Testcases = Table_Testcase()
+        table_Testcases.updateSourceEngine_coverage_integration_all(self.Engine_coverage_integration_all,
+                                                                    self.SourceTestcase_id)
 
     def getCov(self):
         '''
@@ -350,12 +358,26 @@ class Testcase_Object(object):
 
             testcase_object = Testcase_Object(SourceTestcase)
 
-
             # 如果存在父用例，并且父用例的Engine_coverage_integration_all没有内容时，整合自己父用例和所有的父用例下所有子用例，记录在Engine_coverage_integration_all
-            if (len(testcase_object.Engine_coverage_integration_all) == 0):
-                testcase_list = table_Testcase.selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id)
-                # print(testcase_list)
+            # if (len(testcase_object.Engine_coverage_integration_all) == 0):
+            # 所有具有共同父用例的子用例
+            testcase_list = table_Testcase.selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id)
+            # print(testcase_list)
+
+            # 检查所有的子用例是否都已经被测试过，如果被测试过，可以合并父用例的所有子用例的覆盖率
+            all_flag = 0
+
+            for item in testcase_list:
+                # print(item[8])
+                if item[8] is not None and len(item[8]) != 0:
+                    all_flag += 1
+            # print(all_flag)
+            # print(len(testcase_list))
+            if all_flag == len(testcase_list) - 1:
                 AllCov = self.getAllCov(testcase_list)
+            # else:
+            #     print("有子用例没被测试")
+
         return OwnCov, SourceCov, AllCov
 
     def processCov(self, *profraws):

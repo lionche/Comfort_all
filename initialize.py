@@ -17,7 +17,7 @@ class Django_work(object):
         self.runShell('python /root/Comfort_all/web/manage.py runserver 0.0.0.0:10000')
 
     def loaddata(self):
-        self.runShell('python /root/Comfort_all/web/manage.py loaddata analysis_data.json')
+        self.runShell('python /root/Comfort_all/web/manage.py loaddata analysis_init_data.json')
 
     def backupData(self):
         self.runShell('python /root/Comfort_all/web/manage.py dumpdata analysis > analysis_init_data.json')

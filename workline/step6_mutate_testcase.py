@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
             # 生成变异
             if useGptMutate:
-                num_return_sequences = 20
+                num_return_sequences = 1
 
                 start_gen = time.time()
                 # 传入一个用例，返回直接续写和续写替换的用例

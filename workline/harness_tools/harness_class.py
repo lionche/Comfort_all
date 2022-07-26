@@ -149,7 +149,7 @@ class HarnessResult:
         table_result = Table_Result()
         for output in self.outputs:
             table_result.insertDataToTableResult(self.testcase_id, output.testbed_id, output.returncode, output.stdout,
-                                                 output.stderr, output.duration_ms, None)
+                                                 output.stderr, output.duration_ms, 0,None)
 
 
 class Output:
