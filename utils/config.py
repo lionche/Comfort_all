@@ -1,5 +1,6 @@
 # sql_config
 DATABASE_ADDRESS = '127.0.0.1'
+# DATABASE_ADDRESS = '10.15.0.26'
 DATABASE_PORT = 8888
 # DATABASE_NAME = 'comfort_cov'
 DATABASE_NAME = 'comfort'
