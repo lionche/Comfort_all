@@ -193,8 +193,25 @@ class Table_Testcase(object):
         sql = f'select * from Table_Testcase where Mutation_method ={Mutation_method} and Mutation_times ={MutationTime}'
         return self.__table.selectall(sql)
 
+
     def selectSourceTestcaseIdFromTableTestcase(self, SourceTestcase_id):
         sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id}'
+        return self.__table.selectall(sql)
+
+    def selectEngine_coverage_integration_all_is_not_nullFromTableTestcase(self):
+        sql = f'select * from Table_Testcase where Engine_coverage_integration_all is not null'
+        return self.__table.selectall(sql)
+
+    def selectEngine_coverage_integration_all_is_null_and_MutationTimeIsNOT0FromTableTestcase(self):
+        sql = f'select * from Table_Testcase where Engine_coverage_integration_all is null and Mutation_method = 0 and Mutation_times !=0'
+        return self.__table.selectall(sql)
+
+    def selectEngine_coverage_integration_all_is_null_and_MutationTimeIsNOT0RangeFromTableTestcase(self,start,end):
+        sql = f'select * from Table_Testcase where Engine_coverage_integration_all is null and Mutation_method = 0 and Mutation_times !=0 and id between {start} and {end}'
+        return self.__table.selectall(sql)
+
+    def selectSourceTestcaseIdNoFuzzingFromTableTestcase(self, SourceTestcase_id):
+        sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id} and Fuzzing_times = 0'
         return self.__table.selectall(sql)
 
     # 插入单行数据

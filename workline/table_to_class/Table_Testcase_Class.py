@@ -28,6 +28,13 @@ class Testcase_Object(object):
         self.Probability = Testcase_item[11]
         self.Remark = Testcase_item[12]
         self.source_function_object = self.get_function_content()
+        self.testcase_list = self.getAllTestcase_list()
+
+    def getAllTestcase_list(self):
+        otherTestcaseFromSameSourceTestcase = [self.SourceTestcase_id]
+        for item in Table_Testcase().selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id):
+            otherTestcaseFromSameSourceTestcase.append(item[0])
+        return otherTestcaseFromSameSourceTestcase
 
     def engine_run_testcase(self, timeout="30"):
         # 1.记录自身覆盖率信息在Engine_coverage
@@ -354,37 +361,47 @@ class Testcase_Object(object):
         '''
         # 1.记录自身覆盖率信息在Engine_coverage
         OwnCov = self.getOwnCov()
-        # OwnCov = ''
+
         SourceCov = ''
         AllCov = ''
-        table_Testcase = Table_Testcase()
 
         # print(testcase_object.Engine_coverage_integration_all)
         if (self.SourceTestcase_id != 0):
             # 2.查看有无父用例，有的话整合自己和父用例，记录在Engine_coverage_integration_source
             SourceCov = self.getSourceCov()
 
-            SourceTestcase = table_Testcase.selectOneFromTableTestcase(self.SourceTestcase_id)
-
-            testcase_object = Testcase_Object(SourceTestcase)
-
             # 如果存在父用例，并且父用例的Engine_coverage_integration_all没有内容时，整合自己父用例和所有的父用例下所有子用例，记录在Engine_coverage_integration_all
-            # if (len(testcase_object.Engine_coverage_integration_all) == 0):
             # 所有具有共同父用例的子用例
-            testcase_list = table_Testcase.selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id)
-            # print(testcase_list)
+            # testcase_list = table_Testcase.selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id)
 
             # 检查所有的子用例是否都已经被测试过，如果被测试过，可以合并父用例的所有子用例的覆盖率
-            all_flag = 0
+            # all_flag = 0
+            #
+            # for item in testcase_list:
+            #     # print(item[8])
+            #     if item[8] is not None and len(item[8]) != 0:
+            #         all_flag += 1
+            # # print(all_flag,'-',len(testcase_list))
+            # # 统计覆盖率，结束之后删除相应的文件
+            # if all_flag >= len(testcase_list) - 1:
+            #
+            #     # print(testcase_list)
+            #     otherTestcaseFromSameSourceTestcase = []
+            #     otherTestcaseFromSameSourceTestcase.append(self.SourceTestcase_id)
+            #     for item in testcase_list:
+            #         # print(item[0])
+            #         otherTestcaseFromSameSourceTestcase.append(item[0])
+            #
+            #     AllCov = self.getAllCov(otherTestcaseFromSameSourceTestcase)
 
-            for item in testcase_list:
-                # print(item[8])
-                if item[8] is not None and len(item[8]) != 0:
-                    all_flag += 1
-            # print(all_flag)
-            # print(len(testcase_list))
-            if all_flag == len(testcase_list) - 1:
-                AllCov = self.getAllCov(testcase_list)
+            # otherTestcaseFromSameSourceTestcase = []
+            # otherTestcaseFromSameSourceTestcase.append(self.SourceTestcase_id)
+            # for item in self.testcase_list:
+            #     # print(item[0])
+            #     otherTestcaseFromSameSourceTestcase.append(item[0])
+
+            AllCov = self.getAllCov(self.testcase_list)
+
             # else:
             #     print("有子用例没被测试")
 
@@ -407,9 +424,45 @@ class Testcase_Object(object):
         pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = pro.communicate()
+        # print(stdout)
         # print(stderr)
         coverage_stdout_finally = self.del_useless_json_info(stdout)
         return coverage_stdout_finally
+
+    def processAllCov(self, *profraws):
+        # print(profraws)
+        profraws_len = len(profraws)
+        COV_PATH = "/root/Comfort_all/data/cov_files"
+        PROFDATA_PATH = f"{COV_PATH}/profdatas/{profraws[0]}_{profraws_len}.prodata"
+        PROFRAWS_PATH = COV_PATH + "/profraws"
+        COV_ENGHINES_PATH = '/root/.jsvu/engines/chakra-1.13-cov/ch'
+
+        profraws_cmd = ''
+        for fraws in profraws:
+            profraws_cmd += f'{PROFRAWS_PATH}/{fraws}.profraw '
+
+        cmd_coverage = f'llvm-profdata-10 merge -o {PROFDATA_PATH} {profraws_cmd} && llvm-cov-10 export {COV_ENGHINES_PATH} -instr-profile={PROFDATA_PATH} && rm {PROFDATA_PATH}'
+        # print(cmd_coverage)
+        pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = pro.communicate()
+        coverage_stdout_finally = self.del_useless_json_info(stdout)
+        return coverage_stdout_finally
+
+
+    def removeCov(self, *profraws):
+            COV_PATH = "/root/Comfort_all/data/cov_files"
+            PROFRAWS_PATH = COV_PATH + "/profraws"
+
+            profraws_cmd = ''
+            for fraws in profraws:
+                profraws_cmd += f'{PROFRAWS_PATH}/{fraws}.profraw '
+
+            cmd_coverage = f'rm {profraws_cmd}'
+
+            pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
+                                   stderr=subprocess.PIPE, universal_newlines=True)
+            stdout, stderr = pro.communicate()
 
     def getOwnCov(self):
         """
@@ -425,19 +478,23 @@ class Testcase_Object(object):
         """
         return self.processCov(self.Id, self.SourceTestcase_id)
 
-    def getAllCov(self, testcase_list):
+    def getAllCov(self, otherTestcaseFromSameSourceTestcase):
         """
         如果存在父用例，并且父用例的Engine_coverage_integration_all没有内容时，整合自己父用例和所有的父用例下所有子用例，记录在Engine_coverage_integration_all
         @return:
         """
-        # print(testcase_list)
-        otherTestcaseFromSameSourceTestcase = []
-        otherTestcaseFromSameSourceTestcase.append(self.SourceTestcase_id)
-        for item in testcase_list:
-            # print(item[0])
-            otherTestcaseFromSameSourceTestcase.append(item[0])
+        coverage_stdout_finally = None
+        try:
+            coverage_stdout_finally = self.processAllCov(*otherTestcaseFromSameSourceTestcase)
+            # print("返回所有的覆盖率")
+            self.removeCov(*otherTestcaseFromSameSourceTestcase)
 
-        return self.processCov(*otherTestcaseFromSameSourceTestcase)
+        except:
+            pass
+            # print("没有测试完所有的覆盖率")
+
+
+        return coverage_stdout_finally
 
     def del_useless_json_info(self, json_info):
         res = """"""
