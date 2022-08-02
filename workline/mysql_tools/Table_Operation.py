@@ -140,6 +140,17 @@ class Table_Testcase(object):
         sql = f'select * from Table_Testcase where Id={id}'
         return self.__table.selectall(sql)
 
+    def selectAllFromTableTestcase(self):
+        """
+        条件查询全部符合的数据\n
+        查询初始的用例即SourceFun_id==0用例\n
+        :param SourceFun_id: 父用例id
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Testcase'
+        return self.__table.selectall(sql)
+
     def selectInterestingTimeFromTableTestcase(self, Interesting_times):
         """
         条件查询全部符合的数据\n
@@ -162,17 +173,28 @@ class Table_Testcase(object):
         sql = f'select * from Table_Testcase where Fuzzing_times={Fuzzing_times}'
         return self.__table.selectall(sql)
 
+    def selectFuzzingTimeDistributedFromTableTestcase(self, Fuzzing_times, DistributedStart, DistributedEnd):
+        """
+        条件查询全部符合的数据\n
+        查询初始的用例即SourceFun_id==0用例\n
+        :param SourceFun_id: 父用例id
+        :return:所有符合条件的数据的List
+        """
+        # 注意在数据库操作时无 %d ,全部字段都用%s来匹配，无论哪种数据类型。
+        sql = f'select * from Table_Testcase where Fuzzing_times={Fuzzing_times} and id BETWEEN {DistributedStart} AND {DistributedEnd}'
+        return self.__table.selectall(sql)
+
     def selectMutationMethodFromTableTestcase(self, Mutation_method):
         sql = f'select * from Table_Testcase where Mutation_method!={Mutation_method}'
         return self.__table.selectall(sql)
 
-    def selectSourceTestcaseIdFromTableTestcase(self, SourceTestcase_id):
-        sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id}'
+    # 选择没有被变异过得最初的种子池
+    def selectMutationTimeAndMutation_methodFromTableTestcase(self, Mutation_method, MutationTime):
+        sql = f'select * from Table_Testcase where Mutation_method ={Mutation_method} and Mutation_times ={MutationTime}'
         return self.__table.selectall(sql)
 
-    # 全部查询
-    def selectAllFromTableTestcase(self):
-        sql = 'select * from Table_Testcase'
+    def selectSourceTestcaseIdFromTableTestcase(self, SourceTestcase_id):
+        sql = f'select * from Table_Testcase where SourceTestcase_id={SourceTestcase_id}'
         return self.__table.selectall(sql)
 
     # 插入单行数据

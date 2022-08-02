@@ -308,12 +308,22 @@ class Testcase_Object(object):
         table_testcase = Table_Testcase()
 
         # 把通过语法检查的用例存入数据库
+        # all_functions_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+        #     all_functions_generated_testcases_pass,
+        #     self.SourceFun_id,
+        #     self.Id, 0, 1, 0, 0, None, None, None, 0, None)
+        # all_functions_replaced_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
+        #     all_functions_replaced_generated_testcases_pass,
+        #     self.SourceFun_id,
+        #     self.Id, 0, 2, 0, 0, None, None, None, 0, None)
+
+        # 直接存入数据库
         all_functions_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
-            all_functions_generated_testcases_pass,
+            all_functions_generated_testcases,
             self.SourceFun_id,
             self.Id, 0, 1, 0, 0, None, None, None, 0, None)
         all_functions_replaced_generated_testcases_pass_list_to_write = self.make_all_mutation_testcases_passListToWrite(
-            all_functions_replaced_generated_testcases_pass,
+            all_functions_replaced_generated_testcases,
             self.SourceFun_id,
             self.Id, 0, 2, 0, 0, None, None, None, 0, None)
 

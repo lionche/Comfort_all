@@ -1,13 +1,25 @@
 ```
 python step2_trainModel.py \
     --model_name_or_path /root/Comfort_all/data/train_model/distilgpt2 \
+    --train_file /root/Comfort_all/data/datasets/fzy_train1.txt \
+    --per_device_train_batch_size 2 \
+    --do_train \
+    --output_dir /root/Comfort_all/data/train_model/distilgpt2_fzy1 \
+    --save_steps 10000 \
+    --save_total_limit 50 \
+    --num_train_epochs 50 \
+    --overwrite_output_dir True
+```
+```
+python step2_trainModel.py \
+    --model_name_or_path /root/Comfort_all/data/train_model/distilgpt2 \
     --train_file /root/Comfort_all/data/datasets/train_data_bos.txt \
     --per_device_train_batch_size 4 \
     --do_train \
-    --output_dir /root/Comfort_all/data/train_model/distilgpt2_finetune \
+    --output_dir /root/Comfort_all/data/train_model/distilgpt2_new \
     --save_steps 10000 \
     --save_total_limit 50 \
-    --num_train_epochs 10 \
+    --num_train_epochs 50 \
     --overwrite_output_dir True
 ```
 ```

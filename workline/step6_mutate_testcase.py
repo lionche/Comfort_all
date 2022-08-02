@@ -18,6 +18,8 @@ from utils.config import MODEL_PATH
 # 添加环境变量
 os.environ['NODE_PATH'] = '/usr/lib/node_modules/'
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 
 def testJshintPassRate(function):
     def cmd_jshint(temp_file_path):
@@ -111,9 +113,11 @@ def functionReplaceBlockJshintPassMutil(function):
 if __name__ == '__main__':
 
     table_testcase = Table_Testcase()
+    # 选择没有被变异过的初始用例
+    list_unMutate = table_testcase.selectMutationTimeAndMutation_methodFromTableTestcase(0, 0)
 
     # list_unMutate = table_testcase.selectInterestingTimeFromTableTestcase(1)
-    list_unMutate = table_testcase.selectIdFromTableTestcase(1)
+    # list_unMutate = table_testcase.selectIdFromTableTestcase(1)
 
     # pbar = tqdm(total=len(list_unMutate))
     testcase_object_list = []
@@ -149,7 +153,9 @@ if __name__ == '__main__':
 
             # 生成变异
             if useGptMutate:
-                num_return_sequences = 1
+                print("正在进行GPT变异")
+
+                num_return_sequences = 50
 
                 start_gen = time.time()
                 # 传入一个用例，返回直接续写和续写替换的用例
@@ -157,28 +163,31 @@ if __name__ == '__main__':
                                                                              num_return_sequences)
                 AllFunctionsSet = FunctionsSet.union(FunctionsReplaceBlockSet)
 
-                print("生成不重复用例的数量为{},不重复率为{:.2%},生成速度{}个/秒".format(len(AllFunctionsSet),
-                                                                   len(AllFunctionsSet) / (
-                                                                           len(item.source_function_object.prefix_list) * num_return_sequences) / 2,
-                                                                   int(len(AllFunctionsSet) / (
-                                                                           time.time() - start_gen))))
+                if (len(item.source_function_object.prefix_list)):
+                    print("生成不重复用例的数量为{},不重复率为{:.2%},生成速度{}个/秒".format(len(AllFunctionsSet),
+                                                                       len(AllFunctionsSet) / (
+                                                                               len(item.source_function_object.prefix_list) * num_return_sequences) / 2,
+                                                                       int(len(AllFunctionsSet) / max((
+                                                                               time.time() - start_gen), 1))))
                 start_jshint = time.time()
 
                 FunctionsJshintPassSet = set()
                 FunctionsReplaceBlockSetJshintPassSet = set()
 
+                start_gen1 = time.time()
                 pool = ThreadPool()
                 pool.map(functionJshintPassMutil, FunctionsSet)
                 pool.map(functionReplaceBlockJshintPassMutil, FunctionsReplaceBlockSet)
                 pool.close()
                 pool.join()
 
-                print("直接续写语法通过率为{:.2%},续写替换语法通过率为{:.2%}，检查速度{}个/秒".format(
-                    len(FunctionsJshintPassSet) / len(FunctionsSet),
-                    len(FunctionsReplaceBlockSetJshintPassSet) / len(
-                        FunctionsReplaceBlockSet),
-                    int(len(AllFunctionsSet) / (
-                            time.time() - start_gen))))
+                if (len(FunctionsSet) and len(FunctionsReplaceBlockSet)):
+
+                    print("直接续写语法通过率为{:.2%},续写替换语法通过率为{:.2%}，检查速度{}个/秒".format(
+                        len(FunctionsJshintPassSet) / len(FunctionsSet),
+                        len(FunctionsReplaceBlockSetJshintPassSet) / len(
+                            FunctionsReplaceBlockSet),
+                        int(len(AllFunctionsSet) / max(1, int(time.time() - start_gen1)))))
                 all_functions_generated_testcases_pass, all_functions_replaced_generated_testcases_pass = item.mutation_method1_2(
                     FunctionsJshintPassSet, FunctionsReplaceBlockSetJshintPassSet)
 

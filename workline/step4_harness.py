@@ -17,7 +17,8 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 table_Testcases = Table_Testcase()
 
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+# list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+list_unharness = table_Testcases.selectFuzzingTimeDistributedFromTableTestcase(0,30000,60000)
 # 选择变异方法不为0的
 # list_unharness = table_Testcases.selectMutationMethodFromTableTestcase(0)
 # list_unharness = table_Testcases.selectIdFromTableTestcase(189)

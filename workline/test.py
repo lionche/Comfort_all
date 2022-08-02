@@ -1,6 +1,5 @@
-from workline.mysql_tools.Table_Operation import Table_Testcase
+import sys
+from pathlib import Path
 
-table_Testcases = Table_Testcase()
-
-list_unharness = table_Testcases.selectIdFromTableTestcase(1)
-print(list_unharness[0])
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
+print(BASE_DIR)

@@ -7,5 +7,5 @@ DATABASE_NAME = 'comfort'
 DATABASE_USER = 'root'
 DATABASE_PASSWORD = 'mysql123'
 # gpt_config
-MODEL_PATH = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
-
+# MODEL_PATH = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
+MODEL_PATH = "/root/Comfort_all/data/train_model/distilgpt2_new/checkpoint-640000"

@@ -2,7 +2,11 @@
 # 2.生成数据自身的重复率
 # 3.生成数据与训练集的重复率
 # 4.生成数据的平均行数
+import sys
+from pathlib import Path
 
+BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
+sys.path.append(BASE_DIR)
 # 测试的模型，随机200个方法头，每个头生成50个方法，共1万个方法。
 from multiprocessing.dummy import Pool as ThreadPool
 import subprocess
@@ -69,6 +73,7 @@ def repetitionRateGeneratedDataItself(allFunctions):
 
 
 def generateDataWithRepetitionRateTrainingSet(function):
+    # trainDataFile = '/root/Comfort_all/data/datasets/fzy_train1.txt'
     trainDataFile = '/root/Comfort_all/data/datasets/train_data_bos.txt'
     with open(trainDataFile, 'r') as f:
         trainDatasetContents = f.read()
@@ -87,15 +92,9 @@ def multithreadedAnalysis(function):
     generateDataWithRepetitionRateTrainingSet(function)
 
 
-model_name = "/root/Comfort_all/data/train_model/distilgpt2_finetune"
-
-prefixList = []
-
-prefix1 = """function("""
-# prefix2="""function(a,"""
-
-prefixList.append(prefix1)
-# prefixList.append(prefix2)
+# model_name = "/root/Comfort_all/data/train_model/distilgpt2_fzy1/checkpoint-30000"
+model_name = "/root/Comfort_all/data/train_model/distilgpt2_new/checkpoint-640000"
+# model_name = "/root/Comfort_all/data/train_model/distilgpt2_finetune/checkpoint-160000"
 
 num = 50
 
@@ -112,38 +111,39 @@ start_gen = time.time()
 # print(f'---------------第{i+1}次测试---------------')
 prefixList = []
 
-prefix1 = """function("""
-prefix2 = """function(a,"""
+# prefix1 = """function("""
+# prefix2 = """function(a,b"""
 prefix3 = """function(b,"""
-prefix4 = """function(c,"""
-prefix5 = """function(d,"""
-prefix6 = """function(e,"""
-prefix7 = """function(f,"""
-prefix8 = """function(g,"""
-prefix9 = """function(h,"""
-prefix10 = """function(i,"""
-prefix11 = """function(g,"""
-prefix12 = """function(h,"""
-prefix13 = """function(q,"""
-prefix14 = """function(w,"""
-prefix15 = """function(e,"""
-prefixList.append(prefix1)
-prefixList.append(prefix2)
+# prefix4 = """function(c,"""
+# prefix5 = """function(d,"""
+# prefix6 = """function(e,"""
+# prefix7 = """function(f,"""
+# prefix8 = """function(g,"""
+# prefix9 = """function(h,"""
+# prefix10 = """function(i,"""
+# prefix11 = """function(g,"""
+# prefix12 = """function(h,"""
+# prefix13 = """function(q,"""
+# prefix14 = """function(w,"""
+# prefix15 = """function(e,"""
+# prefixList.append(prefix1)
+# prefixList.append(prefix2)
 prefixList.append(prefix3)
-prefixList.append(prefix4)
-prefixList.append(prefix5)
-prefixList.append(prefix6)
-prefixList.append(prefix7)
-prefixList.append(prefix8)
-prefixList.append(prefix9)
-prefixList.append(prefix10)
-prefixList.append(prefix11)
-prefixList.append(prefix12)
-prefixList.append(prefix13)
-prefixList.append(prefix14)
-prefixList.append(prefix15)
-allFunctions = generationTextPipe(prefixList=prefixList, num_return_sequences=10)
-
+# prefixList.append(prefix4)
+# prefixList.append(prefix5)
+# prefixList.append(prefix6)
+# prefixList.append(prefix7)
+# prefixList.append(prefix8)
+# prefixList.append(prefix9)
+# prefixList.append(prefix10)
+# prefixList.append(prefix11)
+# prefixList.append(prefix12)
+# prefixList.append(prefix13)
+# prefixList.append(prefix14)
+# prefixList.append(prefix15)
+allFunctions = generationTextPipe(model_name_or_path=model_name, prefixList=prefixList, num_return_sequences=100)
+# for item in allFunctions:
+#     print(item)
 end_time = time.time()
 
 totalSize = len(allFunctions)
