@@ -31,10 +31,13 @@ class Testcase_Object(object):
         self.testcase_list = self.getAllTestcase_list()
 
     def getAllTestcase_list(self):
-        otherTestcaseFromSameSourceTestcase = [self.SourceTestcase_id]
-        for item in Table_Testcase().selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id):
-            otherTestcaseFromSameSourceTestcase.append(item[0])
-        return otherTestcaseFromSameSourceTestcase
+        if self.SourceTestcase_id == 0:
+            return None
+        else:
+            otherTestcaseFromSameSourceTestcase = [self.SourceTestcase_id]
+            for item in Table_Testcase().selectSourceTestcaseIdFromTableTestcase(self.SourceTestcase_id):
+                otherTestcaseFromSameSourceTestcase.append(item[0])
+            return otherTestcaseFromSameSourceTestcase
 
     def engine_run_testcase(self, timeout="30"):
         # 1.记录自身覆盖率信息在Engine_coverage
@@ -399,11 +402,12 @@ class Testcase_Object(object):
             # for item in self.testcase_list:
             #     # print(item[0])
             #     otherTestcaseFromSameSourceTestcase.append(item[0])
-
             AllCov = self.getAllCov(self.testcase_list)
 
             # else:
             #     print("有子用例没被测试")
+
+        # print(AllCov)
 
         return OwnCov, SourceCov, AllCov
 
@@ -449,20 +453,19 @@ class Testcase_Object(object):
         coverage_stdout_finally = self.del_useless_json_info(stdout)
         return coverage_stdout_finally
 
-
     def removeCov(self, *profraws):
-            COV_PATH = "/root/Comfort_all/data/cov_files"
-            PROFRAWS_PATH = COV_PATH + "/profraws"
+        COV_PATH = "/root/Comfort_all/data/cov_files"
+        PROFRAWS_PATH = COV_PATH + "/profraws"
 
-            profraws_cmd = ''
-            for fraws in profraws:
-                profraws_cmd += f'{PROFRAWS_PATH}/{fraws}.profraw '
+        profraws_cmd = ''
+        for fraws in profraws:
+            profraws_cmd += f'{PROFRAWS_PATH}/{fraws}.profraw '
 
-            cmd_coverage = f'rm {profraws_cmd}'
+        cmd_coverage = f'rm {profraws_cmd}'
 
-            pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
-                                   stderr=subprocess.PIPE, universal_newlines=True)
-            stdout, stderr = pro.communicate()
+        pro = subprocess.Popen(cmd_coverage, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+        stdout, stderr = pro.communicate()
 
     def getOwnCov(self):
         """
@@ -492,7 +495,6 @@ class Testcase_Object(object):
         except:
             pass
             # print("没有测试完所有的覆盖率")
-
 
         return coverage_stdout_finally
 

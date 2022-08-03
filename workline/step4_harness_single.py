@@ -107,16 +107,21 @@ def muti_harness(testcase):
 
 
 # 父用例中被变异过并且没有统计过覆盖率的用例
-id_list = table_Testcases.selectEngine_coverage_integration_all_is_null_and_MutationTimeIsNOT0RangeFromTableTestcase(1,100)
-print(len(id_list))
+id_list = table_Testcases.selectEngine_coverage_integration_all_is_null_and_MutationTimeIsNOT0RangeFromTableTestcase(0,100)
+
 for item in id_list:
     id = item[0]
+
+    # list_unharness1 = table_Testcases.selectIdFromTableTestcase(id)
+    # testcase_object = Testcase_Object(list_unharness1[0])
+    # harness_result = testcase_object.engine_run_testcase()
+
     list_unharness = table_Testcases.selectSourceTestcaseIdNoFuzzingFromTableTestcase(id)
     print(f"父用例{id}一共有{len(list_unharness)}条未差分的测试用例")
     pbar = tqdm(total=len(list_unharness))
-
     pool = ThreadPool()
     results = pool.map(muti_harness, list_unharness)
     pool.close()
     pool.join()
     pbar.close()
+
