@@ -17,12 +17,12 @@ from workline.table_to_class.Table_Testcase_Class import Testcase_Object
 table_Testcases = Table_Testcase()
 
 # 获取未差分过得测试用例,进行差分，并将差分后的结果插入到数据库中
-list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
+# list_unharness = table_Testcases.selectFuzzingTimeFromTableTestcase(0)
 # list_unharness = table_Testcases.selectFuzzingTimeDistributedFromTableTestcase(0,30000,60000)
 # 选择变异方法不为0的
 # list_unharness = table_Testcases.selectMutationMethodFromTableTestcase(0)
 # list_unharness = table_Testcases.selectIdFromTableTestcase(189)
-# list_unharness = table_Testcases.selectIdFromTableTestcase(1)
+list_unharness = table_Testcases.selectIdFromTableTestcase(1)
 # list_unharness = table_Testcases.selectIdFromTableTestcase(2891635)
 # 1 5826 32.35477826358526
 # 3 32.35477826358526
@@ -40,7 +40,7 @@ def muti_harness(testcase):
     start_time = time.time()
     # 获得差分结果，各个引擎输出
     harness_result = testcase_object.engine_run_testcase()
-    # print(harness_result)
+    print(harness_result)
     Cov_info = testcase_object.getCov()
     OwnCov = Cov_info[0]
     SourceCov = Cov_info[1]

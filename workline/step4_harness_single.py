@@ -107,7 +107,7 @@ def muti_harness(testcase):
 
 
 # 父用例中被变异过并且没有统计过覆盖率的用例
-id_list = table_Testcases.selectEngine_coverage_integration_all_is_null_and_MutationTimeIsNOT0RangeFromTableTestcase(0,100)
+id_list = table_Testcases.selectEngine_coverage_integration_all_is_null_and_MutationTimeIsNOT0RangeFromTableTestcase(100,300)
 
 for item in id_list:
     id = item[0]

@@ -77,6 +77,9 @@ def herness_ajax(request):
                 all_testcase.first().Mutation_method,
                 all_testcase.first().Mutation_times,
                 all_testcase.first().Interesting_times,
+                all_testcase.first().Engine_coverage,
+                all_testcase.first().Engine_coverage_integration_source,
+                all_testcase.first().Engine_coverage_integration_all,
                 all_testcase.first().Probability,
                 all_testcase.first().Remark]
     # print(herness_ajax)
