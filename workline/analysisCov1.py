@@ -36,7 +36,7 @@ def analysisCov(json_info):
     # print(json_str['data'][0]['totals'])
 
 
-id = 202
+id = 2
 table_Testcases = Table_Testcase()
 
 
@@ -144,7 +144,7 @@ def printCovByRaise(raise_rate_dic):
         if raise_rate_dic[file_key]['functions_percent']['old_cov'] and raise_rate_dic[file_key]['functions_percent']['new_cov']:
             print("-" * 30 + f"{file_key}" + "-" * 30)
             for type_key in raise_rate_dic[file_key]:
-                print('%s从%.2f%%提高到%.2f%%,提高了%.2f%%' % (
+                print('%s从%.2f提高到%.2f,提高了%.2f%%' % (
                     type_key, raise_rate_dic[file_key][type_key]['old_cov'],
                     raise_rate_dic[file_key][type_key]['new_cov'],
                     raise_rate_dic[file_key][type_key]['raiseRate'] * 100))
