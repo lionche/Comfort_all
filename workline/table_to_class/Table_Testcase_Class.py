@@ -224,7 +224,7 @@ class Testcase_Object(object):
                     condition_code_add.append(i[:i.rfind('\n')])
                 elif split_i[-1] == "replaceOperator" and (i not in replaceOperator):
                     replaceOperator.append(i[:i.rfind('\n')])
-        cmd2 = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/universal_mutation.js', '-f', file_name]
+        cmd2 = ['node', '/root/Comfort_all/workline/mutator_testcase_tools/special_mutation.js', '-f', file_name]
         pro2 = subprocess.Popen(cmd2, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, universal_newlines=True)
         stdout2, stderr2 = pro2.communicate()
